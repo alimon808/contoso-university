@@ -19,14 +19,12 @@ namespace ContosoUniversity.Controllers
             _context = context;    
         }
 
-        // GET: Courses
         public async Task<IActionResult> Index()
         {
             var schoolContext = _context.Courses.Include(c => c.Department);
             return View(await schoolContext.ToListAsync());
         }
 
-        // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -118,7 +116,6 @@ namespace ContosoUniversity.Controllers
             return View(courseToUpdate);
         }
 
-        // GET: Courses/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -138,7 +135,6 @@ namespace ContosoUniversity.Controllers
             return View(course);
         }
 
-        // POST: Courses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -147,6 +143,15 @@ namespace ContosoUniversity.Controllers
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> UpdateCourseCredits(int? multiplier)
+        {
+            if (multiplier != null)
+            {
+                ViewData["RowsAffected"] = await _context.Database.ExecuteSqlCommandAsync("UPDATE Course SET Credits = Credits * {0}", parameters: multiplier);
+            }
+            return View();
         }
 
         private bool CourseExists(int id)

@@ -19,18 +19,12 @@ namespace ContosoUniversity.Controllers
             _context = context;    
         }
 
-        // GET: Students
         public async Task<IActionResult> Index(string sortOrder, string searchString, int? page, string currentFilter)
         {
-            //return View(await _context.Students.ToListAsync());
-
-            ViewData["LastNameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "LastName_desc" : "";
-            ViewData["FirstMidNameSortParm"] = sortOrder == "FirstMidName" ? "FirstMidName_desc" : "FirstMidName";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-            ViewData["CurrentFilter"] = searchString;
-
-            var students = from s in _context.Students select s;
-
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "LastName_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "EnrollmentDate" ? "EnrollmentDate_desc" : "EnrollmentDate";
+            
             if (searchString != null)
             {
                 page = 1;
@@ -40,32 +34,33 @@ namespace ContosoUniversity.Controllers
             }
 
             ViewData["CurrentFilter"] = searchString;
+            var students = from s in _context.Students select s;
 
             if (!String.IsNullOrEmpty(searchString))
             {
                 students = students.Where(s => s.LastName.Contains(searchString) || s.FirstMidName.Contains(searchString));
             }
 
-            switch (sortOrder)
+            if (string.IsNullOrEmpty(sortOrder))
             {
-                case "LastName_desc":
-                    students = students.OrderByDescending(s => s.LastName);
-                    break;
-                case "FirstMidName":
-                    students = students.OrderBy(s => s.FirstMidName);
-                    break;
-                case "FirstMidName_desc":
-                    students = students.OrderByDescending(s => s.FirstMidName);
-                    break;
-                case "Date":
-                    students = students.OrderBy(s => s.EnrollmentDate);
-                    break;
-                case "date_desc":
-                    students = students.OrderByDescending(s => s.EnrollmentDate);
-                    break;
-                default:
-                    students = students.OrderBy(s => s.LastName);
-                    break;
+                sortOrder = "LastName";
+            }
+
+            bool descending = false;
+
+            if (sortOrder.EndsWith("_desc"))
+            {
+                sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
+                descending = true;
+            }
+
+            if (descending)
+            {
+                students = students.OrderByDescending(e => EF.Property<object>(e, sortOrder));
+            }
+            else
+            {
+                students = students.OrderBy(e => EF.Property<object>(e, sortOrder));
             }
 
             int pageSize = 3;
@@ -73,7 +68,6 @@ namespace ContosoUniversity.Controllers
             return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), page ?? 1, pageSize));
         }
 
-        // GET: Students/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -94,15 +88,11 @@ namespace ContosoUniversity.Controllers
             return View(student);
         }
 
-        // GET: Students/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Students/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("LastName,FirstMidName,EnrollmentDate")] Student student)
@@ -124,7 +114,6 @@ namespace ContosoUniversity.Controllers
             return View(student);
         }
 
-        // GET: Students/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -140,9 +129,6 @@ namespace ContosoUniversity.Controllers
             return View(student);
         }
 
-        // POST: Students/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPost(int? id)
@@ -170,7 +156,6 @@ namespace ContosoUniversity.Controllers
             return View(studentToUpdate);
         }
 
-        // GET: Students/Delete/5
         public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
@@ -193,7 +178,6 @@ namespace ContosoUniversity.Controllers
             return View(student);
         }
 
-        // POST: Students/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
