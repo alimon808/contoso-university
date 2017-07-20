@@ -11,9 +11,9 @@ namespace ContosoUniversity.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly SchoolContext _context;
+        private readonly ApplicationContext _context;
 
-        public HomeController(SchoolContext context)
+        public HomeController(ApplicationContext context)
         {
             _context = context;
         }
