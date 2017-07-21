@@ -1,4 +1,4 @@
-﻿namespace ContosoUniversity.Models
+﻿namespace ContosoUniversity.Data.Entities
 {
     public class CourseAssignment
     {

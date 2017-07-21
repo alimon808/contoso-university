@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ContosoUniversity.Data.Entities;
+using System.Collections.Generic;
 
 namespace ContosoUniversity.Models.SchoolViewModels
 {

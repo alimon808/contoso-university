@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
-using ContosoUniversity.Models;
 using ContosoUniversity.Models.SchoolViewModels;
+using ContosoUniversity.Data.Entities;
 
 namespace ContosoUniversity.Controllers
 {
     public class InstructorsController : Controller
     {
-        private readonly SchoolContext _context;
+        private readonly ApplicationContext _context;
 
-        public InstructorsController(SchoolContext context)
+        public InstructorsController(ApplicationContext context)
         {
             _context = context;    
         }

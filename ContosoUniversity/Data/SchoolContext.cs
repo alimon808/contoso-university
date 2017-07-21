@@ -1,4 +1,4 @@
-﻿using ContosoUniversity.Models;
+﻿using ContosoUniversity.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Data
@@ -20,14 +20,14 @@ namespace ContosoUniversity.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Course>().ToTable("Course");
-            modelBuilder.Entity<Enrollment>().ToTable("Enrollment");
-            modelBuilder.Entity<Student>().ToTable("Student");
-            modelBuilder.Entity<Department>().ToTable("Department");
-            modelBuilder.Entity<Instructor>().ToTable("Instructor");
-            modelBuilder.Entity<OfficeAssignment>().ToTable("OfficeAssignment");
-            modelBuilder.Entity<CourseAssignment>().ToTable("CourseAssignment");
-            modelBuilder.Entity<Person>().ToTable("Person");
+            modelBuilder.Entity<Course>().ToTable("Course", "Contoso");
+            modelBuilder.Entity<Enrollment>().ToTable("Enrollment", "Contoso");
+            modelBuilder.Entity<Student>().ToTable("Student", "Contoso");
+            modelBuilder.Entity<Department>().ToTable("Department", "Contoso");
+            modelBuilder.Entity<Instructor>().ToTable("Instructor", "Contoso");
+            modelBuilder.Entity<OfficeAssignment>().ToTable("OfficeAssignment", "Contoso");
+            modelBuilder.Entity<CourseAssignment>().ToTable("CourseAssignment", "Contoso");
+            modelBuilder.Entity<Person>().ToTable("Person", "Contoso");
             modelBuilder.Entity<CourseAssignment>().HasKey(c => new { c.CourseID, c.InstructorID });
 
         }

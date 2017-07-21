@@ -1,8 +1,7 @@
-﻿using ContosoUniversity.Models;
+﻿using ContosoUniversity.Data.Entities;
+using ContosoUniversity.Data.Enums;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ContosoUniversity.Data
 {
