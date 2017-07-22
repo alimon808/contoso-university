@@ -14,10 +14,17 @@ namespace ContosoUniversity.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Instructor> Instructors { get; set; }
+        public DbSet<OfficeAssignment> OfficeAssignments { get; set; }
+        public DbSet<CourseAssignment> CourseAssignments { get; set; }
+        public DbSet<Person> People { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Course>().ToTable("Course", "Contoso");
+            modelBuilder.Entity<Course>().HasKey(k => k.ID);
+            modelBuilder.Entity<Course>().Property(p => p.ID)
+                .ValueGeneratedNever();
+
             modelBuilder.Entity<Enrollment>().ToTable("Enrollment", "Contoso");
             modelBuilder.Entity<Student>().ToTable("Student", "Contoso");
             modelBuilder.Entity<Department>().ToTable("Department", "Contoso");

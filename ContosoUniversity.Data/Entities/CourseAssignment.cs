@@ -1,6 +1,6 @@
 ﻿namespace ContosoUniversity.Data.Entities
 {
-    public class CourseAssignment
+    public class CourseAssignment : BaseEntity
     {
         public int InstructorID { get; set; }
         public int CourseID { get; set; }

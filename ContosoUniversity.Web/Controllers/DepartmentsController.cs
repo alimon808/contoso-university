@@ -10,9 +10,9 @@ namespace ContosoUniversity.Controllers
 {
     public class DepartmentsController : Controller
     {
-        private readonly SchoolContext _context;
+        private readonly ApplicationContext _context;
 
-        public DepartmentsController(SchoolContext context)
+        public DepartmentsController(ApplicationContext context)
         {
             _context = context;    
         }
@@ -30,7 +30,7 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            string query = "SELECT * FROM Department WHERE DepartmentID = {0}";
+            string query = "SELECT * FROM Contoso.Department WHERE DepartmentID = {0}";
             var department = await _context.Departments
                 .FromSql(query, id)
                 .Include(d => d.Administrator)

@@ -4,10 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ContosoUniversity.Data.Entities
 {
-    public class Person
+    public class Person : BaseEntity
     {
-        public int ID { get; set; }
-
         [Required]
         [StringLength(50)]
         [Display(Name = "Last Name")]

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ContosoUniversity.Data.Entities
 {
-    public class Enrollment
+    public class Enrollment : BaseEntity
     {
         public long EnrollmentID { get; set; }
         public long CourseID { get; set; }

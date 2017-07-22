@@ -4,9 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ContosoUniversity.Data.Entities
 {
-    public class Course
+    public class Course : BaseEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        //todo: remove as pk
+        //[DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Display(Name = "Number")]
         public int CourseID { get; set; }
 

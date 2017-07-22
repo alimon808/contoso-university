@@ -2,9 +2,9 @@
 
 namespace ContosoUniversity.Data.Entities
 {
-    public class OfficeAssignment
+    public class OfficeAssignment : BaseEntity
     {
-        [Key]
+        //[Key]
         public int InstructorID { get; set; }
 
         [StringLength(50)]

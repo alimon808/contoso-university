@@ -7,7 +7,7 @@ namespace ContosoUniversity.Data
 {
     public static class DbInitializer
     {
-        public static void Initialize(SchoolContext context)
+        public static void Initialize(ApplicationContext context)
         {
             context.Database.EnsureCreated();
             if (context.Students.Any())
@@ -24,42 +24,42 @@ namespace ContosoUniversity.Data
             EnrollmentInitialize(context);
         }
 
-        private static void CourseAssignmentInitialize(SchoolContext context)
+        private static void CourseAssignmentInitialize(ApplicationContext context)
         {
             var instructors = context.Instructors.ToArray();
             var courses = context.Courses.ToArray();
             var courseAssignments = new CourseAssignment[]
             {
                 new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Chemistry" ).CourseID,
+                    CourseID = courses.Single(c => c.Title == "Chemistry" ).ID,
                     InstructorID = instructors.Single(i => i.LastName == "Kapoor").ID
                 },
                 new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Chemistry" ).CourseID,
+                    CourseID = courses.Single(c => c.Title == "Chemistry" ).ID,
                     InstructorID = instructors.Single(i => i.LastName == "Harui").ID
                 },
                 new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Microeconomics" ).CourseID,
+                    CourseID = courses.Single(c => c.Title == "Microeconomics" ).ID,
                     InstructorID = instructors.Single(i => i.LastName == "Zheng").ID
                 },
                 new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Macroeconomics" ).CourseID,
+                    CourseID = courses.Single(c => c.Title == "Macroeconomics" ).ID,
                     InstructorID = instructors.Single(i => i.LastName == "Zheng").ID
                 },
                 new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Calculus" ).CourseID,
+                    CourseID = courses.Single(c => c.Title == "Calculus" ).ID,
                     InstructorID = instructors.Single(i => i.LastName == "Fakhouri").ID
                 },
                 new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Trigonometry" ).CourseID,
+                    CourseID = courses.Single(c => c.Title == "Trigonometry" ).ID,
                     InstructorID = instructors.Single(i => i.LastName == "Harui").ID
                 },
                 new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Composition" ).CourseID,
+                    CourseID = courses.Single(c => c.Title == "Composition" ).ID,
                     InstructorID = instructors.Single(i => i.LastName == "Abercrombie").ID
                 },
                 new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Literature" ).CourseID,
+                    CourseID = courses.Single(c => c.Title == "Literature" ).ID,
                     InstructorID = instructors.Single(i => i.LastName == "Abercrombie").ID
                 }
             };
@@ -72,7 +72,7 @@ namespace ContosoUniversity.Data
             SaveChanges(context);
         }
 
-        private static void OfficeAssignmentInitialize(SchoolContext context)
+        private static void OfficeAssignmentInitialize(ApplicationContext context)
         {
             var instructors = context.Instructors.ToArray();
             var officeAssignments = new OfficeAssignment[]
@@ -90,7 +90,7 @@ namespace ContosoUniversity.Data
             SaveChanges(context);
         }
 
-        private static void StudentInitialize(SchoolContext context)
+        private static void StudentInitialize(ApplicationContext context)
         {
             var students = new Student[]
 {
@@ -112,7 +112,7 @@ namespace ContosoUniversity.Data
             SaveChanges(context);
         }
 
-        private static void InstructorInitialize(SchoolContext context)
+        private static void InstructorInitialize(ApplicationContext context)
         {
             var instructors = new Instructor[]
             {
@@ -131,7 +131,7 @@ namespace ContosoUniversity.Data
             SaveChanges(context);
         }
 
-        private static void DepartmentInitialize(SchoolContext context)
+        private static void DepartmentInitialize(ApplicationContext context)
         {
             var instructors = context.Instructors.ToArray();
             var departments = new Department[]
@@ -148,30 +148,30 @@ namespace ContosoUniversity.Data
             }
             SaveChanges(context);
         }
-        private static void CourseInitialize(SchoolContext context)
+        private static void CourseInitialize(ApplicationContext context)
         {
             var departments = context.Departments.ToArray();
             var courses = new Course[]
             {
-                new Course {CourseID = 1050, Title = "Chemistry", Credits = 3,
+                new Course {ID = 1050, CourseID = 1050, Title = "Chemistry", Credits = 3,
                     DepartmentID = departments.Single( s => s.Name == "Engineering").DepartmentID
                 },
-                new Course {CourseID = 4022, Title = "Microeconomics", Credits = 3,
+                new Course {ID = 4022, CourseID = 4022, Title = "Microeconomics", Credits = 3,
                     DepartmentID = departments.Single( s => s.Name == "Economics").DepartmentID
                 },
-                new Course {CourseID = 4041, Title = "Macroeconomics", Credits = 3,
+                new Course {ID = 4041, CourseID = 4041, Title = "Macroeconomics", Credits = 3,
                     DepartmentID = departments.Single( s => s.Name == "Economics").DepartmentID
                 },
-                new Course {CourseID = 1045, Title = "Calculus", Credits = 4,
+                new Course {ID = 1045, CourseID = 1045, Title = "Calculus", Credits = 4,
                     DepartmentID = departments.Single( s => s.Name == "Mathematics").DepartmentID
                 },
-                new Course {CourseID = 3141, Title = "Trigonometry", Credits = 4,
+                new Course {ID = 3141, CourseID = 3141, Title = "Trigonometry", Credits = 4,
                     DepartmentID = departments.Single( s => s.Name == "Mathematics").DepartmentID
                 },
-                new Course {CourseID = 2021, Title = "Composition", Credits = 3,
+                new Course {ID = 2021, CourseID = 2021, Title = "Composition", Credits = 3,
                     DepartmentID = departments.Single( s => s.Name == "English").DepartmentID
                 },
-                new Course {CourseID = 2042, Title = "Literature", Credits = 4,
+                new Course {ID = 2042, CourseID = 2042, Title = "Literature", Credits = 4,
                     DepartmentID = departments.Single( s => s.Name == "English").DepartmentID
                 }
             };
@@ -183,7 +183,7 @@ namespace ContosoUniversity.Data
             SaveChanges(context);
         }
 
-        private static void EnrollmentInitialize(SchoolContext context)
+        private static void EnrollmentInitialize(ApplicationContext context)
         {
             var students = context.Students.ToArray();
             var courses = context.Courses.ToArray();
@@ -252,7 +252,7 @@ namespace ContosoUniversity.Data
 
             SaveChanges(context);
         }
-        private static void SaveChanges(SchoolContext context)
+        private static void SaveChanges(ApplicationContext context)
         {
             context.SaveChanges();
         }
