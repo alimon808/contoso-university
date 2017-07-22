@@ -5,21 +5,29 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
 using ContosoUniversity.Data.Entities;
+using ContosoUniversity.Data.Interfaces;
 
 namespace ContosoUniversity.Controllers
 {
     public class DepartmentsController : Controller
     {
-        private readonly ApplicationContext _context;
+        
+        private readonly IRepository<Course> _courseRepo;
+        private readonly IRepository<Department> _departmentRepo;
+        private readonly IRepository<Instructor> _instructorRepo;
+        private ApplicationContext _context;
 
-        public DepartmentsController(ApplicationContext context)
+        public DepartmentsController(ApplicationContext context, IRepository<Course> courseRepo, IRepository<Department> departmentRepo, IRepository<Instructor> instructorRepo)
         {
-            _context = context;    
+            _context = context;
+            _courseRepo = courseRepo;
+            _departmentRepo = departmentRepo;
+            _instructorRepo = instructorRepo;
         }
 
         public async Task<IActionResult> Index()
         {
-            var schoolContext = _context.Departments.Include(d => d.Administrator);
+            var schoolContext = _departmentRepo.GetAll().Include(d => d.Administrator);
             return View(await schoolContext.ToListAsync());
         }
 
@@ -31,7 +39,7 @@ namespace ContosoUniversity.Controllers
             }
 
             string query = "SELECT * FROM Contoso.Department WHERE DepartmentID = {0}";
-            var department = await _context.Departments
+            var department = await _departmentRepo.GetAll()
                 .FromSql(query, id)
                 .Include(d => d.Administrator)
                 .AsNoTracking()
@@ -46,7 +54,7 @@ namespace ContosoUniversity.Controllers
 
         public IActionResult Create()
         {
-            ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FullName");
+            ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName");
             return View();
         }
 
@@ -56,11 +64,11 @@ namespace ContosoUniversity.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(department);
-                await _context.SaveChangesAsync();
+                await _departmentRepo.AddAsync(department);
+                await _departmentRepo.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FullName", department.InstructorID);
+            ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", department.InstructorID);
             return View(department);
         }
 
@@ -71,14 +79,14 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var department = await _context.Departments
+            var department = await _departmentRepo.GetAll()
                 .AsNoTracking()
                 .SingleOrDefaultAsync(m => m.DepartmentID == id);
             if (department == null)
             {
                 return NotFound();
             }
-            ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FullName", department.InstructorID);
+            ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", department.InstructorID);
             return View(department);
         }
 
@@ -91,7 +99,7 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var departmentToUpdate = await _context.Departments
+            var departmentToUpdate = await _departmentRepo.GetAll()
                 .Include(i => i.Administrator)
                 .SingleOrDefaultAsync(m => m.DepartmentID == id);
 
@@ -100,10 +108,11 @@ namespace ContosoUniversity.Controllers
                 Department deletedDepartment = new Department();
                 await TryUpdateModelAsync(deletedDepartment);
                 ModelState.AddModelError(string.Empty, "Unable to save changes.  The department was deleted by another user.");
-                ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FullName", deletedDepartment.InstructorID);
+                ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", deletedDepartment.InstructorID);
                 return View(deletedDepartment);
             }
 
+            // todo: add concurrency to repo
             _context.Entry(departmentToUpdate).Property("RowVersion").OriginalValue = rowVersion;
 
             if (await TryUpdateModelAsync<Department>(departmentToUpdate, "", s => s.Name, s => s.Budget, s => s.InstructorID, s => s.StartDate))
@@ -139,7 +148,7 @@ namespace ContosoUniversity.Controllers
                         }
                         if (databaseValues.InstructorID != clientValues.InstructorID)
                         {
-                            Instructor databaseInstructor = await _context.Instructors.SingleOrDefaultAsync(i => i.ID == databaseValues.InstructorID);
+                            Instructor databaseInstructor = await _instructorRepo.GetAll().SingleOrDefaultAsync(i => i.ID == databaseValues.InstructorID);
                             ModelState.AddModelError("InstructorID", $"Current value: {databaseInstructor?.FullName}");
                         }
 
@@ -151,7 +160,7 @@ namespace ContosoUniversity.Controllers
                     }
                 }
             }
-            ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FullName", departmentToUpdate.InstructorID);
+            ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", departmentToUpdate.InstructorID);
             return View(departmentToUpdate);
         }
 
@@ -162,7 +171,7 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var department = await _context.Departments
+            var department = await _departmentRepo.GetAll()
                 .Include(d => d.Administrator)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(m => m.DepartmentID == id);
@@ -190,9 +199,9 @@ namespace ContosoUniversity.Controllers
         {
             try
             {
-                if (await _context.Departments.AnyAsync(m => m.DepartmentID == department.DepartmentID))
+                if (await _departmentRepo.GetAll().AnyAsync(m => m.DepartmentID == department.DepartmentID))
                 {
-                    _context.Departments.Remove(department);
+                    _departmentRepo.Delete(department);
                     await _context.SaveChangesAsync();
                 }
                 return RedirectToAction("Index");
@@ -205,7 +214,7 @@ namespace ContosoUniversity.Controllers
 
         private bool DepartmentExists(int id)
         {
-            return _context.Departments.Any(e => e.DepartmentID == id);
+            return _departmentRepo.GetAll().Any(e => e.DepartmentID == id);
         }
     }
 }

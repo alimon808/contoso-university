@@ -7,22 +7,29 @@ using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models.SchoolViewModels;
 using ContosoUniversity.Data.Entities;
+using ContosoUniversity.Data.Interfaces;
 
 namespace ContosoUniversity.Controllers
 {
     public class InstructorsController : Controller
     {
-        private readonly ApplicationContext _context;
+        private readonly IRepository<Department> _departmentRepo;
+        private readonly IRepository<Instructor> _instructorRepo;
+        private readonly IRepository<Course> _courseRepo;
+        private readonly IRepository<CourseAssignment> _courseAssignmentRepo;
 
-        public InstructorsController(ApplicationContext context)
+        public InstructorsController(IRepository<Instructor> instructorRepo, IRepository<Department> departmentRepo, IRepository<Course> courseRepo, IRepository<CourseAssignment> courseAssignmentRepo)
         {
-            _context = context;    
+            _instructorRepo = instructorRepo;
+            _departmentRepo = departmentRepo;
+            _courseRepo = courseRepo;
+            _courseAssignmentRepo = courseAssignmentRepo;
         }
 
         public async Task<IActionResult> Index(int? id, int? courseID)
         {
             var viewModel = new InstructorIndexData();
-            viewModel.Instructors = await _context.Instructors
+            viewModel.Instructors = await _instructorRepo.GetAll()
                 .Include(i => i.OfficeAssignment)
                 .Include(i => i.CourseAssignments)
                     .ThenInclude(i => i.Course)
@@ -56,7 +63,7 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var instructor = await _context.Instructors
+            var instructor = await _instructorRepo.GetAll()
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (instructor == null)
             {
@@ -90,8 +97,8 @@ namespace ContosoUniversity.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Add(instructor);
-                await _context.SaveChangesAsync();
+                await _instructorRepo.AddAsync(instructor);
+                await _instructorRepo.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             PopulateAssignedCourseData(instructor);
@@ -105,7 +112,7 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var instructor = await _context.Instructors
+            var instructor = await _instructorRepo.GetAll()
                 .Include(i => i.OfficeAssignment)
                 .Include(i => i.CourseAssignments).ThenInclude(i => i.Course)
                 .AsNoTracking()
@@ -120,7 +127,7 @@ namespace ContosoUniversity.Controllers
 
         private void PopulateAssignedCourseData(Instructor instructor)
         {
-            var allCourses = _context.Courses;
+            var allCourses = _courseRepo.GetAll();
             var instructorCourses = new HashSet<int>(instructor.CourseAssignments.Select(c => c.CourseID));
             var viewModel = new List<AssignedCourseData>();
             foreach (var course in allCourses)
@@ -144,7 +151,7 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var instructorToUpdate = await _context.Instructors
+            var instructorToUpdate = await _instructorRepo.GetAll()
                 .Include(i => i.OfficeAssignment)
                 .Include(i => i.CourseAssignments).ThenInclude(i => i.Course)
                 .SingleOrDefaultAsync(s => s.ID == id);
@@ -159,7 +166,7 @@ namespace ContosoUniversity.Controllers
                 UpdateInstructorCourses(selectedCourses, instructorToUpdate);
                 try
                 {
-                    await _context.SaveChangesAsync();
+                    await _instructorRepo.SaveChangesAsync();
                 }
                 catch (DbUpdateException)
                 {
@@ -182,7 +189,7 @@ namespace ContosoUniversity.Controllers
 
             var selectedCoursesHS = new HashSet<string>(selectedCourses);
             var instructorCourses = new HashSet<int>(instructorToUpdate.CourseAssignments.Select(c => c.Course.CourseID));
-            foreach (var course in _context.Courses)
+            foreach (var course in _courseRepo.GetAll())
             {
                 if (selectedCoursesHS.Contains(course.CourseID.ToString()))
                 {
@@ -196,7 +203,7 @@ namespace ContosoUniversity.Controllers
                     if (instructorCourses.Contains(course.CourseID))
                     {
                         CourseAssignment courseToRemove = instructorToUpdate.CourseAssignments.SingleOrDefault(i => i.CourseID == course.CourseID);
-                        _context.Remove(courseToRemove);
+                        _courseAssignmentRepo.Delete(courseToRemove);
                     }
                 }
             }
@@ -209,7 +216,7 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var instructor = await _context.Instructors
+            var instructor = await _instructorRepo.GetAll()
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (instructor == null)
             {
@@ -223,22 +230,22 @@ namespace ContosoUniversity.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Instructor instructor = await _context.Instructors
+            Instructor instructor = await _instructorRepo.GetAll()
                 .Include(i => i.CourseAssignments)
                 .SingleAsync(m => m.ID == id);
 
-            var departments = await _context.Departments.Where(d => d.InstructorID == id).ToListAsync();
+            var departments = await _departmentRepo.GetAll().Where(d => d.InstructorID == id).ToListAsync();
             departments.ForEach(d => d.InstructorID = null);
 
-            _context.Instructors.Remove(instructor);
+            _instructorRepo.Delete(instructor);
 
-            await _context.SaveChangesAsync();
+            await _instructorRepo.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
         private bool InstructorExists(int id)
         {
-            return _context.Instructors.Any(e => e.ID == id);
+            return _instructorRepo.GetAll().Any(e => e.ID == id);
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ContosoUniversity.Data;
 using Microsoft.EntityFrameworkCore;
+using ContosoUniversity.Data.Interfaces;
 
 namespace ContosoUniversity
 {
@@ -26,6 +27,7 @@ namespace ContosoUniversity
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddMvc();
         }
 
