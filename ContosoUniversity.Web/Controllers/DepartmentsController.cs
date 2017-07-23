@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ContosoUniversity.Data;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
 
@@ -15,11 +14,9 @@ namespace ContosoUniversity.Controllers
         private readonly IRepository<Course> _courseRepo;
         private readonly IRepository<Department> _departmentRepo;
         private readonly IRepository<Instructor> _instructorRepo;
-        private ApplicationContext _context;
 
-        public DepartmentsController(ApplicationContext context, IRepository<Course> courseRepo, IRepository<Department> departmentRepo, IRepository<Instructor> instructorRepo)
+        public DepartmentsController(IRepository<Course> courseRepo, IRepository<Department> departmentRepo, IRepository<Instructor> instructorRepo)
         {
-            _context = context;
             _courseRepo = courseRepo;
             _departmentRepo = departmentRepo;
             _instructorRepo = instructorRepo;
@@ -111,15 +108,12 @@ namespace ContosoUniversity.Controllers
                 ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", deletedDepartment.InstructorID);
                 return View(deletedDepartment);
             }
-
-            // todo: add concurrency to repo
-            _context.Entry(departmentToUpdate).Property("RowVersion").OriginalValue = rowVersion;
-
+            
             if (await TryUpdateModelAsync<Department>(departmentToUpdate, "", s => s.Name, s => s.Budget, s => s.InstructorID, s => s.StartDate))
             {
                 try
                 {
-                    await _context.SaveChangesAsync();
+                    await _departmentRepo.SaveChangesAsync();
                     return RedirectToAction("Index");
                 }
                 catch (DbUpdateConcurrencyException ex)
@@ -202,7 +196,7 @@ namespace ContosoUniversity.Controllers
                 if (await _departmentRepo.GetAll().AnyAsync(m => m.DepartmentID == department.DepartmentID))
                 {
                     _departmentRepo.Delete(department);
-                    await _context.SaveChangesAsync();
+                    await _departmentRepo.SaveChangesAsync();
                 }
                 return RedirectToAction("Index");
             }
