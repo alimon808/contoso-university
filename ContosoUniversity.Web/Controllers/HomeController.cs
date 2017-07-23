@@ -5,16 +5,18 @@ using ContosoUniversity.Data;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Data.Common;
+using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Data.Entities;
 
 namespace ContosoUniversity.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationContext _context;
+        private readonly IRepository<Student> _studentRepo;
 
-        public HomeController(ApplicationContext context)
+        public HomeController(IRepository<Student> studentRepo)
         {
-            _context = context;
+            _studentRepo = studentRepo;
         }
 
         public IActionResult Index()
@@ -25,7 +27,7 @@ namespace ContosoUniversity.Controllers
         public async Task<IActionResult> About()
         {
             List<EnrollmentDateGroup> groups = new List<EnrollmentDateGroup>();
-            var conn = _context.Database.GetDbConnection();
+            var conn = _studentRepo.GetDbConnection();
             try
             {
                 await conn.OpenAsync();
