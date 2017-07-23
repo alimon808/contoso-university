@@ -1,4 +1,5 @@
 ﻿using ContosoUniversity.Data.Entities;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,5 +14,6 @@ namespace ContosoUniversity.Data.Interfaces
         void Delete(T entity);
         Task<int> ExecuteSqlCommandAsync(string queryString);
         Task SaveChangesAsync();
+        DbConnection GetDbConnection();
     }
 }

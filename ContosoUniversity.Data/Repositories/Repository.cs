@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace ContosoUniversity.Data
 {
@@ -67,6 +68,11 @@ namespace ContosoUniversity.Data
         public async Task<int> ExecuteSqlCommandAsync(string queryString)
         {
             return await context.Database.ExecuteSqlCommandAsync(queryString);
+        }
+
+        public DbConnection GetDbConnection()
+        {
+            return context.Database.GetDbConnection();
         }
     }
 }
