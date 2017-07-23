@@ -48,7 +48,7 @@
                     @{ 
                         foreach (var course in item.CourseAssignments)
                         {
-                            @course.Course.CourseID @: @course.Course.Title  <br />
+                            @course.Course.ID @: @course.Course.Title  <br />
                         }
                     }
                 </td>
@@ -76,16 +76,16 @@
         @foreach (var item in Model.Courses)
         {
             string selectedRow = "";
-            if (item.CourseID == (int?)ViewData["CourseID"])
+            if (item.ID == (int?)ViewData["CourseID"])
             {
                 selectedRow = "success";
             }
             <tr class="@selectedRow">
                 <td>
-                    @Html.ActionLink("Select", "Index", new { courseID = item.CourseID })
+                    @Html.ActionLink("Select", "Index", new { courseID = item.ID })
                 </td>
                 <td>
-                    @item.CourseID
+                    @item.ID
                 </td>
                 <td>
                     @item.Title
