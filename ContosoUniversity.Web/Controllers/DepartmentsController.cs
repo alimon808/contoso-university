@@ -24,8 +24,8 @@ namespace ContosoUniversity.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var schoolContext = _departmentRepo.GetAll().Include(d => d.Administrator);
-            return View(await schoolContext.ToListAsync());
+            var departments = _departmentRepo.GetAll().Include(d => d.Administrator);
+            return View(await departments.ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)
