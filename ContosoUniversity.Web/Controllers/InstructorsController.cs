@@ -28,7 +28,7 @@ namespace ContosoUniversity.Controllers
 
         public async Task<IActionResult> Index(int? id, int? courseID)
         {
-            var viewModel = new InstructorIndexData();
+            var viewModel = new InstructorIndexData() { };
             viewModel.Instructors = await _instructorRepo.GetAll()
                 .Include(i => i.OfficeAssignment)
                 .Include(i => i.CourseAssignments)
@@ -51,7 +51,7 @@ namespace ContosoUniversity.Controllers
             if (courseID != null)
             {
                 ViewData["CourseID"] = courseID.Value;
-                viewModel.Enrollments = viewModel.Courses.Where(x => x.CourseID == courseID).Single().Enrollments;
+                viewModel.Enrollments = viewModel.Courses.Where(x => x.ID == courseID).Single().Enrollments;
             }
             return View(viewModel);
         }
@@ -75,7 +75,7 @@ namespace ContosoUniversity.Controllers
 
         public IActionResult Create()
         {
-            var instructor = new Instructor();
+            var instructor = new Instructor() { };
             instructor.CourseAssignments = new List<CourseAssignment>();
             PopulateAssignedCourseData(instructor);
             return View();
@@ -134,9 +134,9 @@ namespace ContosoUniversity.Controllers
             {
                 viewModel.Add(new AssignedCourseData
                 {
-                    CourseID = course.CourseID,
+                    CourseID = course.ID,
                     Title = course.Title,
-                    Assigned = instructorCourses.Contains(course.CourseID)
+                    Assigned = instructorCourses.Contains(course.ID)
                 });
             }
             ViewData["Courses"] = viewModel;
@@ -188,21 +188,21 @@ namespace ContosoUniversity.Controllers
             }
 
             var selectedCoursesHS = new HashSet<string>(selectedCourses);
-            var instructorCourses = new HashSet<int>(instructorToUpdate.CourseAssignments.Select(c => c.Course.CourseID));
+            var instructorCourses = new HashSet<int>(instructorToUpdate.CourseAssignments.Select(c => c.Course.ID));
             foreach (var course in _courseRepo.GetAll())
             {
-                if (selectedCoursesHS.Contains(course.CourseID.ToString()))
+                if (selectedCoursesHS.Contains(course.ID.ToString()))
                 {
-                    if (!instructorCourses.Contains(course.CourseID))
+                    if (!instructorCourses.Contains(course.ID))
                     {
-                        instructorToUpdate.CourseAssignments.Add(new CourseAssignment { InstructorID = instructorToUpdate.ID, CourseID = course.CourseID });
+                        instructorToUpdate.CourseAssignments.Add(new CourseAssignment { InstructorID = instructorToUpdate.ID, CourseID = course.ID });
                     }
                 }
                 else
                 {
-                    if (instructorCourses.Contains(course.CourseID))
+                    if (instructorCourses.Contains(course.ID))
                     {
-                        CourseAssignment courseToRemove = instructorToUpdate.CourseAssignments.SingleOrDefault(i => i.CourseID == course.CourseID);
+                        CourseAssignment courseToRemove = instructorToUpdate.CourseAssignments.SingleOrDefault(i => i.CourseID == course.ID);
                         _courseAssignmentRepo.Delete(courseToRemove);
                     }
                 }

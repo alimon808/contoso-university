@@ -6,10 +6,8 @@ namespace ContosoUniversity.Data.Entities
 {
     public class Course : BaseEntity
     {
-        //todo: remove as pk
-        //[DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Display(Name = "Number")]
-        public int CourseID { get; set; }
+        public int CourseNumber { get; set; }
 
         [StringLength(50, MinimumLength = 3)]
         public string Title { get; set; }

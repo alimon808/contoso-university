@@ -5,7 +5,6 @@ namespace ContosoUniversity.Data.Entities
 {
     public class Enrollment : BaseEntity
     {
-        public long EnrollmentID { get; set; }
         public long CourseID { get; set; }
         public long StudentID { get; set; }
 

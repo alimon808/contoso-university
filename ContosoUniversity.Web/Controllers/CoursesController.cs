@@ -38,7 +38,7 @@ namespace ContosoUniversity.Controllers
             var course = await _courseRepo.GetAll()
                 .Include(c => c.Department)
                 .AsNoTracking()
-                .SingleOrDefaultAsync(m => m.CourseID == id);
+                .SingleOrDefaultAsync(m => m.ID == id);
             if (course == null)
             {
                 return NotFound();
@@ -63,7 +63,7 @@ namespace ContosoUniversity.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CourseID,Credits,DepartmentID,Title")] Course course)
+        public async Task<IActionResult> Create([Bind("CourseNumber,Credits,DepartmentID,Title")] Course course)
         {
             if (ModelState.IsValid)
             {
@@ -82,7 +82,7 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var course = await _courseRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(m => m.CourseID == id);
+            var course = await _courseRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(m => m.ID == id);
             if (course == null)
             {
                 return NotFound();
@@ -101,7 +101,7 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var courseToUpdate = await _courseRepo.GetAll().SingleOrDefaultAsync(c => c.CourseID == id);
+            var courseToUpdate = await _courseRepo.GetAll().SingleOrDefaultAsync(c => c.ID == id);
 
             if (await TryUpdateModelAsync<Course>(courseToUpdate, "", c => c.Credits, c => c.DepartmentID, c => c.Title))
             {
@@ -129,7 +129,7 @@ namespace ContosoUniversity.Controllers
             var course = await _courseRepo.GetAll()
                 .Include(c => c.Department)
                 .AsNoTracking()
-                .SingleOrDefaultAsync(m => m.CourseID == id);
+                .SingleOrDefaultAsync(m => m.ID == id);
             if (course == null)
             {
                 return NotFound();
@@ -142,7 +142,7 @@ namespace ContosoUniversity.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var course = await _courseRepo.GetAll().SingleOrDefaultAsync(m => m.CourseID == id);
+            var course = await _courseRepo.GetAll().SingleOrDefaultAsync(m => m.ID == id);
             _courseRepo.Delete(course);
             await _courseRepo.SaveChangesAsync();
             return RedirectToAction("Index");
@@ -160,7 +160,7 @@ namespace ContosoUniversity.Controllers
 
         private bool CourseExists(int id)
         {
-            return _courseRepo.GetAll().Any(e => e.CourseID == id);
+            return _courseRepo.GetAll().Any(e => e.ID == id);
         }
     }
 }
