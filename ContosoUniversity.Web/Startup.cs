@@ -41,6 +41,7 @@ namespace ContosoUniversity
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
+                DbInitializer.Initialize(context);
             }
             else
             {
@@ -55,8 +56,6 @@ namespace ContosoUniversity
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            DbInitializer.Initialize(context);
         }
     }
 }

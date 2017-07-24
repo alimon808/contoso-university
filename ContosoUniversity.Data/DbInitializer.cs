@@ -7,9 +7,8 @@ namespace ContosoUniversity.Data
 {
     public static class DbInitializer
     {
-        public static void Initialize()
+        public static void Initialize(ApplicationContext context)
         {
-            ApplicationContext context = (new ApplicationContextFactory().Create());
             context.Database.EnsureCreated();
             if (context.Students.Any())
             {
@@ -78,9 +77,9 @@ namespace ContosoUniversity.Data
             var instructors = context.Instructors.ToArray();
             var officeAssignments = new OfficeAssignment[]
             {
-                new OfficeAssignment { ID = instructors.Single( i => i.LastName == "Fakhouri").ID, Location = "Smith 17" },
-                new OfficeAssignment { ID = instructors.Single( i => i.LastName == "Harui").ID, Location = "Gowan 27" },
-                new OfficeAssignment { ID = instructors.Single( i => i.LastName == "Kapoor").ID, Location = "Thompson 304" },
+                new OfficeAssignment { InstructorID = instructors.Single( i => i.LastName == "Fakhouri").ID, Location = "Smith 17" },
+                new OfficeAssignment { InstructorID = instructors.Single( i => i.LastName == "Harui").ID, Location = "Gowan 27" },
+                new OfficeAssignment { InstructorID = instructors.Single( i => i.LastName == "Kapoor").ID, Location = "Thompson 304" },
             };
 
             foreach (OfficeAssignment o in officeAssignments)
