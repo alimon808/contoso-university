@@ -145,6 +145,7 @@ namespace ContosoUniversity.Controllers
             {
                 try
                 {
+                    studentToUpdate.ModifiedDate = DateTime.UtcNow;
                     await _context.SaveChangesAsync();
                     return RedirectToAction("Index");
                 }

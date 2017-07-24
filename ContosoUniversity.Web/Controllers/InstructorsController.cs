@@ -166,6 +166,7 @@ namespace ContosoUniversity.Controllers
                 UpdateInstructorCourses(selectedCourses, instructorToUpdate);
                 try
                 {
+                    instructorToUpdate.ModifiedDate = DateTime.UtcNow;
                     await _instructorRepo.SaveChangesAsync();
                 }
                 catch (DbUpdateException)

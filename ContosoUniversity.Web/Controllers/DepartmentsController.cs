@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
+using System;
 
 namespace ContosoUniversity.Controllers
 {
@@ -113,6 +114,7 @@ namespace ContosoUniversity.Controllers
             {
                 try
                 {
+                    departmentToUpdate.ModifiedDate = DateTime.UtcNow;
                     await _departmentRepo.SaveChangesAsync();
                     return RedirectToAction("Index");
                 }

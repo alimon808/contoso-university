@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
+using System;
 
 namespace ContosoUniversity.Controllers
 {
@@ -105,6 +106,7 @@ namespace ContosoUniversity.Controllers
             {
                 try
                 {
+                    courseToUpdate.ModifiedDate = DateTime.UtcNow;
                     await _courseRepo.SaveChangesAsync();
                 }
                 catch (DbUpdateException)
