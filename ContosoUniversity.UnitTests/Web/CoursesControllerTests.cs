@@ -1,12 +1,14 @@
 ﻿using ContosoUniversity.Controllers;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -18,6 +20,7 @@ namespace ContosoUniversity.Tests.Controllers
         private readonly ITestOutputHelper output;
         private readonly Mock<IRepository<Course>> mockCourseRepo;
         private readonly Mock<IRepository<Department>> mockDepartmentRepo;
+        private readonly Mock<IModelBindingHelperAdaptor> mockModelBindingHelperAdaptor;
         private readonly CoursesController sut;
 
         public CoursesControllerTests(ITestOutputHelper output)
@@ -25,7 +28,8 @@ namespace ContosoUniversity.Tests.Controllers
             this.output = output;
             mockCourseRepo = Courses().AsMockRepository();
             mockDepartmentRepo = Departments().AsMockRepository();
-            sut = new CoursesController(mockCourseRepo.Object, mockDepartmentRepo.Object);
+            mockModelBindingHelperAdaptor = new Mock<IModelBindingHelperAdaptor>();
+            sut = new CoursesController(mockCourseRepo.Object, mockDepartmentRepo.Object, mockModelBindingHelperAdaptor.Object);
         }
 
         [Fact]
@@ -49,235 +53,151 @@ namespace ContosoUniversity.Tests.Controllers
             Assert.Equal(title, model.Title);
         }
 
-        //[Theory]
-        //[InlineData(0)]
-        //[InlineData(null)]
-        //public void Details_ReturnsANotFoundResult(long? id)
-        //{
-        //    var result = sut.Details(id).Result;
+        [Theory]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Details_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.Details(id);
 
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(NotFoundResult), result);
-        //    Assert.Equal(404, ((NotFoundResult)result).StatusCode);
-        //}
+            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
 
-        //[Fact]
-        //public void Create_ReturnsAViewResult()
-        //{
-        //    var result = (ViewResult)sut.Create();
+        [Fact]
+        public void Create_ReturnsAViewResult()
+        {
+            var result = (ViewResult)sut.Create();
 
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType(typeof(ViewResult), result);
 
-        //    var viewData = ((ViewResult)result).ViewData;
-        //    Assert.NotNull(viewData);
-        //    Assert.True(viewData.ContainsKey("DepartmentID"));
-        //}
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.True(viewData.ContainsKey("DepartmentID"));
+        }
 
-        //[Fact]
-        //public async Task CreatePost_ReturnsRedirectToActionResult_Index()
-        //{
-        //    CourseCreateViewModel vm = new CourseCreateViewModel { Number = 9999, Credits = 4, DepartmentID = 1, Title = "Algebra 2" };
+        [Fact]
+        public async Task CreatePost_ReturnsRedirectToActionResult_Index()
+        {
+            Course courseToAdd = new Course { CourseNumber = 9999, Credits = 4, DepartmentID = 1, Title = "Algebra 2" };
 
-        //    var result = await sut.Create(vm);
+            var result = await sut.Create(courseToAdd);
 
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(RedirectToActionResult), result);
-        //    Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
 
-        //    var course = mockCourseRepo.Object.GetAll().Where(c => c.Number == vm.Number).FirstOrDefault();
-        //    Assert.NotNull(course);
-        //    Assert.Equal(vm.Title, course.Title);
-        //}
+            var course = mockCourseRepo.Object.GetAll().Where(c => c.CourseNumber == courseToAdd.CourseNumber).FirstOrDefault();
+            Assert.Equal(courseToAdd.Title, course.Title);
+        }
 
-        //[Fact]
-        //public async Task CreatePost_ReturnsAViewResult_WithInvalidCourseCreateViewModel()
-        //{
-        //    CourseCreateViewModel vm = new CourseCreateViewModel { Number = 9999, Credits = 4, DepartmentID = 1, Title = "Algebra 2" };
-        //    sut.ModelState.AddModelError("ErrorMessage", "error message");
+        [Fact]
+        public async Task CreatePost_ReturnsAViewResult_WithInvalidCourseCreateViewModel()
+        {
+            Course courseToAdd = new Course { CourseNumber = 9999, Credits = 4, DepartmentID = 1, Title = "Algebra 2" };
+            sut.ModelState.AddModelError("MyErrorMessage", "error message");
 
-        //    var result = await sut.Create(vm);
+            var result = await sut.Create(courseToAdd);
 
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(ViewResult), result);
+            Assert.NotNull(result);
+            Assert.IsType(typeof(ViewResult), result);
 
-        //    var viewData = ((ViewResult)result).ViewData;
-        //    CourseCreateViewModel model = (CourseCreateViewModel)viewData.Model;
-        //    Assert.Equal(vm.Number, model.Number);
-        //    Assert.True(viewData.ContainsKey("DepartmentID"));
-        //    Assert.True(viewData.ModelState.ContainsKey("ErrorMessage"));
-        //}
+            var viewData = ((ViewResult)result).ViewData;
+            Course model = (Course)viewData.Model;
+            Assert.True(viewData.ContainsKey("DepartmentID"));
+            Assert.True(viewData.ModelState.ContainsKey("MyErrorMessage"));
+        }
 
-        //[Theory]
-        //[InlineData(0)]
-        //[InlineData(null)]
-        //public async Task Edit_ReturnsANotFoundResult(long? id)
-        //{
-        //    var result = await sut.Edit(id);
+        [Theory]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Edit_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.Edit(id);
 
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(NotFoundResult), result);
-        //    Assert.Equal(404, ((NotFoundResult)result).StatusCode);
-        //}
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
 
-        //[Theory]
-        //[InlineData(3, "Macroeconomics", 4041, 3, 4)]
-        //public async Task Edit_ReturnsAViewResult_WithCourseEditViewModel(int id, string title, int number, int credits, long departmentId)
-        //{
-        //    var result = await sut.Edit(id);
+        [Theory]
+        [InlineData(3, "Macroeconomics", 4041, 3, 4)]
+        public async Task Edit_ReturnsAViewResult_WithCourseEditViewModel(int id, string title, int number, int credits, long departmentId)
+        {
+            var result = await sut.Edit(id);
 
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType(typeof(ViewResult), result);
 
-        //    var viewData = ((ViewResult)result).ViewData;
-        //    CourseEditViewModel model = (CourseEditViewModel)viewData.Model;
-        //    Assert.Equal(title, model.Title);
-        //    Assert.Equal(number, model.Number);
-        //    Assert.Equal(departmentId, model.DepartmentID);
-        //    Assert.True(viewData.ContainsKey("DepartmentID"));
-        //}
+            var viewData = ((ViewResult)result).ViewData;
+            Course model = (Course)viewData.Model;
+            Assert.Equal(title, model.Title);
+            Assert.Equal(number, model.CourseNumber);
+            Assert.Equal(departmentId, model.DepartmentID);
+            Assert.True(viewData.ContainsKey("DepartmentID"));
+        }
 
-        //[Theory]
-        //[InlineData(null)]
-        //public async Task EditPost_ReturnsANotFoundResult(long? id)
-        //{
-        //    CourseEditViewModel vm = new CourseEditViewModel
-        //    {
-        //        Id = id
-        //    };
+        [Theory]
+        [InlineData(null)]
+        [InlineData(0)]
+        public async Task EditPost_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.EditPost(id);
+            
+            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+            
+        }
 
-        //    var result = await sut.EditPost(vm);
+       [Theory]
+       [InlineData(1, 1050, 3, 3, "Chemistry")]
+        public async Task EditPost_ReturnsAViweResult_WithInvalidModel(int id, int courseNumber, int credits, int departmentID, string title)
+        {
+            mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<Controller>(), It.IsAny<Course>(), It.IsAny<string>(), It.IsAny<Expression<Func<Course, object>>[]>()))
+                .Callback(() => sut.ModelState.AddModelError("myerror", "testing error"))
+                .Returns(Task.FromResult(false));
 
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(NotFoundResult), result);
-        //    Assert.Equal(404, ((NotFoundResult)result).StatusCode);
-        //}
+            var result = await sut.EditPost(id);
 
-        //[Theory]
-        //[InlineData(0)]
-        //public async Task EditPost_ReturnsAViweResult_WithCourseDoesNotExist(long? id)
-        //{
-        //    CourseEditViewModel vm = new CourseEditViewModel
-        //    {
-        //        Id = id
-        //    };
+            Assert.IsType(typeof(ViewResult), result);
 
-        //    var result = await sut.EditPost(vm);
+            var model = ((ViewResult)result).Model as Course;
+            Assert.Equal(id, model.ID);
+            Assert.Equal(courseNumber, model.CourseNumber);
+            Assert.Equal(credits, model.Credits);
+            Assert.Equal(departmentID, model.DepartmentID);
+            Assert.Equal(title, model.Title);
 
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(ViewResult), result);
+            var modelState = ((ViewResult)result).ViewData.ModelState;
+            Assert.True(modelState.ContainsKey("myerror"));
+        }
 
-        //    var model = ((ViewResult)result).Model;
-        //    Assert.IsType(typeof(CourseEditViewModel), model);
+        [Theory]
+        [InlineData(1, 1050, 3, 3, "Chemistry")]
+        public async Task EditPost_ReturnsAViewResult_WithValidCourse_ThrowsDbUpdateException(int id, int courseNumber, int credits, int departmentID, string title)
+        {
+            mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<Controller>(), It.IsAny<Course>(), It.IsAny<string>(), It.IsAny<Expression<Func<Course, object>>[]>()))
+                .Returns(Task.FromResult(true));
+            mockCourseRepo.Setup(m => m.SaveChangesAsync())
+                .Throws(new DbUpdateException("myDbUpdateException", new Exception()));
 
-        //    var modelState = ((ViewResult)result).ViewData.ModelState;
-        //    Assert.Equal(1,modelState.Count);
-        //}
+            var result = await sut.EditPost(id);
 
-        //[Fact]
-        //public async Task EditPost_ReturnsAViewResult_WithValidCourse_ThrowsDbUpdateException()
-        //{
-        //    CourseEditViewModel vm = new CourseEditViewModel
-        //    {
-        //        Id = 1
-        //    };
+            Assert.IsType(typeof(ViewResult), result);
 
-        //    mockCourseRepo.Setup(m => m.UpdateAsync(It.IsAny<Course>(), It.IsAny<byte[]>()))
-        //        .Throws(new DbUpdateException("myexception", new Exception()));
-
-        //    var result = await sut.EditPost(vm);
-
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(ViewResult), result);
-
-        //    var viewData = ((ViewResult)result).ViewData;
-        //    var model = viewData.Model;
-        //    Assert.IsType(typeof(CourseEditViewModel), model);
-        //    Assert.True(viewData.ContainsKey("DepartmentID"));
-        //    Assert.True(viewData.ModelState.ContainsKey("UpdateException"));
-        //}
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.True(viewData.ContainsKey("DepartmentID"));
+            Assert.Equal(1, viewData.ModelState.Count);
+        }
 
 
-        //[Fact]
-        //public async Task EditPost_ReturnsAVRedirectToAction_Index()
-        //{
-        //    CourseEditViewModel vm = new CourseEditViewModel
-        //    {
-        //        Id = 1,
-        //        DepartmentID = 1,
-        //        Credits = 5,
-        //        Title = "Chemistry - update"
-        //    };
+        [Theory]
+        [InlineData(1)]
+        public async Task EditPost_ReturnsARedirectToAction_Index(int id)
+        {
+            mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<Controller>(), It.IsAny<Course>(), It.IsAny<string>(), It.IsAny<Expression<Func<Course, object>>[]>()))
+                .Returns(Task.FromResult(true));
+            var result = await sut.EditPost(id);
 
-        //    var result = await sut.EditPost(vm);
-
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(RedirectToActionResult), result);
-        //    Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
-        //}
-
-        //[Theory]
-        //[InlineData(0)]
-        //[InlineData(null)]
-        //public async Task Delete_ReturnsANotFoundResult(long? id)
-        //{
-        //    var result = await sut.Delete(id);
-
-        //    Assert.NotNull(result);
-        //    Assert.Equal(404, ((NotFoundResult)result).StatusCode);
-        //}
-
-        //[Theory]
-        //[InlineData(1, "Chemistry")]
-        //public async Task Delete_ReturnsAViewResult_WithCourse(long id, string title)
-        //{
-        //    var result = await sut.Delete(id);
-
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(ViewResult), result);
-
-        //    var viewData = ((ViewResult)result).ViewData;
-        //    Course model = (Course)viewData.Model;
-        //    Assert.Equal(title, model.Title);
-
-        //}
-
-        //[Theory]
-        //[InlineData(null)]
-        //[InlineData(0)]
-        //public async Task DeletePost_ReturnsARedirectToAction_Delete(long? id)
-        //{
-        //    var result = await sut.DeleteConfirmed(id);
-
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(RedirectToActionResult), result);
-        //    var actionName = ((RedirectToActionResult)result).ActionName;
-        //    Assert.Equal("Delete", actionName);
-        //}
-
-        //[Theory]
-        //[InlineData(5)]
-        //public async Task DeletePost_ReturnsARedirectToAction_Index(long? id)
-        //{
-        //    var preCount = mockCourseRepo.Object.GetAll().Count();
-        //    var result = await sut.DeleteConfirmed(id.Value);
-
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(RedirectToActionResult), result);
-        //    var actionName = ((RedirectToActionResult)result).ActionName;
-        //    Assert.Equal("Index", actionName);
-        //    Assert.Equal(preCount - 1, mockCourseRepo.Object.GetAll().Count());
-        //}
-
-        //[Fact]
-        //public async Task UpdateCourseCredits_ReturnsAViewResult()
-        //{
-        //    var result = await sut.UpdateCourseCredits(0);
-
-        //    Assert.NotNull(result);
-        //    Assert.IsType(typeof(ViewResult), result);
-        //}
-
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
+        }
+        
         private List<Department> Departments()
         {
             return new List<Department>

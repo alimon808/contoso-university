@@ -28,7 +28,7 @@ public static class MockingHelper
         Mock<DbSet<TEntity>> mockDbSet = data.AsQueryable().AsMockDbSet();
         mockDbSet.Setup(c => c.Add(It.IsAny<TEntity>())).Callback<TEntity>(d => data.Add(d));
         mockDbSet.Setup(c => c.AddAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>())).Callback<TEntity, CancellationToken>((d, token) => data.Add(d));
-
+        
         return mockDbSet;
     }
 

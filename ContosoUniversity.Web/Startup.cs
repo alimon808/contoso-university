@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using ContosoUniversity.Data;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Web;
 
 namespace ContosoUniversity
 {
@@ -28,6 +29,7 @@ namespace ContosoUniversity
         {
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddMvc();
         }
 

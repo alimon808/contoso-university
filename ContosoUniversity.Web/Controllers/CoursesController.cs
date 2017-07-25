@@ -7,6 +7,7 @@ using ContosoUniversity.Data;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
 using System;
+using ContosoUniversity.Web;
 
 namespace ContosoUniversity.Controllers
 {
@@ -14,11 +15,13 @@ namespace ContosoUniversity.Controllers
     {
         private readonly IRepository<Course> _courseRepo;
         private readonly IRepository<Department> _departmentRepo;
+        private readonly IModelBindingHelperAdaptor _modelBindingHelperAdaptor;
 
-        public CoursesController(IRepository<Course> courseRepo, IRepository<Department> departmentRepo)
+        public CoursesController(IRepository<Course> courseRepo, IRepository<Department> departmentRepo, IModelBindingHelperAdaptor modelBindingHelperAdaptor)
         {
             _courseRepo = courseRepo;
             _departmentRepo = departmentRepo;
+            _modelBindingHelperAdaptor = modelBindingHelperAdaptor;
         }
 
         public async Task<IActionResult> Index()
@@ -81,7 +84,7 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var course = await _courseRepo.GetAll().AsNoTracking().SingleOrDefaultAsync(m => m.ID == id);
+            var course = await _courseRepo.GetAll().AsGatedNoTracking().SingleOrDefaultAsync(m => m.ID == id);
             if (course == null)
             {
                 return NotFound();
@@ -91,6 +94,7 @@ namespace ContosoUniversity.Controllers
             return View(course);
         }
 
+        //todo: refactor - remove TryUpdateModelAsync to perform unit test
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPost(int? id)
@@ -102,19 +106,25 @@ namespace ContosoUniversity.Controllers
 
             var courseToUpdate = await _courseRepo.GetAll().SingleOrDefaultAsync(c => c.ID == id);
 
-            if (await TryUpdateModelAsync<Course>(courseToUpdate, "", c => c.Credits, c => c.DepartmentID, c => c.Title))
+            if (courseToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            if (await _modelBindingHelperAdaptor.TryUpdateModelAsync<Course>(this, courseToUpdate, "", c => c.Credits, c => c.DepartmentID, c => c.Title))
             {
                 try
                 {
                     courseToUpdate.ModifiedDate = DateTime.UtcNow;
                     await _courseRepo.SaveChangesAsync();
+                    return RedirectToAction("Index");
                 }
                 catch (DbUpdateException)
                 {
                     ModelState.AddModelError("", "Unable to save changes.  Try again, and if the problem persists, see your system administrator");
                 }
-                return RedirectToAction("Index");
             }
+
             PopulateDepartmentsDropDownList(courseToUpdate.DepartmentID);
             return View(courseToUpdate);
         }
