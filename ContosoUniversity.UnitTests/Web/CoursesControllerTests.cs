@@ -241,6 +241,31 @@ namespace ContosoUniversity.Tests.Controllers
             Assert.Equal("Index", actionName);
         }
 
+        [Fact]
+        public async Task UpdateCourseCredits_ReturnsAViewResult_WithRowsAffected()
+        {
+            var result = await sut.UpdateCourseCredits(2);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.True(viewData.ContainsKey("RowsAffected"));
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData(0)]
+        [InlineData(1)]
+        public async Task UpdateCourseCredits_ReturnsAViewResult_WithInvalidMultiplier(int? multiplier)
+        {
+            var result = await sut.UpdateCourseCredits(multiplier);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.True(viewData.ModelState.ContainsKey("InvalidMultiplier"));
+        }
+
         private List<Department> Departments()
         {
             return new List<Department>

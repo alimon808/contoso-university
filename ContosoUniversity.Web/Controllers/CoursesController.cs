@@ -171,10 +171,15 @@ namespace ContosoUniversity.Controllers
 
         public async Task<IActionResult> UpdateCourseCredits(int? multiplier)
         {
-            if (multiplier != null)
+            if (multiplier > 1)
             {
                 ViewData["RowsAffected"] = await _courseRepo.ExecuteSqlCommandAsync($"UPDATE Contoso.Course SET Credits = Credits * {multiplier}");
             }
+            else
+            {
+                ModelState.AddModelError("InvalidMultiplier", "Multiplier must be greater than 1");
+            }
+
             return View();
         }
 
