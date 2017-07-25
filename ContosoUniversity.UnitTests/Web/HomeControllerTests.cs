@@ -1,10 +1,12 @@
 ﻿using ContosoUniversity.Controllers;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Models.SchoolViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -28,7 +30,24 @@ namespace ContosoUniversity.UnitTests.Web
         {
             var result = _sut.Index();
 
-            Assert.NotNull(result);
+            Assert.IsType(typeof(ViewResult), result);
+        }
+
+        //todo: test about action
+
+        [Fact]
+        public void Contact_ReturnsAViewResult()
+        {
+            var result = _sut.Contact();
+
+            Assert.IsType(typeof(ViewResult), result);
+        }
+
+        [Fact]
+        public void Error_ReturnsAViewResult()
+        {
+            var result = _sut.Error();
+
             Assert.IsType(typeof(ViewResult), result);
         }
 
