@@ -35,6 +35,27 @@ namespace ContosoUniversity.UnitTests.Controllers
             Assert.Equal(4, model.Count);
         }
 
+        [Theory]
+        [InlineData(3, "Engineering")]
+        public async Task Details_ReturnsAViewResult_WithDepartmentModel(int id, string departmentName)
+        {
+            var result = await sut.Details(id);
+            var model = (Department)((ViewResult)result).Model;
+
+            Assert.Equal(departmentName, model.Name);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Details_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.Details(id);
+
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
         private List<Instructor> Instructors { get; } = new List<Instructor>
         {
                 new Instructor { ID = 1, FirstMidName = "Kim",     LastName = "Abercrombie", HireDate = DateTime.Parse("1995-03-11") },
