@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -54,6 +55,53 @@ namespace ContosoUniversity.UnitTests.Controllers
             var result = await sut.Details(id);
 
             Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
+
+        [Fact]
+        public void Create_ReturnsAViewResult_WithInstructorIdInViewData()
+        {
+            var result = (ViewResult)sut.Create();
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.Equal(1, viewData.Count);
+            Assert.Equal("InstructorID", viewData.FirstOrDefault().Key);
+        }
+
+        [Fact]
+        public async Task CreatePost_ReturnsRedirectToActionResult_Index()
+        {
+            var department = new Department
+            {
+                Name = "Biology",
+                Budget = 100,
+                StartDate = DateTime.Parse("2007-09-01"),
+                InstructorID = 1
+            };
+
+            var result = await sut.Create(department);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
+        }
+
+        [Fact]
+        public async Task CreatePost_ReturnsAViewResult_WithInvalidModel()
+        {
+            var department = new Department
+            {
+                Name = "Test",
+                InstructorID = 1
+            };
+
+            sut.ModelState.AddModelError("myerror", "error message");
+
+            var result = await sut.Create(department);
+
+            Assert.IsType(typeof(ViewResult), result);
+            Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("myerror"));
         }
 
         private List<Instructor> Instructors { get; } = new List<Instructor>
