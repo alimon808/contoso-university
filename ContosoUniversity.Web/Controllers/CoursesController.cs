@@ -36,7 +36,7 @@ namespace ContosoUniversity.Controllers
 
             var course = await _courseRepo.GetAll()
                 .Include(c => c.Department)
-                .AsNoTracking()
+                .AsGatedNoTracking()
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (course == null)
             {
