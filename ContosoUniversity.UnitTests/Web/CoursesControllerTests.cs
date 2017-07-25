@@ -185,7 +185,6 @@ namespace ContosoUniversity.Tests.Controllers
             Assert.Equal(1, viewData.ModelState.Count);
         }
 
-
         [Theory]
         [InlineData(1)]
         public async Task EditPost_ReturnsARedirectToAction_Index(int id)
@@ -197,7 +196,51 @@ namespace ContosoUniversity.Tests.Controllers
             Assert.IsType(typeof(RedirectToActionResult), result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
         }
-        
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Delete_ReturnsANotFoundResult(int id)
+        {
+            var result = await sut.Delete(id);
+
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1, "Chemistry")]
+        public async Task Delete_ReturnsAViewResult_WithCourseModel(int id, string title)
+        {
+            var result = await sut.Delete(id);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewData = ((ViewResult)result).ViewData;
+            Course model = (Course)viewData.Model;
+            Assert.Equal(title, model.Title);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData(0)]
+        public async Task DeletePost_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.DeleteConfirmed(id);
+
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
+        [Theory]
+        [InlineData(5)]
+        public async Task DeletePost_ReturnsARedirectToAction_Index(int? id)
+        {
+            var result = await sut.DeleteConfirmed(id.Value);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("Index", actionName);
+        }
+
         private List<Department> Departments()
         {
             return new List<Department>
