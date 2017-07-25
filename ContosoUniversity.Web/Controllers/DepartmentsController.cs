@@ -11,14 +11,11 @@ namespace ContosoUniversity.Controllers
 {
     public class DepartmentsController : Controller
     {
-        
-        private readonly IRepository<Course> _courseRepo;
         private readonly IRepository<Department> _departmentRepo;
         private readonly IRepository<Instructor> _instructorRepo;
 
-        public DepartmentsController(IRepository<Course> courseRepo, IRepository<Department> departmentRepo, IRepository<Instructor> instructorRepo)
+        public DepartmentsController(IRepository<Department> departmentRepo, IRepository<Instructor> instructorRepo)
         {
-            _courseRepo = courseRepo;
             _departmentRepo = departmentRepo;
             _instructorRepo = instructorRepo;
         }
