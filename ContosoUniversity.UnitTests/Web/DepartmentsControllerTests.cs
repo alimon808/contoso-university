@@ -1,11 +1,14 @@
 ﻿using ContosoUniversity.Controllers;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Web;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,6 +20,7 @@ namespace ContosoUniversity.UnitTests.Controllers
         private readonly ITestOutputHelper output;
         private readonly Mock<IRepository<Department>> mockDepartmentRepo;
         private readonly Mock<IPersonRepository<Instructor>> mockInstructorRepo;
+        private readonly Mock<IModelBindingHelperAdaptor> mockModelBindingHelperAdaptor;
         DepartmentsController sut;
 
         public DepartmentsControllerTests(ITestOutputHelper output)
@@ -24,7 +28,8 @@ namespace ContosoUniversity.UnitTests.Controllers
             this.output = output;
             mockDepartmentRepo = Departments.AsMockRepository();
             mockInstructorRepo = Instructors.AsMockPersonRepository();
-            sut = new DepartmentsController(mockDepartmentRepo.Object, mockInstructorRepo.Object);
+            mockModelBindingHelperAdaptor = new Mock<IModelBindingHelperAdaptor>();
+            sut = new DepartmentsController(mockDepartmentRepo.Object, mockInstructorRepo.Object, mockModelBindingHelperAdaptor.Object);
         }
 
         [Fact]
@@ -102,6 +107,55 @@ namespace ContosoUniversity.UnitTests.Controllers
 
             Assert.IsType(typeof(ViewResult), result);
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("myerror"));
+        }
+
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Edit_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.Edit(id);
+
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1, "English")]
+        public async Task Edit_ReturnsAViewResult_WithDepartmentModel(int id, string departmentName)
+        {
+            var result = await sut.Edit(id);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            Department model = (Department)((ViewResult)result).Model;
+            Assert.Equal(departmentName, model.Name);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        public async Task EditPost_ReturnsAViewResult_WithDeletedDepartmentModelError(int id)
+        {
+            var result = await sut.Edit(id, null);
+
+            Assert.IsType(typeof(ViewResult), result);
+            var model = (Department)((ViewResult)result).Model;
+            Assert.Null(model.Name);
+            Assert.True(((ViewResult)result).ViewData.ModelState.Count > 0);
+            Assert.True(((ViewResult)result).ViewData.ContainsKey("InstructorID"));
+
+        }
+
+        [Fact]
+        public async Task EditPost_ReturnsRedirectToActionResult_Index()
+        {
+            mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<Controller>(), It.IsAny<Department>(), It.IsAny<string>(), It.IsAny<Expression<Func<Department, object>>[]>()))
+                .Returns(Task.FromResult(true));
+
+            var result = await sut.Edit(1, null);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
         }
 
         private List<Instructor> Instructors { get; } = new List<Instructor>

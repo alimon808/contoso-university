@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
 using System;
+using ContosoUniversity.Web;
 
 namespace ContosoUniversity.Controllers
 {
@@ -13,11 +14,13 @@ namespace ContosoUniversity.Controllers
     {
         private readonly IRepository<Department> _departmentRepo;
         private readonly IRepository<Instructor> _instructorRepo;
+        private readonly IModelBindingHelperAdaptor _modelBindingHelperAdaptor;
 
-        public DepartmentsController(IRepository<Department> departmentRepo, IRepository<Instructor> instructorRepo)
+        public DepartmentsController(IRepository<Department> departmentRepo, IRepository<Instructor> instructorRepo, IModelBindingHelperAdaptor modelBindingHelperAdaptor)
         {
             _departmentRepo = departmentRepo;
             _instructorRepo = instructorRepo;
+            _modelBindingHelperAdaptor = modelBindingHelperAdaptor;
         }
 
         public async Task<IActionResult> Index()
@@ -73,13 +76,15 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var department = await _departmentRepo.GetAll()
-                .AsNoTracking()
-                .SingleOrDefaultAsync(m => m.DepartmentID == id);
+            var department = await _departmentRepo.Get(id.Value)
+                .AsGatedNoTracking()
+                .SingleOrDefaultAsync();
+
             if (department == null)
             {
                 return NotFound();
             }
+
             ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", department.InstructorID);
             return View(department);
         }
@@ -93,20 +98,20 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var departmentToUpdate = await _departmentRepo.GetAll()
+            var departmentToUpdate = await _departmentRepo.Get(id.Value)
                 .Include(i => i.Administrator)
-                .SingleOrDefaultAsync(m => m.DepartmentID == id);
+                .SingleOrDefaultAsync();
 
             if (departmentToUpdate == null)
             {
                 Department deletedDepartment = new Department();
-                await TryUpdateModelAsync(deletedDepartment);
+                await _modelBindingHelperAdaptor.TryUpdateModelAsync(this, deletedDepartment);
                 ModelState.AddModelError(string.Empty, "Unable to save changes.  The department was deleted by another user.");
                 ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", deletedDepartment.InstructorID);
                 return View(deletedDepartment);
             }
             
-            if (await TryUpdateModelAsync<Department>(departmentToUpdate, "", s => s.Name, s => s.Budget, s => s.InstructorID, s => s.StartDate))
+            if (await _modelBindingHelperAdaptor.TryUpdateModelAsync<Department>(this, departmentToUpdate, "", s => s.Name, s => s.Budget, s => s.InstructorID, s => s.StartDate))
             {
                 try
                 {
@@ -152,6 +157,7 @@ namespace ContosoUniversity.Controllers
                     }
                 }
             }
+
             ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", departmentToUpdate.InstructorID);
             return View(departmentToUpdate);
         }
