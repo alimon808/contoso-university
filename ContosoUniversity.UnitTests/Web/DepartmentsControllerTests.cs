@@ -4,6 +4,7 @@ using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -109,7 +110,6 @@ namespace ContosoUniversity.UnitTests.Controllers
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("myerror"));
         }
 
-
         [Theory]
         [InlineData(-1)]
         [InlineData(0)]
@@ -156,6 +156,55 @@ namespace ContosoUniversity.UnitTests.Controllers
             var result = await sut.Edit(1, null);
 
             Assert.IsType(typeof(RedirectToActionResult), result);
+        }
+
+        [Theory]
+        [InlineData(0, false)]
+        [InlineData(null, null)]
+        public async Task Delete_ReturnsANotFoundResult(int? id, bool? concurrencyError)
+        {
+            var result = await sut.Delete(id, concurrencyError);
+
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1, true, "English")]
+        public async Task Delete_ReturnsAViewAction_WithDepartmentModel_AndConcurrencyErrorMessage(int? id, bool? concurrencyError, string departmentName)
+        {
+            var result = await sut.Delete(id, concurrencyError);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var model = (Department)((ViewResult)result).Model;
+            Assert.Equal(departmentName, model.Name);
+
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.True(viewData.ContainsKey("ConcurrencyErrorMessage"));
+        }
+
+        [Theory]
+        [InlineData(0, true)]
+        public async Task Delete_ReturnsARedirectToAction_Index(int? id, bool? concurrencyError)
+        {
+            var result = await sut.Delete(id, concurrencyError);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("Index", actionName);
+        }
+
+        [Fact]
+        public async Task DeletePost_ReturnsARedirectToActionResult_Index()
+        {
+            var department = mockDepartmentRepo.Object.Get(1).FirstOrDefault();
+
+            var result = await sut.Delete(department);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("Index", actionName);
         }
 
         private List<Instructor> Instructors { get; } = new List<Instructor>
