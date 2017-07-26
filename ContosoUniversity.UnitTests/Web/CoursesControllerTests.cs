@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ContosoUniversity.Tests.Controllers
+namespace ContosoUniversity.UnitTests.Web
 {
     public class CoursesControllerTests
     {

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ContosoUniversity.UnitTests.Controllers
+namespace ContosoUniversity.UnitTests.Web
 {
     public class DepartmentsControllerTests
     {

@@ -18,7 +18,10 @@ namespace ContosoUniversity.Controllers
         private readonly IRepository<Course> _courseRepo;
         private readonly IRepository<CourseAssignment> _courseAssignmentRepo;
 
-        public InstructorsController(IRepository<Instructor> instructorRepo, IRepository<Department> departmentRepo, IRepository<Course> courseRepo, IRepository<CourseAssignment> courseAssignmentRepo)
+        public InstructorsController(IRepository<Instructor> instructorRepo, 
+            IRepository<Department> departmentRepo, 
+            IRepository<Course> courseRepo, 
+            IRepository<CourseAssignment> courseAssignmentRepo)
         {
             _instructorRepo = instructorRepo;
             _departmentRepo = departmentRepo;
@@ -38,7 +41,7 @@ namespace ContosoUniversity.Controllers
                 .Include(i => i.CourseAssignments)
                     .ThenInclude(i => i.Course)
                         .ThenInclude(i => i.Department)
-                .AsNoTracking()
+                .AsGatedNoTracking()
                 .OrderBy(i => i.LastName)
                 .ToListAsync();
             if (id != null)
