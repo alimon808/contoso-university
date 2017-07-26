@@ -59,6 +59,27 @@ namespace ContosoUniversity.UnitTests.Web
             Assert.Equal(2, model.Enrollments.Count());
         }
 
+        [Theory]
+        [InlineData(1,"Abercrombie")]
+        public async Task Details_ReturnsAViewResult_WithInstructorModel(int id, string instructorName)
+        {
+            var result = await sut.Details(id);
+
+            var model = (Instructor)((ViewResult)result).Model;
+
+            Assert.Equal(instructorName, model.LastName);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Details_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.Details(id);
+
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
         private List<Instructor> Instructors()
         {
             return new List<Instructor>

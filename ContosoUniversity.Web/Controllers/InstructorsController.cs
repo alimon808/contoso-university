@@ -66,8 +66,8 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var instructor = await _instructorRepo.GetAll()
-                .SingleOrDefaultAsync(m => m.ID == id);
+            var instructor = await _instructorRepo.Get(id.Value).SingleOrDefaultAsync();
+
             if (instructor == null)
             {
                 return NotFound();
