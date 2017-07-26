@@ -154,25 +154,25 @@ namespace ContosoUniversity.Data
             var courses = new Course[]
             {
                 new Course {CourseNumber = 1050, Title = "Chemistry", Credits = 3,
-                    DepartmentID = departments.Single( s => s.Name == "Engineering").DepartmentID
+                    DepartmentID = departments.Single( s => s.Name == "Engineering").ID
                 },
                 new Course {CourseNumber = 4022, Title = "Microeconomics", Credits = 3,
-                    DepartmentID = departments.Single( s => s.Name == "Economics").DepartmentID
+                    DepartmentID = departments.Single( s => s.Name == "Economics").ID
                 },
                 new Course {CourseNumber = 4041, Title = "Macroeconomics", Credits = 3,
-                    DepartmentID = departments.Single( s => s.Name == "Economics").DepartmentID
+                    DepartmentID = departments.Single( s => s.Name == "Economics").ID
                 },
                 new Course {CourseNumber = 1045, Title = "Calculus", Credits = 4,
-                    DepartmentID = departments.Single( s => s.Name == "Mathematics").DepartmentID
+                    DepartmentID = departments.Single( s => s.Name == "Mathematics").ID
                 },
                 new Course {CourseNumber = 3141, Title = "Trigonometry", Credits = 4,
-                    DepartmentID = departments.Single( s => s.Name == "Mathematics").DepartmentID
+                    DepartmentID = departments.Single( s => s.Name == "Mathematics").ID
                 },
                 new Course {CourseNumber = 2021, Title = "Composition", Credits = 3,
-                    DepartmentID = departments.Single( s => s.Name == "English").DepartmentID
+                    DepartmentID = departments.Single( s => s.Name == "English").ID
                 },
                 new Course {CourseNumber = 2042, Title = "Literature", Credits = 4,
-                    DepartmentID = departments.Single( s => s.Name == "English").DepartmentID
+                    DepartmentID = departments.Single( s => s.Name == "English").ID
                 }
             };
 

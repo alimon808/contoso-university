@@ -7,8 +7,6 @@ namespace ContosoUniversity.Data.Entities
 {
     public class Department : BaseEntity
     {
-        public int DepartmentID { get; set; }
-
         [StringLength(50, MinimumLength = 3)]
         public string Name { get; set; }
 

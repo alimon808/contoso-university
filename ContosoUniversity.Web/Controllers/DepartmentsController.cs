@@ -169,10 +169,11 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var department = await _departmentRepo.GetAll()
+            var department = await _departmentRepo.Get(id.Value)
                 .Include(d => d.Administrator)
-                .AsNoTracking()
-                .SingleOrDefaultAsync(m => m.DepartmentID == id);
+                .AsGatedNoTracking()
+                .SingleOrDefaultAsync();
+
             if (department == null)
             {
                 if (concurrencyError.GetValueOrDefault())
@@ -197,7 +198,7 @@ namespace ContosoUniversity.Controllers
         {
             try
             {
-                if (await _departmentRepo.GetAll().AnyAsync(m => m.DepartmentID == department.DepartmentID))
+                if (await _departmentRepo.GetAll().AnyAsync(m => m.ID == department.ID))
                 {
                     _departmentRepo.Delete(department);
                     await _departmentRepo.SaveChangesAsync();
@@ -206,13 +207,13 @@ namespace ContosoUniversity.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                return RedirectToAction("Delete", new { concurrencyError = true, id = department.DepartmentID });
+                return RedirectToAction("Delete", new { concurrencyError = true, id = department.ID });
             }
         }
 
         private bool DepartmentExists(int id)
         {
-            return _departmentRepo.GetAll().Any(e => e.DepartmentID == id);
+            return _departmentRepo.GetAll().Any(e => e.ID == id);
         }
     }
 }
