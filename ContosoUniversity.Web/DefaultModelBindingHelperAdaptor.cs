@@ -13,5 +13,10 @@ namespace ContosoUniversity.Web
         {
             return controller.TryUpdateModelAsync(model, prefix, includeExpressions);
         }
+
+        public Task<bool> TryUpdateModelAsync<TModel>(ControllerBase controller, TModel model) where TModel : class
+        {
+            return controller.TryUpdateModelAsync(model);
+        }
     }
 }
