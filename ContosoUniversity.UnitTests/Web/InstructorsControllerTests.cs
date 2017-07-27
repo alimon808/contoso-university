@@ -3,11 +3,14 @@ using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Enums;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Models.SchoolViewModels;
+using ContosoUniversity.Web;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,6 +24,8 @@ namespace ContosoUniversity.UnitTests.Web
         private readonly Mock<IRepository<Course>> mockCourseRepo;
         private readonly Mock<IRepository<CourseAssignment>> mockCourseAssignmentRepo;
         private readonly Mock<IPersonRepository<Instructor>> mockInstructorRepo;
+        private readonly Mock<IModelBindingHelperAdaptor> mockModelBindingHelperAdaptor;
+
         InstructorsController sut;
 
         public InstructorsControllerTests(ITestOutputHelper output)
@@ -30,7 +35,8 @@ namespace ContosoUniversity.UnitTests.Web
             mockInstructorRepo = Instructors().AsMockPersonRepository();
             mockCourseRepo = Courses().AsMockRepository();
             mockCourseAssignmentRepo = CourseAssignments().AsMockRepository();
-            sut = new InstructorsController(mockInstructorRepo.Object, mockDepartmentRepo.Object, mockCourseRepo.Object, mockCourseAssignmentRepo.Object);
+            mockModelBindingHelperAdaptor = new Mock<IModelBindingHelperAdaptor>();
+            sut = new InstructorsController(mockInstructorRepo.Object, mockDepartmentRepo.Object, mockCourseRepo.Object, mockCourseAssignmentRepo.Object, mockModelBindingHelperAdaptor.Object);
         }
 
         [Theory]
@@ -137,6 +143,64 @@ namespace ContosoUniversity.UnitTests.Web
             Assert.True(modelState.Keys.Contains("myerror"));
 
             Assert.Equal(instructorCourses+1, ((Instructor)model).CourseAssignments.Count);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Edit_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.Edit(id);
+
+            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1, "Abercrombie")]
+        public async Task Edit_ReturnsAViewResult_WithInstructorModel(int id, string lastName)
+        {
+            var result = await sut.Edit(id);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            Instructor model = (Instructor)((ViewResult)result).Model;
+            Assert.Equal(lastName, model.LastName);
+        }
+
+        [Fact]
+        public async Task EditPost_ReturnsANotFoundResult()
+        {
+            var result = await sut.Edit(null, null);
+
+            Assert.IsType(typeof(NotFoundResult), result);
+        }
+
+        [Fact]
+        public async Task EditPost_ReturnsAVRedirectToAction_Index()
+        {
+            mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<Controller>(), It.IsAny<Instructor>(), It.IsAny<string>(), It.IsAny<Expression<Func<Instructor, object>>[]>()))
+                .Returns(Task.FromResult(true));
+
+            var result = await sut.Edit(1, null);
+
+            Assert.NotNull(result);
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
+        }
+
+        [Fact]
+        public async Task EditPost_ReturnsAViewResult_WithModelError_DbUpdateException()
+        {
+            mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<Controller>(), It.IsAny<Instructor>(), It.IsAny<string>(), It.IsAny<Expression<Func<Instructor, object>>[]>()))
+                .Returns(Task.FromResult(true));
+            mockInstructorRepo.Setup(m => m.SaveChangesAsync())
+                .Callback(() => throw new DbUpdateException("myexception", new Exception()));
+
+            var result = await sut.Edit(1, null);
+
+            Assert.IsType(typeof(ViewResult), result);
+            Assert.True(((ViewResult)result).ViewData.ModelState.Count > 0);
         }
 
         private List<Instructor> Instructors()
