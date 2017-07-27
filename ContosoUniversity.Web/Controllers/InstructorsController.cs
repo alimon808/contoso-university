@@ -104,6 +104,7 @@ namespace ContosoUniversity.Controllers
                 await _instructorRepo.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+
             PopulateAssignedCourseData(instructor);
             return View(instructor);
         }

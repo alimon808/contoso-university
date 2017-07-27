@@ -80,6 +80,65 @@ namespace ContosoUniversity.UnitTests.Web
             Assert.Equal(404, ((NotFoundResult)result).StatusCode);
         }
 
+        [Fact]
+        public void Create_ReturnsAViewResult_WithCoursesInViewData()
+        {
+            var result = (ViewResult)sut.Create();
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.Equal(1, viewData.Count);
+            Assert.Equal("Courses", viewData.FirstOrDefault().Key);
+        }
+
+        [Fact]
+        public async Task CreatePost_ReturnsRedirectToActionResult_Index()
+        {
+            var result = await sut.Create(new Instructor { }, null);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
+        }
+
+        [Fact]
+        public async Task CreatePost_ReturnsAViewResult_WithInvalidModel()
+        {
+            var instructor = Instructors().First();
+            sut.ModelState.AddModelError("myerror", "error message");
+
+            var result = await sut.Create(instructor, null);
+
+            Assert.IsType(typeof(ViewResult), result);
+            var model = ((ViewResult)result).Model;
+            Assert.Equal(instructor.LastName, ((Instructor)model).LastName);
+
+            var modelState = ((ViewResult)result).ViewData.ModelState;
+            Assert.True(modelState.Keys.Contains("myerror"));
+        }
+
+        [Fact]
+        public async Task CreatePost_ReturnsAViewResult_WithAddedCourses()
+        {
+            var instructor = Instructors().First();
+            var instructorCourses = instructor.CourseAssignments.Count;
+            var selectedCourses = instructor.CourseAssignments.Select(s => s.CourseID.ToString())
+                .Append("1")
+                .ToArray();
+            sut.ModelState.AddModelError("myerror", "error message");
+
+            var result = await sut.Create(instructor, selectedCourses);
+
+            Assert.IsType(typeof(ViewResult), result);
+            var model = ((ViewResult)result).Model;
+            Assert.Equal(instructor.LastName, ((Instructor)model).LastName);
+
+            var modelState = ((ViewResult)result).ViewData.ModelState;
+            Assert.True(modelState.Keys.Contains("myerror"));
+
+            Assert.Equal(instructorCourses+1, ((Instructor)model).CourseAssignments.Count);
+        }
+
         private List<Instructor> Instructors()
         {
             return new List<Instructor>
