@@ -203,6 +203,41 @@ namespace ContosoUniversity.UnitTests.Web
             Assert.True(((ViewResult)result).ViewData.ModelState.Count > 0);
         }
 
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Delete_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.Delete(id);
+
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1, "Abercrombie")]
+        public async Task Delete_ReturnsAViewAction_WithInstructorModel(int id, string lastName)
+        {
+            var result = await sut.Delete(id);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var model = (Instructor)((ViewResult)result).Model;
+            Assert.Equal(lastName, model.LastName);
+        }
+
+        [Theory]
+        [InlineData(5)]
+        public async Task Delete_ReturnsARedirectToAction_Index(int id)
+        {
+            var result = await sut.DeleteConfirmed(id);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("Index", actionName);
+        }
+
         private List<Instructor> Instructors()
         {
             return new List<Instructor>

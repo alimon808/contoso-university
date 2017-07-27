@@ -174,6 +174,40 @@ namespace ContosoUniversity.Controllers
             return View(instructorToUpdate);
         }
 
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var instructor = await _instructorRepo.Get(id.Value).SingleOrDefaultAsync();
+
+            if (instructor == null)
+            {
+                return NotFound();
+            }
+
+            return View(instructor);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            Instructor instructor = await _instructorRepo.GetAll()
+                .Include(i => i.CourseAssignments)
+                .SingleAsync(m => m.ID == id);
+
+            var departments = await _departmentRepo.GetAll().Where(d => d.InstructorID == id).ToListAsync();
+            departments.ForEach(d => d.InstructorID = null);
+
+            _instructorRepo.Delete(instructor);
+
+            await _instructorRepo.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
         private void UpdateInstructorCourses(string[] selectedCourses, Instructor instructorToUpdate)
         {
             if (selectedCourses == null)
@@ -202,40 +236,6 @@ namespace ContosoUniversity.Controllers
                     }
                 }
             }
-        }
-
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var instructor = await _instructorRepo.GetAll()
-                .SingleOrDefaultAsync(m => m.ID == id);
-            if (instructor == null)
-            {
-                return NotFound();
-            }
-
-            return View(instructor);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            Instructor instructor = await _instructorRepo.GetAll()
-                .Include(i => i.CourseAssignments)
-                .SingleAsync(m => m.ID == id);
-
-            var departments = await _departmentRepo.GetAll().Where(d => d.InstructorID == id).ToListAsync();
-            departments.ForEach(d => d.InstructorID = null);
-
-            _instructorRepo.Delete(instructor);
-
-            await _instructorRepo.SaveChangesAsync();
-            return RedirectToAction("Index");
         }
 
         private void PopulateAssignedCourseData(Instructor instructor)
