@@ -8,6 +8,7 @@ using ContosoUniversity.Data;
 using ContosoUniversity.Models.SchoolViewModels;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Web;
 
 namespace ContosoUniversity.Controllers
 {
@@ -17,16 +18,19 @@ namespace ContosoUniversity.Controllers
         private readonly IRepository<Instructor> _instructorRepo;
         private readonly IRepository<Course> _courseRepo;
         private readonly IRepository<CourseAssignment> _courseAssignmentRepo;
+        private readonly IModelBindingHelperAdaptor _modelBindingHelperAdaptor;
 
         public InstructorsController(IRepository<Instructor> instructorRepo, 
             IRepository<Department> departmentRepo, 
             IRepository<Course> courseRepo, 
-            IRepository<CourseAssignment> courseAssignmentRepo)
+            IRepository<CourseAssignment> courseAssignmentRepo,
+            IModelBindingHelperAdaptor modelBindingHelperAdaptor)
         {
             _instructorRepo = instructorRepo;
             _departmentRepo = departmentRepo;
             _courseRepo = courseRepo;
             _courseAssignmentRepo = courseAssignmentRepo;
+            _modelBindingHelperAdaptor = modelBindingHelperAdaptor;
         }
 
         public async Task<IActionResult> Index(int? id, int? courseID)
@@ -116,34 +120,19 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var instructor = await _instructorRepo.GetAll()
+            var instructor = await _instructorRepo.Get(id.Value)
                 .Include(i => i.OfficeAssignment)
                 .Include(i => i.CourseAssignments).ThenInclude(i => i.Course)
-                .AsNoTracking()
-                .SingleOrDefaultAsync(m => m.ID == id);
+                .AsGatedNoTracking()
+                .SingleOrDefaultAsync();
+
             if (instructor == null)
             {
                 return NotFound();
             }
+
             PopulateAssignedCourseData(instructor);
             return View(instructor);
-        }
-
-        private void PopulateAssignedCourseData(Instructor instructor)
-        {
-            var allCourses = _courseRepo.GetAll();
-            var instructorCourses = new HashSet<int>(instructor.CourseAssignments.Select(c => c.CourseID));
-            var viewModel = new List<AssignedCourseData>();
-            foreach (var course in allCourses)
-            {
-                viewModel.Add(new AssignedCourseData
-                {
-                    CourseID = course.ID,
-                    Title = course.Title,
-                    Assigned = instructorCourses.Contains(course.ID)
-                });
-            }
-            ViewData["Courses"] = viewModel;
         }
 
         [HttpPost]
@@ -160,7 +149,7 @@ namespace ContosoUniversity.Controllers
                 .Include(i => i.CourseAssignments).ThenInclude(i => i.Course)
                 .SingleOrDefaultAsync(s => s.ID == id);
 
-            if (await TryUpdateModelAsync<Instructor>(instructorToUpdate, "", i => i.FirstMidName, i => i.LastName, i => i.HireDate, i => i.OfficeAssignment))
+            if (await _modelBindingHelperAdaptor.TryUpdateModelAsync<Instructor>(this, instructorToUpdate, "", i => i.FirstMidName, i => i.LastName, i => i.HireDate, i => i.OfficeAssignment))
             {
                 if (String.IsNullOrWhiteSpace(instructorToUpdate.OfficeAssignment?.Location))
                 {
@@ -172,13 +161,14 @@ namespace ContosoUniversity.Controllers
                 {
                     instructorToUpdate.ModifiedDate = DateTime.UtcNow;
                     await _instructorRepo.SaveChangesAsync();
+                    return RedirectToAction("Index");
                 }
                 catch (DbUpdateException)
                 {
                     ModelState.AddModelError("", "Unable to save changes.  Try again, and if the problem persists, see your system administrator.");
                 }
-                return RedirectToAction("Index");
             }
+
             UpdateInstructorCourses(selectedCourses, instructorToUpdate);
             PopulateAssignedCourseData(instructorToUpdate);
             return View(instructorToUpdate);
@@ -246,6 +236,23 @@ namespace ContosoUniversity.Controllers
 
             await _instructorRepo.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        private void PopulateAssignedCourseData(Instructor instructor)
+        {
+            var allCourses = _courseRepo.GetAll();
+            var instructorCourses = new HashSet<int>(instructor.CourseAssignments.Select(c => c.CourseID));
+            var viewModel = new List<AssignedCourseData>();
+            foreach (var course in allCourses)
+            {
+                viewModel.Add(new AssignedCourseData
+                {
+                    CourseID = course.ID,
+                    Title = course.Title,
+                    Assigned = instructorCourses.Contains(course.ID)
+                });
+            }
+            ViewData["Courses"] = viewModel;
         }
 
         private bool InstructorExists(int id)
