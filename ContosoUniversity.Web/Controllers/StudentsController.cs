@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
+using System.Reflection;
 
 namespace ContosoUniversity.Controllers
 {
@@ -54,16 +55,16 @@ namespace ContosoUniversity.Controllers
 
             if (descending)
             {
-                students = students.OrderByDescending(e => EF.Property<object>(e, sortOrder));
+                students = students.OrderByDescending(e => e.GetType().GetProperty(sortOrder).GetValue(e, null));
             }
             else
             {
-                students = students.OrderBy(e => EF.Property<object>(e, sortOrder));
+                students = students.OrderBy(e => e.GetType().GetProperty(sortOrder).GetValue(e, null));
             }
 
             int pageSize = 3;
 
-            return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), page ?? 1, pageSize));
+            return View(await PaginatedList<Student>.CreateAsync(students.AsGatedNoTracking(), page ?? 1, pageSize));
         }
 
         public async Task<IActionResult> Details(int? id)
