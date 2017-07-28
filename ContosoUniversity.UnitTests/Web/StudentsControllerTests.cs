@@ -2,6 +2,7 @@
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,54 @@ namespace ContosoUniversity.UnitTests.Web
 
             Assert.IsType(typeof(NotFoundResult), result);
             Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
+
+        [Fact]
+        public void Create_ReturnsAViewResult()
+        {
+            var result = sut.Create();
+
+            Assert.IsType(typeof(ViewResult), result);
+        }
+
+        [Fact]
+        public async Task CreatePost_ReturnsRedirectToActionResult_Index()
+        {
+            var result = await sut.Create(new Student());
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
+        }
+
+        [Fact]
+        public async Task CreatePost_ReturnsAViewResult_WithInvalidModel()
+        {
+            var student = new Student { ID = 9, FirstMidName = "John", LastName = "Wick", EnrollmentDate = DateTime.Parse("2005-09-01") };
+            sut.ModelState.AddModelError("myerror", "my error message");
+
+            var result = await sut.Create(student);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var model = (Student)((ViewResult)result).Model;
+            Assert.Equal("Wick", model.LastName);
+        }
+
+        [Fact]
+        public async Task CreatePost_ReturnsAViewResult_WithInvalidModel_DbUpdateException()
+        {
+            var student = new Student { ID = 9, FirstMidName = "John", LastName = "Wick", EnrollmentDate = DateTime.Parse("2005-09-01") };
+            mockStudentRepo.Setup(m => m.SaveChangesAsync())
+                .Callback(() => throw new DbUpdateException("myexception", new Exception()))
+                .Returns(Task.FromResult(0));
+
+            var result = await sut.Create(student);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.True(viewData.ModelState.Count > 0);
         }
 
         private List<Student> Students()
