@@ -39,6 +39,27 @@ namespace ContosoUniversity.UnitTests.Web
             Assert.Null(viewData["CurrentSort"]);
         }
 
+        [Theory]
+        [InlineData(1, "Alexander")]
+        public async Task Details_ReturnsAViewResult_WithStudentModel(int id, string lastName)
+        {
+            var result = await sut.Details(id);
+
+            var model = (Student)((ViewResult)result).Model;
+            Assert.Equal(lastName, model.LastName);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Details_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.Details(id);
+
+            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
         private List<Student> Students()
         {
             return new List<Student>
