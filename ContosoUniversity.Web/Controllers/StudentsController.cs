@@ -6,16 +6,19 @@ using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
 using System.Reflection;
+using ContosoUniversity.Web;
 
 namespace ContosoUniversity.Controllers
 {
     public class StudentsController : Controller
     {
         private readonly IRepository<Student> _studentRepo;
+        private readonly IModelBindingHelperAdaptor _modelBindingHelperAdaptor;
 
-        public StudentsController(IRepository<Student> studentRepo)
+        public StudentsController(IRepository<Student> studentRepo, IModelBindingHelperAdaptor modelBindingHelperAdaptor)
         {
             _studentRepo = studentRepo;
+            _modelBindingHelperAdaptor = modelBindingHelperAdaptor;
         }
 
         public async Task<IActionResult> Index(string sortOrder, string searchString, int? page, string currentFilter)
@@ -142,7 +145,7 @@ namespace ContosoUniversity.Controllers
 
             var studentToUpdate = await _studentRepo.Get(id.Value).SingleOrDefaultAsync();
 
-            if (await TryUpdateModelAsync<Student>(studentToUpdate, "", s => s.FirstMidName, s => s.LastName, s => s.EnrollmentDate))
+            if (await _modelBindingHelperAdaptor.TryUpdateModelAsync<Student>(this, studentToUpdate, "", s => s.FirstMidName, s => s.LastName, s => s.EnrollmentDate))
             {
                 try
                 {
