@@ -7,6 +7,8 @@ using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
 using System;
 using ContosoUniversity.Web;
+using ContosoUniversity.ViewModels;
+using System.Collections.Generic;
 
 namespace ContosoUniversity.Controllers
 {
@@ -25,8 +27,21 @@ namespace ContosoUniversity.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var departments = _departmentRepo.GetAll().Include(d => d.Administrator);
-            return View(await departments.ToListAsync());
+            var departments = await _departmentRepo.GetAll()
+                .Include(d => d.Administrator)
+                .ToListAsync();
+
+            var vm = new List<DepartmentDetailsViewModel>();
+            departments.ForEach(d => vm.Add(new DepartmentDetailsViewModel
+            {
+                ID = d.ID,
+                Name = d.Name,
+                Budget = d.Budget,
+                StartDate = d.StartDate,
+                Administrator = d.Administrator?.FullName,
+            }));
+
+            return View(vm);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -40,13 +55,22 @@ namespace ContosoUniversity.Controllers
                 .Include(d => d.Administrator)
                 .AsGatedNoTracking()
                 .SingleOrDefaultAsync();
-
+            
             if (department == null)
             {
                 return NotFound();
             }
 
-            return View(department);
+            var vm = new DepartmentDetailsViewModel
+            {
+                ID = department.ID,
+                Name = department.Name,
+                Budget = department.Budget,
+                StartDate = department.StartDate,
+                Administrator = department.Administrator?.FullName
+            };
+
+            return View(vm);
         }
 
         public IActionResult Create()
@@ -57,16 +81,23 @@ namespace ContosoUniversity.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DepartmentID,Name,Budget,StartDate,InstructorID,RowVersion")] Department department)
+        public async Task<IActionResult> Create(DepartmentCreateViewModel vm)
         {
             if (ModelState.IsValid)
             {
+                var department = new Department {
+                    Name = vm.Name,
+                    Budget = vm.Budget,
+                    StartDate = vm.StartDate,
+                    InstructorID = vm.InstructorID
+                };
                 await _departmentRepo.AddAsync(department);
                 await _departmentRepo.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { newid = department.ID });
             }
-            ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", department.InstructorID);
-            return View(department);
+
+            ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", vm.InstructorID);
+            return View(vm);
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -85,13 +116,24 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
+            var vm = new DepartmentEditViewModel
+            {
+                ID = id.Value,
+                Name = department.Name,
+                Budget = department.Budget,
+                StartDate = department.StartDate,
+                RowVersion = department.RowVersion?.ToString(),
+                Administrator = department?.Administrator?.FullName,
+                InstructorID = department.InstructorID.Value
+            };
+
             ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", department.InstructorID);
-            return View(department);
+            return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, byte[] rowVersion)
+        public async Task<IActionResult> Edit(int? id, string rowVersion)
         {
             if (id == null)
             {

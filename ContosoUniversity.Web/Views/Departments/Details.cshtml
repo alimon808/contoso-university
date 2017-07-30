@@ -1,4 +1,4 @@
-@model ContosoUniversity.Data.Entities.Department
+@model ContosoUniversity.ViewModels.DepartmentDetailsViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -32,7 +32,7 @@
             @Html.DisplayNameFor(model => model.Administrator)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Administrator.FullName)
+            @Html.DisplayFor(model => model.Administrator)
         </dd>
     </dl>
 </div>
