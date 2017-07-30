@@ -166,7 +166,6 @@ namespace ContosoUniversity.UnitTests.Web
             Assert.True(((ViewResult)result).ViewData.ModelState.Count > 0);
         }
 
-
         [Fact]
         public async Task EditPost_ReturnsAVRedirectToAction_Index()
         {
@@ -177,6 +176,61 @@ namespace ContosoUniversity.UnitTests.Web
 
             Assert.IsType(typeof(RedirectToActionResult), result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Delete_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.Delete(id);
+
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
+        [Fact]
+        public async Task Delete_ReturnsAViewResult_WithErrorMessageInViewData()
+        {
+            bool saveChangesError = true;
+
+            var result = await sut.Delete(1, saveChangesError);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.True(viewData.ContainsKey("ErrorMessage"));
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(0)]
+        public async Task Delete_ReturnsARedirectToAction_Index(int? id)
+        {
+            var result = await sut.DeleteConfirmed(id.Value);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("Index", actionName);
+        }
+
+        [Fact]
+        public async Task Delete_ReturnsARedirectToAction_DeleteAction()
+        {
+            mockStudentRepo.Setup(m => m.SaveChangesAsync())
+                .Callback(() => throw new DbUpdateException("myexception", new Exception()))
+                .Returns(Task.FromResult(0));
+
+            var result = await sut.DeleteConfirmed(1);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("Delete", actionName);
+            Assert.True(((RedirectToActionResult)result).RouteValues.TryGetValue("id", out object id));
+            Assert.True(((RedirectToActionResult)result).RouteValues.TryGetValue("saveChangesError", out object saveChangesError));
+            Assert.Equal(1, id);
+            Assert.True((bool)saveChangesError);
         }
 
         private List<Student> Students()
