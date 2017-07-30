@@ -14,6 +14,8 @@ namespace ContosoUniversity
     {
         public Startup(IHostingEnvironment env)
         {
+            CurrentEnvironment = env;
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -23,11 +25,22 @@ namespace ContosoUniversity
         }
 
         public IConfigurationRoot Configuration { get; }
+        public IHostingEnvironment CurrentEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            if (CurrentEnvironment.IsEnvironment("Testing"))
+            {
+                services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase());
+            }
+            else
+            {
+                services.AddDbContext<ApplicationContext>(
+                    options => options.UseSqlServer(
+                        Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso")));
+            }
+
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddMvc();
@@ -42,7 +55,7 @@ namespace ContosoUniversity
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
+                //app.UseBrowserLink();
                 DbInitializer.Initialize(context);
             }
             else
