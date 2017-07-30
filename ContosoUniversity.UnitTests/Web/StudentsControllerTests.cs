@@ -1,11 +1,13 @@
 ﻿using ContosoUniversity.Controllers;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,12 +19,14 @@ namespace ContosoUniversity.UnitTests.Web
         private readonly ITestOutputHelper output;
         private readonly Mock<IPersonRepository<Student>> mockStudentRepo;
         StudentsController sut;
+        private readonly Mock<IModelBindingHelperAdaptor> mockModelBindingHelperAdaptor;
 
         public StudentsControllerTests(ITestOutputHelper output)
         {
             this.output = output;
             mockStudentRepo = Students().AsMockPersonRepository();
-            sut = new StudentsController(mockStudentRepo.Object);
+            mockModelBindingHelperAdaptor = new Mock<IModelBindingHelperAdaptor>();
+            sut = new StudentsController(mockStudentRepo.Object, mockModelBindingHelperAdaptor.Object);
         }
 
         [Theory]
@@ -107,6 +111,72 @@ namespace ContosoUniversity.UnitTests.Web
 
             var viewData = ((ViewResult)result).ViewData;
             Assert.True(viewData.ModelState.Count > 0);
+        }
+
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(null)]
+        public async Task Edit_ReturnsANotFoundResult(int? id)
+        {
+            var result = await sut.Edit(id);
+
+            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.Equal(404, ((NotFoundResult)result).StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1, "Alexander")]
+        public async Task Edit_ReturnsAViewResult_WithStudentModel(int id, string lastName)
+        {
+            var result = await sut.Edit(id);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var model = (Student)((ViewResult)result).Model;
+            Assert.Equal(lastName, model.LastName);
+        }
+
+        [Fact]
+        public async Task EditPost_ReturnsAViewResult_WithInvalidModel()
+        {
+            mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<ControllerBase>(), It.IsAny<Student>(), It.IsAny<string>(), It.IsAny<Expression<Func<Student, object>>[]>()))
+                .Callback(() => sut.ModelState.AddModelError("mymodelerror", "my error message"))
+                .Returns(Task.FromResult(false));
+
+            var result = await sut.EditPost(1);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            Assert.True( ((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
+        }
+
+        [Fact]
+        public async Task EditPost_ReturnsAViewResult_WithInvalidModel_DbUpdateException()
+        {
+            mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<ControllerBase>(), It.IsAny<Student>(), It.IsAny<string>(), It.IsAny<Expression<Func<Student, object>>[]>()))
+                .Returns(Task.FromResult(true));
+
+            mockStudentRepo.Setup(m => m.SaveChangesAsync())
+                .Callback(() => throw new DbUpdateException("myexception", new Exception()))
+                .Returns(Task.FromResult(0));
+
+            var result = await sut.EditPost(1);
+
+            Assert.True(((ViewResult)result).ViewData.ModelState.Count > 0);
+        }
+
+
+        [Fact]
+        public async Task EditPost_ReturnsAVRedirectToAction_Index()
+        {
+            mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<ControllerBase>(), It.IsAny<Student>(), It.IsAny<string>(), It.IsAny<Expression<Func<Student, object>>[]>()))
+                .Returns(Task.FromResult(true));
+
+            var result = await sut.EditPost(1);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
         }
 
         private List<Student> Students()
