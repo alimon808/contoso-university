@@ -1,6 +1,7 @@
 ﻿using ContosoUniversity.Controllers;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.ViewModels;
 using ContosoUniversity.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,7 @@ namespace ContosoUniversity.UnitTests.Web
         public async Task Index_ReturnsAViewResult_WithAListOfDepartments()
         {
             var result = await sut.Index();
-            var model = (List<Department>)((ViewResult)result).Model;
+            var model = (List<DepartmentDetailsViewModel>)((ViewResult)result).Model;
 
             Assert.Equal(4, model.Count);
         }
@@ -47,7 +48,7 @@ namespace ContosoUniversity.UnitTests.Web
         public async Task Details_ReturnsAViewResult_WithDepartmentModel(int id, string departmentName)
         {
             var result = await sut.Details(id);
-            var model = (Department)((ViewResult)result).Model;
+            var model = (DepartmentDetailsViewModel)((ViewResult)result).Model;
 
             Assert.Equal(departmentName, model.Name);
         }
@@ -79,7 +80,7 @@ namespace ContosoUniversity.UnitTests.Web
         [Fact]
         public async Task CreatePost_ReturnsRedirectToActionResult_Index()
         {
-            var department = new Department
+            var vm = new DepartmentCreateViewModel
             {
                 Name = "Biology",
                 Budget = 100,
@@ -87,7 +88,7 @@ namespace ContosoUniversity.UnitTests.Web
                 InstructorID = 1
             };
 
-            var result = await sut.Create(department);
+            var result = await sut.Create(vm);
 
             Assert.IsType(typeof(RedirectToActionResult), result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
@@ -96,15 +97,9 @@ namespace ContosoUniversity.UnitTests.Web
         [Fact]
         public async Task CreatePost_ReturnsAViewResult_WithInvalidModel()
         {
-            var department = new Department
-            {
-                Name = "Test",
-                InstructorID = 1
-            };
-
             sut.ModelState.AddModelError("myerror", "error message");
 
-            var result = await sut.Create(department);
+            var result = await sut.Create(new DepartmentCreateViewModel { });
 
             Assert.IsType(typeof(ViewResult), result);
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("myerror"));
@@ -129,8 +124,8 @@ namespace ContosoUniversity.UnitTests.Web
 
             Assert.IsType(typeof(ViewResult), result);
 
-            Department model = (Department)((ViewResult)result).Model;
-            Assert.Equal(departmentName, model.Name);
+            var vm = (DepartmentEditViewModel)((ViewResult)result).Model;
+            Assert.Equal(departmentName, vm.Name);
         }
 
         [Theory]
