@@ -5,6 +5,6 @@
         public int ID { get; set; }
         
         public string RowVersion { get; set; }
-        public int InstructorID { get; set; } = 0;
+        public int InstructorID { get; set; }
     }
 }

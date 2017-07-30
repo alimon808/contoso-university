@@ -190,12 +190,12 @@ namespace ContosoUniversity.UnitTests.Web
             Assert.Equal("Index", actionName);
         }
 
-        [Fact]
-        public async Task DeletePost_ReturnsARedirectToActionResult_Index()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public async Task DeletePost_ReturnsARedirectToActionResult_Index(int id)
         {
-            var department = mockDepartmentRepo.Object.Get(1).FirstOrDefault();
-
-            var result = await sut.Delete(department);
+            var result = await sut.Delete(id);
 
             Assert.IsType(typeof(RedirectToActionResult), result);
             var actionName = ((RedirectToActionResult)result).ActionName;

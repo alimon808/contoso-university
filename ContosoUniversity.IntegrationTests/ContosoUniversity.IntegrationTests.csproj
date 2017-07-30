@@ -14,9 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="AntiForgeryHelper.cs" />
-    <Compile Remove="HttpClientExtensions.cs" />
-    <Compile Remove="HttpResponseMessageExtensions.cs" />
     <Compile Remove="IntegrationTemplateTests.cs" />
     <Compile Remove="Startup.cs" />
     <Compile Remove="TestapplicationEnvironment.cs" />

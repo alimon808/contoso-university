@@ -55,7 +55,7 @@ namespace ContosoUniversity.Controllers
                 .Include(d => d.Administrator)
                 .AsGatedNoTracking()
                 .SingleOrDefaultAsync();
-            
+
             if (department == null)
             {
                 return NotFound();
@@ -85,7 +85,8 @@ namespace ContosoUniversity.Controllers
         {
             if (ModelState.IsValid)
             {
-                var department = new Department {
+                var department = new Department
+                {
                     Name = vm.Name,
                     Budget = vm.Budget,
                     StartDate = vm.StartDate,
@@ -152,7 +153,7 @@ namespace ContosoUniversity.Controllers
                 ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", deletedDepartment.InstructorID);
                 return View(deletedDepartment);
             }
-            
+
             if (await _modelBindingHelperAdaptor.TryUpdateModelAsync<Department>(this, departmentToUpdate, "", s => s.Name, s => s.Budget, s => s.InstructorID, s => s.StartDate))
             {
                 try
@@ -236,15 +237,19 @@ namespace ContosoUniversity.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(Department department)
+        public async Task<IActionResult> Delete(int id)
         {
+            var department = await _departmentRepo.Get(id).FirstOrDefaultAsync();
+
+            if (department == null)
+            {
+                return RedirectToAction("Index");
+            }
+
             try
             {
-                if (await _departmentRepo.GetAll().AnyAsync(m => m.ID == department.ID))
-                {
-                    _departmentRepo.Delete(department);
-                    await _departmentRepo.SaveChangesAsync();
-                }
+                _departmentRepo.Delete(department);
+                await _departmentRepo.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             catch (DbUpdateConcurrencyException)
