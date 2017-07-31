@@ -21,5 +21,17 @@ namespace ContosoUniversity.Api.Controllers
         {
             return _departmentRepo.GetAll().ToList();
         }
+
+        [HttpGet("{id}", Name ="GetDepartment")]
+        public IActionResult GetById(int id)
+        {
+            var department = _departmentRepo.Get(id).FirstOrDefault();
+            if (department == null)
+            {
+                return NotFound();
+            }
+
+            return new ObjectResult(department);
+        }
     }
 }
