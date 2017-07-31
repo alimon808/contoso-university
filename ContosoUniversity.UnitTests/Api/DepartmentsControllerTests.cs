@@ -6,6 +6,7 @@ using ContosoUniversity.Data.Entities;
 using System.Collections.Generic;
 using System;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ContosoUniversity.UnitTests.Api
 {
@@ -49,6 +50,31 @@ namespace ContosoUniversity.UnitTests.Api
             var department = (Department)((ObjectResult)result).Value;
             Assert.Equal(departmentName, department.Name);
             Assert.Equal(budget, department.Budget);
+        }
+
+        [Fact]
+        public async Task HttpPost_ReturnsCreatedAtRouteResult_WithDepartmentEntity()
+        {
+            var departmentToAdd = new Department { ID = 5, Name = "Physics", Budget = 100000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 4 };
+            var result = await _sut.Create(departmentToAdd);
+
+            Assert.NotNull(result);
+            Assert.IsType(typeof(CreatedAtRouteResult), result);
+            Assert.Equal(201, ((CreatedAtRouteResult)result).StatusCode);
+
+            var department = (Department)((CreatedAtRouteResult)result).Value;
+            Assert.Equal(departmentToAdd.ID, department.ID);
+            Assert.Equal(departmentToAdd.Name, department.Name);
+        }
+
+        [Fact]
+        public async Task HttpPost_ReturnsABadRequestResult()
+        {
+            var result = await _sut.Create(null);
+
+            Assert.NotNull(result);
+            Assert.IsType(typeof(BadRequestResult), result);
+            Assert.Equal(400, ((BadRequestResult)result).StatusCode);
         }
 
         private List<Department> Departments { get; } = new List<Department>

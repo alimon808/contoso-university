@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Data.Entities;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ContosoUniversity.Api.Controllers
 {
+
+    // api is modeled after https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?tabs=aspnet1x
     [Route("[controller]")]
     public class DepartmentsController : Controller
     {
@@ -32,6 +35,20 @@ namespace ContosoUniversity.Api.Controllers
             }
 
             return new ObjectResult(department);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Department department)
+        {
+            if (department == null)
+            {
+                return BadRequest();
+            }
+
+            await _departmentRepo.AddAsync(department);
+            await _departmentRepo.SaveChangesAsync();
+
+            return CreatedAtRoute("GetDepartment", new { id = department.ID }, department);
         }
     }
 }
