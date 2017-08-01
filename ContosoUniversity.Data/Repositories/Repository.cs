@@ -50,6 +50,7 @@ namespace ContosoUniversity.Data
         {
             IsEntityNull(entity);
             context.Entry(entity).Property("RowVersion").OriginalValue = rowVersion;
+            context.Update(entity);
         }
 
         public async Task SaveChangesAsync()

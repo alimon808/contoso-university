@@ -77,6 +77,59 @@ namespace ContosoUniversity.UnitTests.Api
             Assert.Equal(400, ((BadRequestResult)result).StatusCode);
         }
 
+        [Fact]
+        public async Task HttpPut_ReturnsABadRequestResult_WithNullDepartment()
+        {
+            var result = await _sut.Update(1, null);
+
+            Assert.IsType(typeof(BadRequestResult), result);
+        }
+
+        [Fact]
+        public async Task HttpPut_ReturnsABadRequestResult_WithInvalidDepartmentID()
+        {
+            var departmentToUpdate = new Department { ID = 1, Name = "English 2", Budget = 350000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 1, RowVersion = new byte[] { } };
+            var result = await _sut.Update(2, departmentToUpdate);
+
+            Assert.IsType(typeof(BadRequestResult), result);
+        }
+
+        [Fact]
+        public async Task HttpPut_ReturnsANotFoundResult()
+        {
+            var departmentToUpdate = new Department { ID = 0, Name = "English 2", Budget = 350000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 1, RowVersion = new byte[] { } };
+
+            var result = await _sut.Update(departmentToUpdate.ID, departmentToUpdate);
+
+            Assert.IsType(typeof(NotFoundResult), result);
+        }
+
+        [Fact]
+        public async Task HttpPut_ReturnsANoContentResult()
+        {
+            var departmentToUpdate = new Department { ID = 1, Name = "English 2", Budget = 350000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 1, RowVersion = new byte[] { } };
+
+            var result = await _sut.Update(departmentToUpdate.ID, departmentToUpdate);
+
+            Assert.IsType(typeof(NoContentResult), result);
+        }
+
+        [Fact]
+        public async Task HttpDelete_ReturnsNoContentResult()
+        {
+            var result = await _sut.Delete(1);
+
+            Assert.IsType(typeof(NoContentResult), result);
+        }
+
+        [Fact]
+        public async Task HttpDelete_ReturnsNotFoundResult()
+        {
+            var result = await _sut.Delete(0);
+
+            Assert.IsType(typeof(NotFoundResult), result);
+        }
+
         private List<Department> Departments { get; } = new List<Department>
         {
             new Department { ID = 1, Name = "English",     Budget = 350000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID  = 1 },
