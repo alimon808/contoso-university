@@ -2,10 +2,7 @@
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.ViewModels;
-using ContosoUniversity.Web;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -15,7 +12,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ContosoUniversity.UnitTests.Web
+namespace ContosoUniversity.Web.Tests
 {
     public class DepartmentsControllerTests
     {

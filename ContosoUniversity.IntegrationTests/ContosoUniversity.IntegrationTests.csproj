@@ -49,6 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ContosoUniversity.Api\ContosoUniversity.Api.csproj" />
     <ProjectReference Include="..\ContosoUniversity.Web\ContosoUniversity.Web.csproj" />
   </ItemGroup>
 
