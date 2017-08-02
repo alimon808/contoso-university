@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using ContosoUniversity.Tests;
 
 namespace ContosoUniversity.Api.Tests
 {

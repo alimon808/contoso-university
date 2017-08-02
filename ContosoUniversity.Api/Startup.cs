@@ -45,12 +45,13 @@ namespace ContosoUniversity.Api
 
         public void Configure(IApplicationBuilder app, ApplicationContext context)
         {
-            if (CurrentEnvironment.IsDevelopment())
+            if (CurrentEnvironment.IsDevelopment() || CurrentEnvironment.IsEnvironment("Testing"))
             {
                 DbInitializer.Initialize(context);
             }
 
             app.UseMvc();
+            //app.UseMvcWithDefaultRoute();
         }
     }
 }
