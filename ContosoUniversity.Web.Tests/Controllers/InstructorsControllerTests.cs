@@ -3,7 +3,7 @@ using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Enums;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Models.SchoolViewModels;
-using ContosoUniversity.Web;
+using ContosoUniversity.Tests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ContosoUniversity.Web.Tests
+namespace ContosoUniversity.Web.Tests.Controllers
 {
     public class InstructorsControllerTests
     {

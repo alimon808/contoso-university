@@ -1,7 +1,7 @@
 ﻿using ContosoUniversity.Controllers;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
-using ContosoUniversity.Web;
+using ContosoUniversity.Tests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ContosoUniversity.Web.Tests
+namespace ContosoUniversity.Web.Tests.Controllers
 {
     public class CoursesControllerTests
     {

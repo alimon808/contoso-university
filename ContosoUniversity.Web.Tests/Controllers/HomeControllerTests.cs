@@ -1,16 +1,15 @@
 ﻿using ContosoUniversity.Controllers;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
-using ContosoUniversity.Models.SchoolViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using ContosoUniversity.Tests;
 
-namespace ContosoUniversity.Web.Tests
+namespace ContosoUniversity.Web.Tests.Controllers
 {
     public class HomeControllerTests
     {
