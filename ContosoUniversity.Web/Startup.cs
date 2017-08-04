@@ -7,6 +7,8 @@ using ContosoUniversity.Data;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Web;
+using ContosoUniversity.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace ContosoUniversity
 {
@@ -38,11 +40,19 @@ namespace ContosoUniversity
                 services.AddDbContext<ApplicationContext>(
                     options => options.UseSqlServer(
                         Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso")));
+
+                services.AddDbContext<SecureApplicationContext>(
+                    options => options.UseSqlServer(
+                        Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("IdentityMigration", "Contoso")));
+                services.AddIdentity<ApplicationUser, IdentityRole>()
+                    .AddEntityFrameworkStores<SecureApplicationContext>()
+                    .AddDefaultTokenProviders();
             }
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddMvc();
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApplicationContext context)
@@ -61,6 +71,7 @@ namespace ContosoUniversity
             }
 
             app.UseStaticFiles();
+            app.UseIdentity();
 
             app.UseMvc(routes =>
             {
