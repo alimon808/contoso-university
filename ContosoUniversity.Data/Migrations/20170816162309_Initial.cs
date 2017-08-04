@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ContosoUniversity.Data.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -19,9 +19,12 @@ namespace ContosoUniversity.Data.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AddedDate = table.Column<DateTime>(nullable: false),
                     Discriminator = table.Column<string>(nullable: false),
                     FirstName = table.Column<string>(maxLength: 50, nullable: false),
                     LastName = table.Column<string>(maxLength: 50, nullable: false),
+                    ModifiedDate = table.Column<DateTime>(nullable: false),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
                     HireDate = table.Column<DateTime>(nullable: true),
                     EnrollmentDate = table.Column<DateTime>(nullable: true)
                 },
@@ -35,17 +38,19 @@ namespace ContosoUniversity.Data.Migrations
                 schema: "Contoso",
                 columns: table => new
                 {
-                    DepartmentID = table.Column<int>(nullable: false)
+                    ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AddedDate = table.Column<DateTime>(nullable: false),
                     Budget = table.Column<decimal>(type: "money", nullable: false),
                     InstructorID = table.Column<int>(nullable: true),
+                    ModifiedDate = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(maxLength: 50, nullable: true),
                     RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
                     StartDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Department", x => x.DepartmentID);
+                    table.PrimaryKey("PK_Department", x => x.ID);
                     table.ForeignKey(
                         name: "FK_Department_Person_InstructorID",
                         column: x => x.InstructorID,
@@ -60,12 +65,17 @@ namespace ContosoUniversity.Data.Migrations
                 schema: "Contoso",
                 columns: table => new
                 {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AddedDate = table.Column<DateTime>(nullable: false),
                     InstructorID = table.Column<int>(nullable: false),
-                    Location = table.Column<string>(maxLength: 50, nullable: true)
+                    Location = table.Column<string>(maxLength: 50, nullable: true),
+                    ModifiedDate = table.Column<DateTime>(nullable: false),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OfficeAssignment", x => x.InstructorID);
+                    table.PrimaryKey("PK_OfficeAssignment", x => x.ID);
                     table.ForeignKey(
                         name: "FK_OfficeAssignment_Person_InstructorID",
                         column: x => x.InstructorID,
@@ -80,20 +90,25 @@ namespace ContosoUniversity.Data.Migrations
                 schema: "Contoso",
                 columns: table => new
                 {
-                    CourseID = table.Column<int>(nullable: false),
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AddedDate = table.Column<DateTime>(nullable: false),
+                    CourseNumber = table.Column<int>(nullable: false),
                     Credits = table.Column<int>(nullable: false),
                     DepartmentID = table.Column<int>(nullable: false),
+                    ModifiedDate = table.Column<DateTime>(nullable: false),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
                     Title = table.Column<string>(maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Course", x => x.CourseID);
+                    table.PrimaryKey("PK_Course", x => x.ID);
                     table.ForeignKey(
                         name: "FK_Course_Department_DepartmentID",
                         column: x => x.DepartmentID,
                         principalSchema: "Contoso",
                         principalTable: "Department",
-                        principalColumn: "DepartmentID",
+                        principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -103,7 +118,11 @@ namespace ContosoUniversity.Data.Migrations
                 columns: table => new
                 {
                     CourseID = table.Column<int>(nullable: false),
-                    InstructorID = table.Column<int>(nullable: false)
+                    InstructorID = table.Column<int>(nullable: false),
+                    AddedDate = table.Column<DateTime>(nullable: false),
+                    ID = table.Column<int>(nullable: false),
+                    ModifiedDate = table.Column<DateTime>(nullable: false),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -113,7 +132,7 @@ namespace ContosoUniversity.Data.Migrations
                         column: x => x.CourseID,
                         principalSchema: "Contoso",
                         principalTable: "Course",
-                        principalColumn: "CourseID",
+                        principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CourseAssignment_Person_InstructorID",
@@ -129,31 +148,32 @@ namespace ContosoUniversity.Data.Migrations
                 schema: "Contoso",
                 columns: table => new
                 {
-                    EnrollmentID = table.Column<long>(nullable: false)
+                    ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CourseID = table.Column<long>(nullable: false),
-                    CourseID1 = table.Column<int>(nullable: true),
+                    AddedDate = table.Column<DateTime>(nullable: false),
+                    CourseID = table.Column<int>(nullable: false),
                     Grade = table.Column<int>(nullable: true),
-                    StudentID = table.Column<long>(nullable: false),
-                    StudentID1 = table.Column<int>(nullable: true)
+                    ModifiedDate = table.Column<DateTime>(nullable: false),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    StudentID = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Enrollment", x => x.EnrollmentID);
+                    table.PrimaryKey("PK_Enrollment", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Enrollment_Course_CourseID1",
-                        column: x => x.CourseID1,
+                        name: "FK_Enrollment_Course_CourseID",
+                        column: x => x.CourseID,
                         principalSchema: "Contoso",
                         principalTable: "Course",
-                        principalColumn: "CourseID",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Enrollment_Person_StudentID1",
-                        column: x => x.StudentID1,
+                        name: "FK_Enrollment_Person_StudentID",
+                        column: x => x.StudentID,
                         principalSchema: "Contoso",
                         principalTable: "Person",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -175,16 +195,23 @@ namespace ContosoUniversity.Data.Migrations
                 column: "InstructorID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrollment_CourseID1",
+                name: "IX_Enrollment_CourseID",
                 schema: "Contoso",
                 table: "Enrollment",
-                column: "CourseID1");
+                column: "CourseID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrollment_StudentID1",
+                name: "IX_Enrollment_StudentID",
                 schema: "Contoso",
                 table: "Enrollment",
-                column: "StudentID1");
+                column: "StudentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OfficeAssignment_InstructorID",
+                schema: "Contoso",
+                table: "OfficeAssignment",
+                column: "InstructorID",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
