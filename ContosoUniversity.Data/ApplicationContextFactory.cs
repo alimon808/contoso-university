@@ -43,7 +43,7 @@ namespace ContosoUniversity.Data
             }
 
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseSqlServer(connectionString, x => x.MigrationsHistoryTable("Migration", "Contoso"));
 
             return new ApplicationContext(optionsBuilder.Options);
         }
