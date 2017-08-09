@@ -11,7 +11,7 @@ namespace ContosoUniversity.Data.Interfaces
         Task AddAsync(T entity);
         void Update(T entity, byte[] rowVersion);
         void Delete(T entity);
-        Task<int> ExecuteSqlCommandAsync(string sql);
+        Task<int> ExecuteSqlCommandAsync(string queryString);
         Task SaveChangesAsync();
     }
 }

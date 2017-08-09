@@ -64,9 +64,9 @@ namespace ContosoUniversity.Data
             }
         }
 
-        public async Task<int> ExecuteSqlCommandAsync(string sql)
+        public async Task<int> ExecuteSqlCommandAsync(string queryString)
         {
-            return await context.Database.ExecuteSqlCommandAsync(sql);
+            return await context.Database.ExecuteSqlCommandAsync(queryString);
         }
     }
 }

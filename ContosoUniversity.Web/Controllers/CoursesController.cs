@@ -13,19 +13,17 @@ namespace ContosoUniversity.Controllers
     {
         private readonly IRepository<Course> _courseRepo;
         private readonly IRepository<Department> _departmentRepo;
-        private ApplicationContext _context;
 
-        public CoursesController(ApplicationContext context, IRepository<Course> courseRepo, IRepository<Department> departmentRepo)
+        public CoursesController(IRepository<Course> courseRepo, IRepository<Department> departmentRepo)
         {
-            _context = context;
             _courseRepo = courseRepo;
             _departmentRepo = departmentRepo;
         }
 
         public async Task<IActionResult> Index()
         {
-            var schoolContext = _courseRepo.GetAll().Include(c => c.Department);
-            return View(await schoolContext.ToListAsync());
+            var courses = _courseRepo.GetAll().Include(c => c.Department);
+            return View(await courses.ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -152,8 +150,7 @@ namespace ContosoUniversity.Controllers
         {
             if (multiplier != null)
             {
-                // todo: add ExecuteSqlCommandAsync to repo
-                ViewData["RowsAffected"] = await _context.Database.ExecuteSqlCommandAsync("UPDATE Course SET Credits = Credits * {0}", parameters: multiplier);
+                ViewData["RowsAffected"] = await _courseRepo.ExecuteSqlCommandAsync($"UPDATE Contoso.Course SET Credits = Credits * {multiplier}");
             }
             return View();
         }
