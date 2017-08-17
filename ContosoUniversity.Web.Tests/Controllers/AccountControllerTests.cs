@@ -31,7 +31,19 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             _sut = new AccountController(_fakeUserManager, _fakeSignInManager);
         }
-        
+
+        [Fact]
+        public void Login_ReturnsAViewResult_WithReturnUrlInViewData()
+        {
+            var returnUrl = "/Home/Index";
+            var result =  _sut.Login(returnUrl);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.True(viewData.ContainsKey("ReturnUrl"));
+        }
+
         [Fact]
         public void Register_ReturnsAViewResult_WithReturnUrlInViewData()
         {

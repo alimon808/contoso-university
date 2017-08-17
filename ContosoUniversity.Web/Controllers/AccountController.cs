@@ -18,6 +18,12 @@ namespace ContosoUniversity.Web.Controllers
             _signInManager = signInManager;
         }
 
+        public IActionResult Login(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
         public IActionResult Register(string returnUrl)
         {
             ViewData["ReturnUrl"] = returnUrl;
