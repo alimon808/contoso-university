@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Identity;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
+using System;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -37,9 +38,18 @@ namespace ContosoUniversity.Web.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToLocal(returnUrl);
                 }
+                AddErrors(result);
             }
 
             return View(model);
+        }
+
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
         }
 
         private IActionResult RedirectToLocal(string returnUrl)

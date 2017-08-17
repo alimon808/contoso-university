@@ -45,7 +45,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         }
 
         [Fact]
-        public async Task Register_ReturnsARedirectResult()
+        public async Task RegisterPost_ReturnsARedirectResult()
         {
             var mockUrl = new Mock<IUrlHelper>();
             mockUrl.Setup(m => m.IsLocalUrl(It.IsAny<string>())).Returns(true);
@@ -57,6 +57,21 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             Assert.IsType(typeof(RedirectResult), result);
             Assert.Equal(returnUrl, ((RedirectResult)result).Url);
+        }
+
+
+        [Fact]
+        public async Task RegisterPost_ReturnsAViewResult_WithInvalidModel()
+        {
+            
+            var returnUrl = "/Departments/Index";
+            var model = new RegisterViewModel { Email = "abc@example.com", Password = "P@ssw0rd!" };
+            _sut.ModelState.AddModelError("myModelError", "my model error message");
+
+            var result = await _sut.Register(model, returnUrl);
+
+            Assert.IsType(typeof(ViewResult), result);
+            Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("myModelError"));
         }
 
         // original code from https://github.com/aspnet/Identity/issues/344
