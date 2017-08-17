@@ -34,6 +34,7 @@ namespace ContosoUniversity
             if (CurrentEnvironment.IsEnvironment("Testing"))
             {
                 services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase());
+                services.AddDbContext<SecureApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase());
             }
             else
             {
@@ -44,11 +45,11 @@ namespace ContosoUniversity
                 services.AddDbContext<SecureApplicationContext>(
                     options => options.UseSqlServer(
                         Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("IdentityMigration", "Contoso")));
-                services.AddIdentity<ApplicationUser, IdentityRole>()
-                    .AddEntityFrameworkStores<SecureApplicationContext>()
-                    .AddDefaultTokenProviders();
             }
 
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<SecureApplicationContext>()
+                .AddDefaultTokenProviders();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddMvc();
