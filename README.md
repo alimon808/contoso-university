@@ -4,6 +4,7 @@ Contoso University is a place for learning AspNetCore and related technologies. 
 ## Concepts
 - Web App
 - Web Api
+- Repository design pattern
 - Unit Testing with Moq and xunit
 - Integration Testing using TestHost and InMemoryDatabase
 - Configuring DbContext in separate project
