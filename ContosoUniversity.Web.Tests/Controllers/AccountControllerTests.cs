@@ -45,6 +45,22 @@ namespace ContosoUniversity.Web.Tests.Controllers
         }
 
         [Fact]
+        public async Task LoginPost_ReturnsARedirectResult()
+        {
+            var mockUrl = new Mock<IUrlHelper>();
+            mockUrl.Setup(m => m.IsLocalUrl(It.IsAny<string>())).Returns(true);
+            _sut.Url = mockUrl.Object;
+            var model = new LoginViewModel { Email = "abc@example.com", Password = "abc", RememberMe = false };
+            var returnUrl = "/Home/Index";
+            
+
+            var result = await _sut.LoginAsync(model, returnUrl);
+
+            Assert.IsType(typeof(RedirectResult), result);
+            Assert.Equal(returnUrl, ((RedirectResult)result).Url);
+        }
+
+        [Fact]
         public void Register_ReturnsAViewResult_WithReturnUrlInViewData()
         {
             var returnUrl = "/Home/Index";
@@ -120,6 +136,11 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             // solution from https://github.com/aspnet/Identity/issues/640
             public override Task SignInAsync(ApplicationUser user, bool isPersistent, string authenticationMethod = null)
+            {
+                return Task.FromResult(Microsoft.AspNetCore.Identity.SignInResult.Success);
+            }
+
+            public override Task<Microsoft.AspNetCore.Identity.SignInResult> PasswordSignInAsync(string user, string password, bool isPersistent, bool lockoutOnFailure)
             {
                 return Task.FromResult(Microsoft.AspNetCore.Identity.SignInResult.Success);
             }
