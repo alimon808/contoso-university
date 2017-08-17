@@ -21,11 +21,15 @@ namespace ContosoUniversity.Web.Tests.Controllers
         private readonly ITestOutputHelper _output;
         AccountController _sut;
         private readonly FakeUserManager _fakeUserManager;
+        private readonly FakeSignInManager _fakeSignInManager;
+
         public AccountControllerTests(ITestOutputHelper output)
         {
             _output = output;
             _fakeUserManager = new FakeUserManager();
-            _sut = new AccountController(_fakeUserManager);
+            _fakeSignInManager = new FakeSignInManager();
+
+            _sut = new AccountController(_fakeUserManager, _fakeSignInManager);
         }
         
         [Fact]
@@ -74,6 +78,23 @@ namespace ContosoUniversity.Web.Tests.Controllers
             {
                 // solution from https://stackoverflow.com/questions/26269104/how-to-construct-identityresult-with-success-true
                 return Task.FromResult(IdentityResult.Success);
+            }
+        }
+
+        public class FakeSignInManager : SignInManager<ApplicationUser>
+        {
+            public FakeSignInManager()
+                : base(new FakeUserManager(),
+                      new HttpContextAccessor { HttpContext = new Mock<HttpContext>().Object },
+                      new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>().Object,
+                      null,
+                      null)
+            { }
+
+            // solution from https://github.com/aspnet/Identity/issues/640
+            public override Task SignInAsync(ApplicationUser user, bool isPersistent, string authenticationMethod = null)
+            {
+                return Task.FromResult(Microsoft.AspNetCore.Identity.SignInResult.Success);
             }
         }
     }
