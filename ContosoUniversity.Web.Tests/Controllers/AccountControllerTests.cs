@@ -102,6 +102,16 @@ namespace ContosoUniversity.Web.Tests.Controllers
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("myModelError"));
         }
 
+        [Fact]
+        public async Task LogoutPost_ReturnsARedirectToActionResult()
+        {
+            var result = await _sut.Logout();
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal("Home", ((RedirectToActionResult)result).ControllerName);
+            Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
+        }
+
         // original code from https://github.com/aspnet/Identity/issues/344
         public class FakeUserManager : UserManager<ApplicationUser>
         {
@@ -143,6 +153,11 @@ namespace ContosoUniversity.Web.Tests.Controllers
             public override Task<Microsoft.AspNetCore.Identity.SignInResult> PasswordSignInAsync(string user, string password, bool isPersistent, bool lockoutOnFailure)
             {
                 return Task.FromResult(Microsoft.AspNetCore.Identity.SignInResult.Success);
+            }
+
+            public override Task SignOutAsync()
+            {
+                return Task.FromResult(0);
             }
         }
     }
