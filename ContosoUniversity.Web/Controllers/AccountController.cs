@@ -4,9 +4,11 @@ using ContosoUniversity.Identity;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ContosoUniversity.Web.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -18,6 +20,8 @@ namespace ContosoUniversity.Web.Controllers
             _signInManager = signInManager;
         }
 
+        [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -25,6 +29,9 @@ namespace ContosoUniversity.Web.Controllers
             return View();
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginAsync(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -44,6 +51,7 @@ namespace ContosoUniversity.Web.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public IActionResult Register(string returnUrl)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -51,6 +59,8 @@ namespace ContosoUniversity.Web.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -69,6 +79,7 @@ namespace ContosoUniversity.Web.Controllers
 
             return View(model);
         }
+
 
         private void AddErrors(IdentityResult result)
         {
