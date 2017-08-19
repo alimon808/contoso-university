@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Identity;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
-using System;
 using Microsoft.AspNetCore.Authorization;
+using ContosoUniversity.Services;
+using ContosoUniversity.Web.Helpers;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -13,11 +14,18 @@ namespace ContosoUniversity.Web.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IEmailSender _emailSender;
+        private readonly IUrlHelperAdaptor _urlHelperAdaptor;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, 
+            SignInManager<ApplicationUser> signInManager, 
+            IEmailSender emailSender,
+            IUrlHelperAdaptor urlHelperAdaptor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
+            _urlHelperAdaptor = urlHelperAdaptor;
         }
 
         [HttpGet]
@@ -32,7 +40,7 @@ namespace ContosoUniversity.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LoginAsync(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
@@ -52,6 +60,7 @@ namespace ContosoUniversity.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register(string returnUrl)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -71,7 +80,13 @@ namespace ContosoUniversity.Web.Controllers
 
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    // send an email with this link
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = _urlHelperAdaptor.Action(this.Url, "ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account", $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
+
+                    // comment out following line to prevent a new user automaticallly logged on
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);
@@ -87,6 +102,25 @@ namespace ContosoUniversity.Web.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return View("Error");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return View("Error");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
         private void AddErrors(IdentityResult result)
