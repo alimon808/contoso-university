@@ -127,7 +127,79 @@ namespace ContosoUniversity.Web.Tests.Controllers
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
         }
 
-        
+        [Fact]
+        public void ResetPassword_ReturnsAViewResult()
+        {
+            var result = _sut.ResetPassword();
+
+            Assert.IsType(typeof(ViewResult), result);
+        }
+
+        [Fact]
+        public async Task ResetPasswordPost_ReturnsARedirectToActionResult_ResetPasswordConfirmation()
+        {
+            var model = new ResetPasswordViewModel();
+
+            var result = await _sut.ResetPassword(model);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal("ResetPasswordConfirmation", ((RedirectToActionResult)result).ActionName);
+        }
+
+        [Fact]
+        public async Task ResetPasswordPost_ReturnsAViewResult_WithInvalidModel()
+        {
+            var model = new ResetPasswordViewModel();
+            _sut.ModelState.AddModelError("mymodelerror", "my model error message");
+
+            var result = await _sut.ResetPassword(model);
+
+            Assert.IsType(typeof(ViewResult), result);
+            Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
+        }
+
+        [Fact]
+        public void ForgotPassword_ReturnsAViewResult()
+        {
+            var result = _sut.ForgotPassword();
+
+            Assert.IsType(typeof(ViewResult), result);
+        }
+
+        [Fact]
+        public async Task ForgotPasswordPost_ReturnsAViewResult_WithInvalidModel()
+        {
+            var vm = new ForgotPasswordViewModel { };
+            _sut.ModelState.AddModelError("myerror", "my error message");
+
+            var result = await _sut.ForgotPassword(vm);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewData = ((ViewResult)result).ViewData;
+            Assert.True(viewData.ModelState.ContainsKey("myerror"));
+        }
+
+        [Fact]
+        public async Task ForgotPasswordPost_ReturnsAViewResult_WithForgotPasswordConfirmation()
+        {
+            var vm = new ForgotPasswordViewModel { Email = "a@example.com" };
+            var mockUrl = new Mock<IUrlHelper>();
+            mockUrl.Setup(m => m.IsLocalUrl(It.IsAny<string>())).Returns(true);
+            var context = new Mock<HttpContext>();
+            _sut.ControllerContext = new ControllerContext();
+            _sut.ControllerContext.HttpContext = new DefaultHttpContext();
+            _sut.Url = mockUrl.Object;
+            _mockUrlHelperAdaptor.Setup(m => m.Action(It.IsAny<IUrlHelper>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>())).Returns("confirmemialurl");
+            _mockEmailSender.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(0));
+
+            var result = await _sut.ForgotPassword(vm);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            Assert.Equal("ForgotPasswordConfirmation", ((ViewResult)result).ViewName);
+        }
+
         // original code from https://github.com/aspnet/Identity/issues/344
         public class FakeUserManager : UserManager<ApplicationUser>
         {
@@ -151,6 +223,22 @@ namespace ContosoUniversity.Web.Tests.Controllers
             public override Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user)
             {
                 return Task.FromResult("token string");
+            }
+            public override Task<ApplicationUser> FindByEmailAsync(string email)
+            {
+                return Task.FromResult(new ApplicationUser());
+            }
+            public override Task<string> GeneratePasswordResetTokenAsync(ApplicationUser user)
+            {
+                return Task.FromResult("reset-password-token");
+            }
+            public override Task<bool> IsEmailConfirmedAsync(ApplicationUser user)
+            {
+                return Task.FromResult(true);
+            }
+            public override Task<IdentityResult> ResetPasswordAsync(ApplicationUser user, string token, string newPassword)
+            {
+                return Task.FromResult(IdentityResult.Success);
             }
         }
 
