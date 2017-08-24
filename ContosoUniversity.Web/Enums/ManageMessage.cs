@@ -9,6 +9,7 @@ namespace ContosoUniversity.Web.Enums
     {
         ChangePasswordSuccess,
         Error,
-        AddPhoneSuccess
+        AddPhoneSuccess,
+        RemovePhoneSuccess
     }
 }

@@ -38,9 +38,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         [Fact]
         public async Task Index_ReturnsAViewResult()
         {
-            var context = new Mock<HttpContext>();
-            _sut.ControllerContext = new ControllerContext();
-            _sut.ControllerContext.HttpContext = new DefaultHttpContext();
+            InitTestContext();
 
             var result = await _sut.Index();
 
@@ -82,9 +80,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
                 NewPassword = "bcd",
                 ConfirmPassword = "bcd"
             };
-            var context = new Mock<HttpContext>();
-            _sut.ControllerContext = new ControllerContext();
-            _sut.ControllerContext.HttpContext = new DefaultHttpContext();
+            InitTestContext();
 
             var result = await _sut.ChangePassword(model);
 
@@ -115,9 +111,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         [Fact]
         public async Task AddPhoneNumberPost_ReturnsARedirectToAction_VerifyPhoneNumber()
         {
-            var context = new Mock<HttpContext>();
-            _sut.ControllerContext = new ControllerContext { };
-            _sut.ControllerContext.HttpContext = new DefaultHttpContext { };
+            InitTestContext();
             _mockSmsSender.Setup(m => m.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(0));
 
             var result = await _sut.AddPhoneNumber(new AddPhoneNumberViewModel());
@@ -165,6 +159,20 @@ namespace ContosoUniversity.Web.Tests.Controllers
             
         }
 
+        [Fact]
+        public async Task RemovePhoneNumber_ReturnsAReidrectToActionResult()
+        {
+            InitTestContext();
+
+            var result = await _sut.RemovePhoneNumber();
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("Index", actionName);
+            Assert.Equal(ManageMessage.RemovePhoneSuccess, ((RedirectToActionResult)result).RouteValues["Message"]);
+        }
+
+
         public class FakeUserManager : UserManager<ApplicationUser>
         {
             public FakeUserManager()
@@ -198,6 +206,14 @@ namespace ContosoUniversity.Web.Tests.Controllers
                 return Task.FromResult("change-phone-number-token");
             }
             public override Task<IdentityResult> ChangePhoneNumberAsync(ApplicationUser user, string phoneNumber, string token)
+            {
+                return Task.FromResult(IdentityResult.Success);
+            }
+            public override Task<string> GetPhoneNumberAsync(ApplicationUser user)
+            {
+                return Task.FromResult("224-555-0123");
+            }
+            public override Task<IdentityResult> SetPhoneNumberAsync(ApplicationUser user, string phoneNumber)
             {
                 return Task.FromResult(IdentityResult.Success);
             }

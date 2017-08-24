@@ -83,6 +83,24 @@ namespace ContosoUniversity.Web.Controllers
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemovePhoneNumber()
+        {
+            var user = await GetCurrentUserAsync();
+
+            if (user != null)
+            {
+                var result = await _userManager.SetPhoneNumberAsync(user, null);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction(nameof(Index), new { Message = ManageMessage.RemovePhoneSuccess });
+                }
+            }
+            return RedirectToAction(nameof(Index), new { Message = ManageMessage.Error });
+        }
+
         [HttpGet]
         public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
         {

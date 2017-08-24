@@ -32,11 +32,15 @@
             @(Model.PhoneNumber ?? "None")
             @if (Model.PhoneNumber != null)
             {
+                <br />
                 <a asp-controller="Manage" asp-action="AddPhoneNumber" class="btn-bracketed">Change</a>
+                <form asp-controller="Manage" asp-action="RemovePhoneNumber" method="post" style="display:inline" class="btn-bracketed">
+                    <button type="submit" class="btn-link">Remove</button>
+                </form>
             }
             else
             {
-                <a asp-controller="Manage" asp-action="AddPhoneNumber">Add</a>
+                <a asp-controller="Manage" asp-action="AddPhoneNumber" class="btn-bracketed">Add</a>
             }
 
         </dd>
