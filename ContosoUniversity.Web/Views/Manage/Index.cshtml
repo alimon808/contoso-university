@@ -22,5 +22,23 @@
                 @*<a asp-controller="Manage" asp-action="SetPassword" class="btn-bracketed">Create</a>*@
             }
         </dd>
+        <dt>Phone Number:</dt>
+        <dd>
+            @*<p>
+                Phone numbers can be used as a second factor of verification in two-factor authentication
+                See <a href="https://go.microsoft.com/fwlink/?LinkID=532713">this article</a>
+                for details on setting this ASP.NET application to support two-factor authentication using sms.
+            </p>*@
+            @(Model.PhoneNumber ?? "None")
+            @if (Model.PhoneNumber != null)
+            {
+                <a asp-controller="Manage" asp-action="AddPhoneNumber" class="btn-bracketed">Change</a>
+            }
+            else
+            {
+                <a asp-controller="Manage" asp-action="AddPhoneNumber">Add</a>
+            }
+
+        </dd>
     </dl>
 </div>

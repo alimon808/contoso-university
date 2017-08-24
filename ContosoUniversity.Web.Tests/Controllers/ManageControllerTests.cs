@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using ContosoUniversity.Web.ViewModels;
 using ContosoUniversity.Web.Enums;
+using ContosoUniversity.Services;
 
 namespace ContosoUniversity.Web.Tests.Controllers
 {
@@ -23,13 +24,15 @@ namespace ContosoUniversity.Web.Tests.Controllers
         private readonly FakeUserManager _fakeUserManager;
         private readonly FakeSignInManager _fakeSignInManager;
         ManageController _sut;
+        private Mock<ISmsSender> _mockSmsSender;
 
         public ManageControllerTests(ITestOutputHelper output)
         {
             _output = output;
             _fakeUserManager = new FakeUserManager();
             _fakeSignInManager = new FakeSignInManager();
-            _sut = new ManageController(_fakeUserManager, _fakeSignInManager);
+            _mockSmsSender = new Mock<ISmsSender>();
+            _sut = new ManageController(_fakeUserManager, _fakeSignInManager, _mockSmsSender.Object);
         }
 
         [Fact]
@@ -90,6 +93,78 @@ namespace ContosoUniversity.Web.Tests.Controllers
             Assert.Equal(ManageMessage.ChangePasswordSuccess, ((RedirectToActionResult)result).RouteValues["Message"]);
         }
 
+        [Fact]
+        public void AddPhoneNumber_ReturnsAViewResult()
+        {
+            var result = _sut.AddPhoneNumber();
+
+            Assert.IsType(typeof(ViewResult), result);
+        }
+
+        [Fact]
+        public async Task AddPhoneNumberPost_ReturnsAViewResult_WithInvalidModel()
+        {
+            _sut.ModelState.AddModelError("mymodelerror", "my model error message");
+
+            var result = await _sut.AddPhoneNumber(new AddPhoneNumberViewModel());
+
+            Assert.IsType(typeof(ViewResult), result);
+            Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
+        }
+
+        [Fact]
+        public async Task AddPhoneNumberPost_ReturnsARedirectToAction_VerifyPhoneNumber()
+        {
+            var context = new Mock<HttpContext>();
+            _sut.ControllerContext = new ControllerContext { };
+            _sut.ControllerContext.HttpContext = new DefaultHttpContext { };
+            _mockSmsSender.Setup(m => m.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(0));
+
+            var result = await _sut.AddPhoneNumber(new AddPhoneNumberViewModel());
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.True(((RedirectToActionResult)result).RouteValues.ContainsKey("PhoneNumber"));
+        }
+
+        [Fact]
+        public async Task VerifyPhoneNumber_ReturnsAViewResult()
+        {
+            InitTestContext();
+            var phoneNumber = "555-555-0123";
+
+            var result = await _sut.VerifyPhoneNumber(phoneNumber);
+
+            Assert.IsType(typeof(ViewResult), result);
+            var model = (VerifyPhoneNumberViewModel)((ViewResult)result).Model;
+            Assert.Equal(phoneNumber, model.PhoneNumber);
+        }
+
+        [Fact]
+        public async Task VerifyPhoneNumberPost_ReturnsARedirectToAction_Index()
+        {
+            InitTestContext();
+            var model = new VerifyPhoneNumberViewModel { PhoneNumber = "555-555-0123" };
+
+            var result = await _sut.VerifyPhoneNumber(model);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal(ManageMessage.AddPhoneSuccess, ((RedirectToActionResult)result).RouteValues["Message"]);
+
+        }
+
+        [Fact]
+        public async Task VerifyPhoneNumberPost_ReturnsAViewResult_WithInvalidModel()
+        {
+            var model = new VerifyPhoneNumberViewModel { PhoneNumber = "555-555-0123" };
+            _sut.ModelState.AddModelError("mymodelerror", "my model error message");
+
+            var result = await _sut.VerifyPhoneNumber(model);
+
+            Assert.IsType(typeof(ViewResult), result);
+            Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
+            
+        }
+
         public class FakeUserManager : UserManager<ApplicationUser>
         {
             public FakeUserManager()
@@ -118,6 +193,14 @@ namespace ContosoUniversity.Web.Tests.Controllers
             {
                 return Task.FromResult(IdentityResult.Success);
             }
+            public override Task<string> GenerateChangePhoneNumberTokenAsync(ApplicationUser user, string phoneNumber)
+            {
+                return Task.FromResult("change-phone-number-token");
+            }
+            public override Task<IdentityResult> ChangePhoneNumberAsync(ApplicationUser user, string phoneNumber, string token)
+            {
+                return Task.FromResult(IdentityResult.Success);
+            }
         }
 
         public class FakeSignInManager : SignInManager<ApplicationUser>
@@ -134,6 +217,13 @@ namespace ContosoUniversity.Web.Tests.Controllers
             {
                 return Task.FromResult(0);
             }
+        }
+
+        private void InitTestContext()
+        {
+            var context = new Mock<HttpContext>();
+            _sut.ControllerContext = new ControllerContext { };
+            _sut.ControllerContext.HttpContext = new DefaultHttpContext { };
         }
     }
 }

@@ -8,6 +8,7 @@ namespace ContosoUniversity.Web.Enums
     public enum ManageMessage
     {
         ChangePasswordSuccess,
-        Error
+        Error,
+        AddPhoneSuccess
     }
 }
