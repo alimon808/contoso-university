@@ -63,6 +63,7 @@ namespace ContosoUniversity
                 .AddDefaultTokenProviders();
 
             services.AddTransient<IEmailSender, AuthMessageSender>();
+            services.AddTransient<ISmsSender, AuthMessageSender>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
@@ -70,6 +71,7 @@ namespace ContosoUniversity
 
             services.AddMvc();
             services.Configure<AuthMessageSenderOptions>(Configuration);
+            services.Configure<SMSOptions>(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApplicationContext context)
