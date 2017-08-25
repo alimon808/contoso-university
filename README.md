@@ -3,16 +3,14 @@ Contoso University is a place for learning AspNetCore and related technologies. 
 
 ### Web App
 ### Rest Api
-### Repository design pattern
 ### Testing
 - Unit Testing using Moq and xunit
 - Integration Testing using TestHost and InMemoryDatabase
-### Configuring DbContext in separate project
 ### Security (work in progress)
 - using Identity
 - Confirm Email using SendGrid
 - Confirm Phone using Twilio
-- Two-Factor Authentication (work in progress) - [tutorial](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/2fa)
+- Two-Factor Authentication - [see tutorial](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/2fa)
 ### Technologies
 - ASP.NET Core
 - Asp.Net Core Mvc
