@@ -31,6 +31,7 @@ namespace ContosoUniversity.Web.Controllers
             ViewData["StatusMessage"] =
                 message == ManageMessage.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessage.AddPhoneSuccess ? "Your phone number was added."
+                : message == ManageMessage.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
                 : message == ManageMessage.Error ? "An error has occurred."
                 : "";
 
@@ -43,7 +44,8 @@ namespace ContosoUniversity.Web.Controllers
             var model = new ManageIndexViewModel
             {
                 HasPassword = await _userManager.HasPasswordAsync(user),
-                PhoneNumber = await _userManager.GetPhoneNumberAsync(user)
+                PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
+                TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user)
             };
 
             return View(model);
@@ -167,6 +169,33 @@ namespace ContosoUniversity.Web.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EnableTwoFactorAuthentication()
+        {
+            var user = await GetCurrentUserAsync();
+            if (user != null)
+            {
+                await _userManager.SetTwoFactorEnabledAsync(user, true);
+                await _signInManager.SignInAsync(user, isPersistent: false);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DisableTwoFactorAuthentication()
+        {
+            var user = await GetCurrentUserAsync();
+            if (user != null)
+            {
+                await _userManager.SetTwoFactorEnabledAsync(user, false);
+                await _signInManager.SignInAsync(user, isPersistent: false);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         private Task<ApplicationUser> GetCurrentUserAsync()

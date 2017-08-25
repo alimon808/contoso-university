@@ -16,6 +16,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using System.Collections.Generic;
 
 namespace ContosoUniversity.Web.Tests.Controllers
 {
@@ -27,6 +28,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         private readonly FakeSignInManager _fakeSignInManager;
         private readonly Mock<IUrlHelperAdaptor> _mockUrlHelperAdaptor;
         private readonly Mock<IEmailSender> _mockEmailSender;
+        private readonly Mock<ISmsSender> _mockSmsSender;
 
         public AccountControllerTests(ITestOutputHelper output)
         {
@@ -35,8 +37,9 @@ namespace ContosoUniversity.Web.Tests.Controllers
             _fakeSignInManager = new FakeSignInManager();
             _mockUrlHelperAdaptor = new Mock<IUrlHelperAdaptor>();
             _mockEmailSender = new Mock<IEmailSender>();
+            _mockSmsSender = new Mock<ISmsSender>();
 
-            _sut = new AccountController(_fakeUserManager, _fakeSignInManager, _mockEmailSender.Object, _mockUrlHelperAdaptor.Object);
+            _sut = new AccountController(_fakeUserManager, _fakeSignInManager, _mockEmailSender.Object, _mockSmsSender.Object, _mockUrlHelperAdaptor.Object);
         }
 
         [Fact]
@@ -65,6 +68,28 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             Assert.IsType(typeof(RedirectResult), result);
             Assert.Equal(returnUrl, ((RedirectResult)result).Url);
+        }
+
+        [Fact]
+        public async Task LoginPost_ReturnsARedirectToActionResult_RequiresTwoFactorAuthentication()
+        {
+            var mockUrl = new Mock<IUrlHelper>();
+            mockUrl.Setup(m => m.IsLocalUrl(It.IsAny<string>())).Returns(true);
+            _sut.Url = mockUrl.Object;
+            _fakeSignInManager.SignInResult = Microsoft.AspNetCore.Identity.SignInResult.TwoFactorRequired;
+            var model = new LoginViewModel { Email = "abc@example.com", Password = "abc", RememberMe = false };
+            var returnUrl = "/Home/Index";
+
+            var result = await _sut.Login(model, returnUrl);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("SendCode", actionName);
+
+            var routeValues = ((RedirectToActionResult)result).RouteValues;
+            Assert.Equal(returnUrl, routeValues["ReturnUrl"]);
+            Assert.Equal(model.RememberMe, routeValues["RememberMe"]);
         }
 
         [Fact]
@@ -133,6 +158,150 @@ namespace ContosoUniversity.Web.Tests.Controllers
             var result = _sut.ResetPassword();
 
             Assert.IsType(typeof(ViewResult), result);
+        }
+
+        [Fact]
+        public async Task SendCode_ReturnsAViewResult()
+        {
+            _fakeUserManager.TwoFactorProviders = new List<string> { "Email" };
+
+            var result = await _sut.SendCode();
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var model = (SendCodeViewModel)((ViewResult)result).Model;
+            Assert.False(model.RememberMe);
+            Assert.Null(model.ReturnUrl);
+            Assert.Equal(1, model.Providers.Count);
+        }
+
+        [Fact]
+        public async Task SendCodePost_ReturnsAViewResult_WithInvalidModel()
+        {
+            _sut.ModelState.AddModelError("mymodelerror", "my model error message");
+            var model = new SendCodeViewModel { SelectedProvider = "Email", RememberMe = false, ReturnUrl = null };
+
+            var result = await _sut.SendCode(model);
+
+            Assert.IsType(typeof(ViewResult), result);
+        }
+
+        [Fact]
+        public async Task SendCodePost_ReturnsAErrorViewResult()
+        {
+            _fakeSignInManager.ApplicationUser = null;
+            var model = new SendCodeViewModel { SelectedProvider = "Email", RememberMe = false, ReturnUrl = null };
+
+            var result = await _sut.SendCode(model);
+
+            Assert.IsType(typeof(ViewResult), result);
+            Assert.Equal("Error", ((ViewResult)result).ViewName);
+        }
+
+        [Fact]
+        public async Task SendCodePost_ReturnsARedirectToActionResult_ToVerifyCode_UsingEmailProvider()
+        {
+            _mockEmailSender.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(0));
+            var model = new SendCodeViewModel { SelectedProvider = "Email", RememberMe = false, ReturnUrl = null };
+
+            var result = await _sut.SendCode(model);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("VerifyCode", actionName);
+
+            var routeValues = ((RedirectToActionResult)result).RouteValues;
+            Assert.Equal(model.SelectedProvider, routeValues["Provider"]);
+            Assert.Equal(model.ReturnUrl, routeValues["ReturnUrl"]);
+            Assert.Equal(model.RememberMe, routeValues["RememberMe"]);
+        }
+
+        [Fact]
+        public async Task SendCodePost_ReturnsARedirectToActionResult_ToVerifyCode_UsingPhoneProvider()
+        {
+            _mockSmsSender.Setup(m => m.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(0));
+            var model = new SendCodeViewModel { SelectedProvider = "Phone", RememberMe = false, ReturnUrl = null };
+
+            var result = await _sut.SendCode(model);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("VerifyCode", actionName);
+
+            var routeValues = ((RedirectToActionResult)result).RouteValues;
+            Assert.Equal(model.SelectedProvider, routeValues["Provider"]);
+            Assert.Equal(model.ReturnUrl, routeValues["ReturnUrl"]);
+            Assert.Equal(model.RememberMe, routeValues["RememberMe"]);
+        }
+
+        [Fact]
+        public async Task VerfifyCode_ReturnsAViewResult()
+        {
+            var provider = "Email";
+            var rememberMe = false;
+            string returnUrl = null;
+
+            var result = await _sut.VerifyCode(provider, rememberMe, returnUrl);
+
+            Assert.IsType(typeof(ViewResult), result);
+            var model = (VerifyCodeViewModel)((ViewResult)result).Model;
+            Assert.Equal(provider, model.Provider);
+            Assert.Equal(rememberMe, model.RememberMe);
+            Assert.Equal(returnUrl, model.ReturnUrl);
+        }
+
+        [Fact]
+        public async Task VerfifyCode_ReturnsAErrorViewResult()
+        {
+            _fakeSignInManager.ApplicationUser = null;
+
+            var result = await _sut.VerifyCode("", false, null);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewName = ((ViewResult)result).ViewName;
+            Assert.Equal("Error", viewName);
+        }
+
+        [Fact]
+        public async Task VerfifyCodePost_ReturnsARedirectToActionResult_HomeIndex()
+        {
+            var mockUrl = new Mock<IUrlHelper>();
+            mockUrl.Setup(m => m.IsLocalUrl(It.IsAny<string>())).Returns(false);
+            _sut.Url = mockUrl.Object;
+            var model = new VerifyCodeViewModel {};
+
+            var result = await _sut.VerifyCode(model);
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
+            Assert.Equal("Home", ((RedirectToActionResult)result).ControllerName);
+        }
+
+        [Fact]
+        public async Task VerfifyCodePost_ReturnsAViewResult_WithInvalidCode()
+        {
+            var model = new VerifyCodeViewModel { };
+            _fakeSignInManager.SignInResult = Microsoft.AspNetCore.Identity.SignInResult.Failed;
+
+            var result = await _sut.VerifyCode(model);
+
+            Assert.IsType(typeof(ViewResult), result);
+            Assert.Equal(1, ((ViewResult)result).ViewData.ModelState.Count);
+        }
+
+        [Fact]
+        public async Task VerfifyCodePost_ReturnsAViewResult_WithInvalidModel()
+        {
+            var model = new VerifyCodeViewModel { };
+            _sut.ModelState.AddModelError("mymodelerror", "my model error message");
+
+            var result = await _sut.VerifyCode(model);
+
+            Assert.IsType(typeof(ViewResult), result);
+            Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
         }
 
         [Fact]
@@ -215,6 +384,8 @@ namespace ContosoUniversity.Web.Tests.Controllers
                       new Mock<ILogger<UserManager<ApplicationUser>>>().Object)
             { }
 
+            public IList<string> TwoFactorProviders { get; set; } = new List<string> { "Email", "Phone" };
+
             public override Task<IdentityResult> CreateAsync(ApplicationUser user, string password)
             {
                 // solution from https://stackoverflow.com/questions/26269104/how-to-construct-identityresult-with-success-true
@@ -240,10 +411,29 @@ namespace ContosoUniversity.Web.Tests.Controllers
             {
                 return Task.FromResult(IdentityResult.Success);
             }
+            public override Task<IList<string>> GetValidTwoFactorProvidersAsync(ApplicationUser user)
+            {
+                return Task.FromResult(this.TwoFactorProviders);
+            }
+            public override Task<string> GenerateTwoFactorTokenAsync(ApplicationUser user, string tokenProvider)
+            {
+                return Task.FromResult("two-factor-token");
+            }
+            public override Task<string> GetEmailAsync(ApplicationUser user)
+            {
+                return Task.FromResult("admin@contoso.com");
+            }
+            public override Task<string> GetPhoneNumberAsync(ApplicationUser user)
+            {
+                return Task.FromResult("224-555-0123");
+            }
         }
 
         public class FakeSignInManager : SignInManager<ApplicationUser>
         {
+            public Microsoft.AspNetCore.Identity.SignInResult SignInResult { get; set; } = Microsoft.AspNetCore.Identity.SignInResult.Success;
+            public ApplicationUser ApplicationUser { get; set; } = new ApplicationUser { Email = "admin@contoso.com" };
+
             public FakeSignInManager()
                 : base(new FakeUserManager(),
                       new HttpContextAccessor { HttpContext = new Mock<HttpContext>().Object },
@@ -260,12 +450,20 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             public override Task<Microsoft.AspNetCore.Identity.SignInResult> PasswordSignInAsync(string user, string password, bool isPersistent, bool lockoutOnFailure)
             {
-                return Task.FromResult(Microsoft.AspNetCore.Identity.SignInResult.Success);
+                return Task.FromResult(this.SignInResult);
             }
 
+            public override Task<ApplicationUser> GetTwoFactorAuthenticationUserAsync()
+            {
+                return Task.FromResult(this.ApplicationUser);
+            }
             public override Task SignOutAsync()
             {
                 return Task.FromResult(0);
+            }
+            public override Task<Microsoft.AspNetCore.Identity.SignInResult> TwoFactorSignInAsync(string provider, string code, bool isPersistent, bool rememberClient)
+            {
+                return Task.FromResult(this.SignInResult);
             }
         }
     }

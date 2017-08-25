@@ -43,6 +43,10 @@ namespace ContosoUniversity.Web.Tests.Controllers
             var result = await _sut.Index();
 
             Assert.IsType(typeof(ViewResult), result);
+
+            var model = (ManageIndexViewModel)((ViewResult)result).Model;
+            Assert.True(model.HasPassword);
+            Assert.True(model.TwoFactor);
         }
 
         [Fact]
@@ -172,6 +176,31 @@ namespace ContosoUniversity.Web.Tests.Controllers
             Assert.Equal(ManageMessage.RemovePhoneSuccess, ((RedirectToActionResult)result).RouteValues["Message"]);
         }
 
+        [Fact]
+        public async Task EnableTwoFactorAuthentication_ReturnsARedirectToActionResult_ToIndex()
+        {
+            InitTestContext();
+
+            var result = await _sut.EnableTwoFactorAuthentication();
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("Index", actionName);
+        }
+
+        [Fact]
+        public async Task DisableTwoFactorAuthentication_ReturnsARedirectToActionResult_ToIndex()
+        {
+            InitTestContext();
+
+            var result = await _sut.DisableTwoFactorAuthentication();
+
+            Assert.IsType(typeof(RedirectToActionResult), result);
+
+            var actionName = ((RedirectToActionResult)result).ActionName;
+            Assert.Equal("Index", actionName);
+        }
 
         public class FakeUserManager : UserManager<ApplicationUser>
         {
@@ -214,6 +243,14 @@ namespace ContosoUniversity.Web.Tests.Controllers
                 return Task.FromResult("224-555-0123");
             }
             public override Task<IdentityResult> SetPhoneNumberAsync(ApplicationUser user, string phoneNumber)
+            {
+                return Task.FromResult(IdentityResult.Success);
+            }
+            public override Task<bool> GetTwoFactorEnabledAsync(ApplicationUser user)
+            {
+                return Task.FromResult(true);
+            }
+            public override Task<IdentityResult> SetTwoFactorEnabledAsync(ApplicationUser user, bool enabled)
             {
                 return Task.FromResult(IdentityResult.Success);
             }

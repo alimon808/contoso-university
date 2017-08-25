@@ -10,6 +10,7 @@ namespace ContosoUniversity.Web.Enums
         ChangePasswordSuccess,
         Error,
         AddPhoneSuccess,
-        RemovePhoneSuccess
+        RemovePhoneSuccess,
+        SetTwoFactorSuccess
     }
 }
