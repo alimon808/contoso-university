@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ContosoUniversity.Services;
 using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Web.Helpers;
+using System;
 
 namespace ContosoUniversity
 {
@@ -70,6 +71,11 @@ namespace ContosoUniversity
             services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();
 
             services.AddMvc();
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
+                options.Lockout.MaxFailedAccessAttempts = 3;
+            });
             services.Configure<AuthMessageSenderOptions>(Configuration);
             services.Configure<SMSOptions>(Configuration);
         }

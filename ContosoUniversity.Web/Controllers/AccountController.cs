@@ -51,7 +51,7 @@ namespace ContosoUniversity.Web.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     return RedirectToLocal(returnUrl);
@@ -60,6 +60,10 @@ namespace ContosoUniversity.Web.Controllers
                 if (result.RequiresTwoFactor)
                 {
                     return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                }
+                if (result.IsLockedOut)
+                {
+                    return View("Lockout");
                 }
                 else
                 {
@@ -159,6 +163,11 @@ namespace ContosoUniversity.Web.Controllers
             if (result.Succeeded)
             {
                 return RedirectToLocal(model.ReturnUrl);
+            }
+
+            if (result.IsLockedOut)
+            {
+                return View("Lockout");
             }
 
             ModelState.AddModelError(string.Empty, "Invalid code");

@@ -93,6 +93,21 @@ namespace ContosoUniversity.Web.Tests.Controllers
         }
 
         [Fact]
+        public async Task LoginPost_ReturnsALockoutViewResult()
+        {
+            _fakeSignInManager.SignInResult = Microsoft.AspNetCore.Identity.SignInResult.LockedOut;
+            var model = new LoginViewModel { Email = "abc@example.com", Password = "abc", RememberMe = false };
+            var returnUrl = "/Home/Index";
+
+            var result = await _sut.Login(model, returnUrl);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewName = ((ViewResult)result).ViewName;
+            Assert.Equal("Lockout", viewName);
+        }
+
+        [Fact]
         public void Register_ReturnsAViewResult_WithReturnUrlInViewData()
         {
             var returnUrl = "/Home/Index";
@@ -302,6 +317,20 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             Assert.IsType(typeof(ViewResult), result);
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
+        }
+
+        [Fact]
+        public async Task VerfifyCodePost_ReturnsALockoutViewResult()
+        {
+            var model = new VerifyCodeViewModel { };
+            _fakeSignInManager.SignInResult = Microsoft.AspNetCore.Identity.SignInResult.LockedOut;
+
+            var result = await _sut.VerifyCode(model);
+
+            Assert.IsType(typeof(ViewResult), result);
+
+            var viewName = ((ViewResult)result).ViewName;
+            Assert.Equal("Lockout", viewName);
         }
 
         [Fact]
