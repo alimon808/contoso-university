@@ -1,4 +1,4 @@
-﻿using ContosoUniversity.Controllers;
+﻿using ContosoUniversity.Web.Controllers;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Enums;
 using ContosoUniversity.Data.Interfaces;

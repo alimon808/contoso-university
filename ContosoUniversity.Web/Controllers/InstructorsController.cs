@@ -10,7 +10,7 @@ using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Web;
 
-namespace ContosoUniversity.Controllers
+namespace ContosoUniversity.Web.Controllers
 {
     public class InstructorsController : Controller
     {
