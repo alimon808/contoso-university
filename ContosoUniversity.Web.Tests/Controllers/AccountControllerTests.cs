@@ -1,22 +1,20 @@
 ﻿using ContosoUniversity.Identity;
 using ContosoUniversity.Services;
-using ContosoUniversity.Web.Controllers;
-using ContosoUniversity.Web.Helpers;
-using ContosoUniversity.Web.ViewModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using System.Collections.Generic;
+using ContosoUniversity.Web.Controllers;
+using ContosoUniversity.Web.Helpers;
+using ContosoUniversity.Web.ViewModels;
 
 namespace ContosoUniversity.Web.Tests.Controllers
 {
