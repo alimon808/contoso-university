@@ -30,7 +30,7 @@ namespace ContosoUniversity.Api
         {
             if (CurrentEnvironment.IsEnvironment("Testing"))
             {
-                services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase());
+                services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("ContosoUniversity2017"));
             } else
             {
                 services.AddDbContext<ApplicationContext>(options =>

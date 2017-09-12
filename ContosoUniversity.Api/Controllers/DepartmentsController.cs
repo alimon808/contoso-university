@@ -75,7 +75,7 @@ namespace ContosoUniversity.Api.Controllers
                 _departmentRepo.Update(oldDepartment, oldDepartment.RowVersion);
                 await _departmentRepo.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //todo: log excecption
                 return BadRequest();
