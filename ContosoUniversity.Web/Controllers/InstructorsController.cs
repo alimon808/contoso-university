@@ -48,6 +48,7 @@ namespace ContosoUniversity.Web.Controllers
                 .AsGatedNoTracking()
                 .OrderBy(i => i.LastName)
                 .ToListAsync();
+
             if (id != null)
             {
                 ViewData["InstructorID"] = id.Value;
@@ -60,6 +61,7 @@ namespace ContosoUniversity.Web.Controllers
                 ViewData["CourseID"] = courseID.Value;
                 viewModel.Enrollments = viewModel.Courses.Where(x => x.ID == courseID).Single().Enrollments;
             }
+
             return View(viewModel);
         }
 
