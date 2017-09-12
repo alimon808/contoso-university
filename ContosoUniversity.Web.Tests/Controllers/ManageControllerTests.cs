@@ -263,6 +263,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
                       new HttpContextAccessor { HttpContext = new Mock<HttpContext>().Object },
                       new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>().Object,
                       null,
+                      null,
                       null)
             { }
 
