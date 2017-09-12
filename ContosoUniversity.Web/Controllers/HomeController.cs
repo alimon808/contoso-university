@@ -8,7 +8,7 @@ using System.Data.Common;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Data.Entities;
 
-namespace ContosoUniversity.Controllers
+namespace ContosoUniversity.Web.Controllers
 {
     public class HomeController : Controller
     {

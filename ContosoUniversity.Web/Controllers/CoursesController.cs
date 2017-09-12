@@ -9,7 +9,7 @@ using ContosoUniversity.Data.Interfaces;
 using System;
 using ContosoUniversity.Web;
 
-namespace ContosoUniversity.Controllers
+namespace ContosoUniversity.Web.Controllers
 {
     public class CoursesController : Controller
     {

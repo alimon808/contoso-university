@@ -13,6 +13,7 @@ using ContosoUniversity.Services;
 using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Web.Helpers;
 using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace ContosoUniversity
 {
@@ -42,8 +43,8 @@ namespace ContosoUniversity
         {
             if (CurrentEnvironment.IsEnvironment("Testing"))
             {
-                services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase());
-                services.AddDbContext<SecureApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase());
+                services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("ContosoUniversity2017"));
+                services.AddDbContext<SecureApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("ContosoUniversity2017"));
             }
             else
             {
@@ -96,7 +97,7 @@ namespace ContosoUniversity
             }
 
             app.UseStaticFiles();
-            app.UseIdentity();
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

@@ -127,8 +127,10 @@ namespace ContosoUniversity.Web.Tests.Controllers
             // moq HttpContext.Request.Scheme
             // https://stackoverflow.com/questions/41400030/mock-httpcontext-for-unit-testing-a-net-core-mvc-controller
             var context = new Mock<HttpContext>();
-            _sut.ControllerContext = new ControllerContext();
-            _sut.ControllerContext.HttpContext = new DefaultHttpContext();
+            _sut.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };
 
             _mockUrlHelperAdaptor.Setup(m => m.Action(It.IsAny<IUrlHelper>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>())).Returns("confirmemialurl");
             _mockEmailSender.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(0));
@@ -383,8 +385,10 @@ namespace ContosoUniversity.Web.Tests.Controllers
             var mockUrl = new Mock<IUrlHelper>();
             mockUrl.Setup(m => m.IsLocalUrl(It.IsAny<string>())).Returns(true);
             var context = new Mock<HttpContext>();
-            _sut.ControllerContext = new ControllerContext();
-            _sut.ControllerContext.HttpContext = new DefaultHttpContext();
+            _sut.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };
             _sut.Url = mockUrl.Object;
             _mockUrlHelperAdaptor.Setup(m => m.Action(It.IsAny<IUrlHelper>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>())).Returns("confirmemialurl");
             _mockEmailSender.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(0));
@@ -465,6 +469,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
                 : base(new FakeUserManager(),
                       new HttpContextAccessor { HttpContext = new Mock<HttpContext>().Object },
                       new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>().Object,
+                      null,
                       null,
                       null)
             { }

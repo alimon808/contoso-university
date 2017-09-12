@@ -10,7 +10,7 @@ using ContosoUniversity.Web;
 using ContosoUniversity.ViewModels;
 using System.Collections.Generic;
 
-namespace ContosoUniversity.Controllers
+namespace ContosoUniversity.Web.Controllers
 {
     public class DepartmentsController : Controller
     {

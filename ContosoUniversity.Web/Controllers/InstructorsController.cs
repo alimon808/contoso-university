@@ -10,7 +10,7 @@ using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Web;
 
-namespace ContosoUniversity.Controllers
+namespace ContosoUniversity.Web.Controllers
 {
     public class InstructorsController : Controller
     {
@@ -48,6 +48,7 @@ namespace ContosoUniversity.Controllers
                 .AsGatedNoTracking()
                 .OrderBy(i => i.LastName)
                 .ToListAsync();
+
             if (id != null)
             {
                 ViewData["InstructorID"] = id.Value;
@@ -60,6 +61,7 @@ namespace ContosoUniversity.Controllers
                 ViewData["CourseID"] = courseID.Value;
                 viewModel.Enrollments = viewModel.Courses.Where(x => x.ID == courseID).Single().Enrollments;
             }
+
             return View(viewModel);
         }
 

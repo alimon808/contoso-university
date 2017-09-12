@@ -42,7 +42,7 @@ namespace ContosoUniversity.Tests
         {
             services.AddAntiforgery(options =>
             {
-                options.CookieName = AntiForgeryCookieName;
+                options.Cookie.Name = AntiForgeryCookieName;
                 options.FormFieldName = AntiForgeryFormTokenName;
             });
 

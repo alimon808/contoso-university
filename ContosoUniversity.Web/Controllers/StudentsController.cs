@@ -8,7 +8,7 @@ using ContosoUniversity.Data.Interfaces;
 using System.Reflection;
 using ContosoUniversity.Web;
 
-namespace ContosoUniversity.Controllers
+namespace ContosoUniversity.Web.Controllers
 {
     public class StudentsController : Controller
     {
