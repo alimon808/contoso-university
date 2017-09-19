@@ -3,6 +3,7 @@ using ContosoUniversity.Data.Interfaces;
 
 namespace ContosoUniversity.Data
 {
+    // use c# 7 expression-bodied members
     public class UnitOfWork : IUnitOfWork
     {
         private ApplicationContext _context;
@@ -26,87 +27,37 @@ namespace ContosoUniversity.Data
 
         public IRepository<Department> DepartmentRepository
         {
-            get
-            {
-                if (_departmentRepo == null)
-                {
-                    _departmentRepo = new Repository<Department>(_context);
-                }
-
-                return _departmentRepo;
-            }
+            get => _departmentRepo = _departmentRepo ?? new Repository<Department>(_context);
         }
 
         public IPersonRepository<Instructor> InstructorRepository
         {
-            get
-            {
-                if (_instructorRepo == null)
-                {
-                    _instructorRepo = new PersonRepository<Instructor>(_context);
-                }
-
-                return _instructorRepo;
-            }
+            get => _instructorRepo = _instructorRepo ?? new PersonRepository<Instructor>(_context);
         }
 
         public IPersonRepository<Student> StudentRepository
         {
-            get
-            {
-                if (_studentRepo == null)
-                {
-                    _studentRepo = new PersonRepository<Student>(_context);
-                }
-                return _studentRepo;
-            }
+            get => _studentRepo = _studentRepo ?? new PersonRepository<Student>(_context);
         }
 
-        public IRepository<Course> CourseRepository {
-            get
-            {
-                if (_courseRepo == null)
-                {
-                    _courseRepo = new Repository<Course>(_context);
-                }
-                return _courseRepo;
-            }
+        public IRepository<Course> CourseRepository
+        {
+            get => _courseRepo = _courseRepo ?? new Repository<Course>(_context);
         }
 
         public IRepository<CourseAssignment> CourseAssignmentRepository
         {
-            get
-            {
-                if (_courseAssignmentRepo == null)
-                {
-                    _courseAssignmentRepo = new Repository<CourseAssignment>(_context);
-                }
-                return _courseAssignmentRepo;
-            }
+            get => _courseAssignmentRepo = _courseAssignmentRepo ?? new Repository<CourseAssignment>(_context);
         }
 
         public IRepository<OfficeAssignment> OfficeAssignmentRepository
         {
-            get
-            {
-                if (_officeAssignmentRepo == null)
-                {
-                    _officeAssignmentRepo = new Repository<OfficeAssignment>(_context);
-                }
-                return _officeAssignmentRepo;
-            }
+            get => _officeAssignmentRepo = _officeAssignmentRepo ?? new Repository<OfficeAssignment>(_context);
         }
 
         public IRepository<Enrollment> EnrollmentRepository
         {
-            get
-            {
-                if (_enrollmentRepo == null)
-                {
-                    _enrollmentRepo = new Repository<Enrollment>(_context);
-                }
-                return _enrollmentRepo;
-            }
+            get => _enrollmentRepo = _enrollmentRepo ?? new Repository<Enrollment>(_context);
         }
 
         public void Commit()
