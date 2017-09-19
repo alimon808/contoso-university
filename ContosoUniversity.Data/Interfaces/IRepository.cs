@@ -9,6 +9,7 @@ namespace ContosoUniversity.Data.Interfaces
     {
         IQueryable<T> GetAll();
         IQueryable<T> Get(int id);
+        void Add(T entity);
         Task AddAsync(T entity);
         void Update(T entity, byte[] rowVersion);
         void Delete(T entity);

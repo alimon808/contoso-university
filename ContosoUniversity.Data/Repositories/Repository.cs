@@ -75,5 +75,10 @@ namespace ContosoUniversity.Data
         {
             return context.Database.GetDbConnection();
         }
+
+        public void Add(T entity)
+        {
+            context.Add<T>(entity);
+        }
     }
 }
