@@ -20,6 +20,6 @@ Contoso University is a place for learning AspNetCore and related technologies. 
 - Twilio
 - SendGrid
 
-### Design Patters
+### Design Patterns
 - [Repository](https://social.technet.microsoft.com/wiki/contents/articles/36287.repository-pattern-in-asp-net-core.aspx)
 - [Unit Of Work](https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/advanced)
