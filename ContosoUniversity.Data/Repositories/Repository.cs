@@ -33,22 +33,24 @@ namespace ContosoUniversity.Data
         {
             return entities.AsQueryable<T>();
         }
-        
+
+        public void Add(T entity)
+        {
+            context.Add<T>(entity);
+        }
+
         public async Task AddAsync(T entity)
         {
-            IsEntityNull(entity);
             await entities.AddAsync(entity);
         }
 
         public void Delete(T entity)
         {
-            IsEntityNull(entity);
             entities.Remove(entity);
         }
 
         public void Update(T entity, byte[] rowVersion)
         {
-            IsEntityNull(entity);
             context.Entry(entity).Property("RowVersion").OriginalValue = rowVersion;
             context.Update(entity);
         }
@@ -57,15 +59,7 @@ namespace ContosoUniversity.Data
         {
             await context.SaveChangesAsync();
         }
-
-        private void IsEntityNull(T entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
-        }
-
+        
         public async Task<int> ExecuteSqlCommandAsync(string queryString)
         {
             return await context.Database.ExecuteSqlCommandAsync(queryString);
@@ -76,9 +70,5 @@ namespace ContosoUniversity.Data
             return context.Database.GetDbConnection();
         }
 
-        public void Add(T entity)
-        {
-            context.Add<T>(entity);
-        }
     }
 }

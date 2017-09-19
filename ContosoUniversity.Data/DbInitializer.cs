@@ -15,7 +15,6 @@ namespace ContosoUniversity.Data
             var unitOfWork = new UnitOfWork(context);
             var seedData = new SeedData(loggerFactory.CreateLogger("SeedData"), unitOfWork);
             seedData.Initialize();
-            
         }
     }
 }

@@ -92,7 +92,6 @@ namespace ContosoUniversity
             {
                 app.UseDeveloperExceptionPage();
                 DbInitializer.Initialize(context, loggerFactory);
-
             }
             else
             {
