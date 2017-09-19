@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
 using ContosoUniversity.Data.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace ContosoUniversity.Api
 {
@@ -43,11 +44,11 @@ namespace ContosoUniversity.Api
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, ApplicationContext context)
+        public void Configure(IApplicationBuilder app, ApplicationContext context, ILoggerFactory loggerFactory)
         {
             if (CurrentEnvironment.IsDevelopment() || CurrentEnvironment.IsEnvironment("Testing"))
             {
-                DbInitializer.Initialize(context);
+                DbInitializer.Initialize(context, loggerFactory);
             }
 
             app.UseMvc();
