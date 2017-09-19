@@ -32,17 +32,13 @@ namespace ContosoUniversity.Data
 
         private void InitializeEnrollments()
         {
-            var studentCount = _unitOfWork.StudentRepository.GetAll().Count();
-            if (studentCount == 0)
+            if (IsInitialized(_unitOfWork.EnrollmentRepository.GetAll()))
             {
-                InitializeStudents();
+                return;
             }
-
-            var courseCount = _unitOfWork.CourseRepository.GetAll().Count();
-            if (courseCount == 0)
-            {
-                InitializeCourses();
-            }
+            
+            InitializeStudents();
+            InitializeCourses();
 
             var students = _unitOfWork.StudentRepository.GetAll().ToArray();
             var courses = _unitOfWork.CourseRepository.GetAll().ToArray();
@@ -115,17 +111,13 @@ namespace ContosoUniversity.Data
 
         private void InitializeCourseAssignment()
         {
-            var instructorsCount = _unitOfWork.InstructorRepository.GetAll().Count();
-            if (instructorsCount == 0)
+            if (IsInitialized(_unitOfWork.CourseAssignmentRepository.GetAll()))
             {
-                InitializeInstructors();
+                return;
             }
 
-            var courseCount = _unitOfWork.CourseRepository.GetAll().Count();
-            if (courseCount == 0)
-            {
-                InitializeCourses();
-            }
+            InitializeInstructors();
+            InitializeCourses();
 
             var instructors = _unitOfWork.InstructorRepository.GetAll().ToArray();
             var courses = _unitOfWork.CourseRepository.GetAll().ToArray();
@@ -177,11 +169,12 @@ namespace ContosoUniversity.Data
 
         private void InitializeOfficeAssignment()
         {
-            var instructorsCount = _unitOfWork.InstructorRepository.GetAll().Count();
-            if (instructorsCount == 0)
+            if (IsInitialized(_unitOfWork.OfficeAssignmentRepository.GetAll()))
             {
-                InitializeInstructors();
+                return;
             }
+            
+            InitializeInstructors();
 
             var instructors = _unitOfWork.InstructorRepository.GetAll().ToArray();
             var officeAssignments = new OfficeAssignment[]
@@ -202,11 +195,13 @@ namespace ContosoUniversity.Data
 
         private void InitializeCourses()
         {
-            var departmentCount = _unitOfWork.DepartmentRepository.GetAll().Count();
-            if (departmentCount == 0)
+            if (IsInitialized(_unitOfWork.CourseRepository.GetAll()))
             {
-                InitializeDeparments();
+                return;
             }
+
+            InitializeDeparments();
+            
             var departments = _unitOfWork.DepartmentRepository.GetAll().ToArray();
             var courses = new Course[]
             {
@@ -244,6 +239,11 @@ namespace ContosoUniversity.Data
 
         private void InitializeStudents()
         {
+            if (IsInitialized(_unitOfWork.StudentRepository.GetAll()))
+            {
+                return;
+            }
+
             var students = new Student[]
             {
                 new Student{FirstMidName="Carson",LastName="Alexander",EnrollmentDate=DateTime.Parse("2005-09-01")},
@@ -267,17 +267,12 @@ namespace ContosoUniversity.Data
 
         private void InitializeDeparments()
         {
-            var departmentCount =  _unitOfWork.DepartmentRepository.GetAll().Count();
-            if (departmentCount > 0)
+            if (IsInitialized(_unitOfWork.DepartmentRepository.GetAll()))
             {
                 return;
             }
 
-            var instructorCount = _unitOfWork.InstructorRepository.GetAll().Count();
-            if (instructorCount == 0)
-            {
-                InitializeInstructors();
-            }
+            InitializeInstructors();
 
             var instructors = _unitOfWork.InstructorRepository.GetAll().ToArray();
             var departments = new Department[]
@@ -298,8 +293,7 @@ namespace ContosoUniversity.Data
 
         private void InitializeInstructors()
         {
-            var instructorCount = _unitOfWork.InstructorRepository.GetAll().Count();
-            if (instructorCount > 0)
+            if (IsInitialized(_unitOfWork.InstructorRepository.GetAll()))
             {
                 return;
             }
@@ -321,5 +315,7 @@ namespace ContosoUniversity.Data
 
             _unitOfWork.Commit();
         }
+
+        private bool IsInitialized(IQueryable<BaseEntity> query) => query.Count() > 0;
     }
 }
