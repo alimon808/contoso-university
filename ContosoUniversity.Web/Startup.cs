@@ -68,6 +68,7 @@ namespace ContosoUniversity
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();
 
@@ -86,10 +87,12 @@ namespace ContosoUniversity
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                DbInitializer.Initialize(context);
+                DbInitializer.Initialize(context, loggerFactory);
+
             }
             else
             {
