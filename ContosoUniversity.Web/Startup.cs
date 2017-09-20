@@ -25,7 +25,7 @@ namespace ContosoUniversity
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             if (env.IsDevelopment())
@@ -78,6 +78,7 @@ namespace ContosoUniversity
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
                 options.Lockout.MaxFailedAccessAttempts = 3;
             });
+
             services.Configure<AuthMessageSenderOptions>(Configuration);
             services.Configure<SMSOptions>(Configuration);
         }
@@ -90,8 +91,10 @@ namespace ContosoUniversity
             
             if (env.IsDevelopment())
             {
+                var sampleData = new SampleData();
+                Configuration.GetSection("SampleData").Bind(sampleData);
                 app.UseDeveloperExceptionPage();
-                DbInitializer.Initialize(context, loggerFactory);
+                DbInitializer.Initialize(context, loggerFactory, sampleData);
             }
             else
             {

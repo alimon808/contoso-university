@@ -5,6 +5,13 @@ using System.Threading.Tasks;
 using ContosoUniversity.Data.Entities;
 using System.Linq;
 using ContosoUniversity.Data.Enums;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Collections;
+using ContosoUniversity.Data.DTO;
+using Microsoft.Extensions.Configuration;
 
 namespace ContosoUniversity.Data
 {
@@ -12,11 +19,13 @@ namespace ContosoUniversity.Data
     {
         private readonly UnitOfWork _unitOfWork;
         private readonly ILogger _logger;
+        private readonly SampleData _data;
 
-        public SeedData(ILogger logger, UnitOfWork unitOfWork)
+        public SeedData(ILogger logger, UnitOfWork unitOfWork, SampleData data)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _data = data;
         }
 
         public void Initialize()
@@ -36,69 +45,18 @@ namespace ContosoUniversity.Data
             {
                 return;
             }
-            
+
             InitializeStudents();
             InitializeCourses();
 
             var students = _unitOfWork.StudentRepository.GetAll().ToArray();
             var courses = _unitOfWork.CourseRepository.GetAll().ToArray();
-            var enrollments = new Enrollment[]
+            var enrollments = _data.Enrollments.Select(e => new Enrollment
             {
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Alexander").ID,
-                    CourseID = courses.Single(c => c.Title == "Chemistry" ).ID,
-                    Grade = Grade.A
-                },
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Alexander").ID,
-                    CourseID = courses.Single(c => c.Title == "Microeconomics" ).ID,
-                    Grade = Grade.C
-                },
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Alexander").ID,
-                    CourseID = courses.Single(c => c.Title == "Macroeconomics" ).ID,
-                    Grade = Grade.B
-                },
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Alonso").ID,
-                    CourseID = courses.Single(c => c.Title == "Calculus" ).ID,
-                    Grade = Grade.B
-                },
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Alonso").ID,
-                    CourseID = courses.Single(c => c.Title == "Trigonometry" ).ID,
-                    Grade = Grade.B
-                },
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Alonso").ID,
-                    CourseID = courses.Single(c => c.Title == "Composition" ).ID,
-                Grade = Grade.B
-                },
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Anand").ID,
-                    CourseID = courses.Single(c => c.Title == "Chemistry" ).ID
-                },
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Anand").ID,
-                    CourseID = courses.Single(c => c.Title == "Microeconomics").ID,
-                    Grade = Grade.B
-                },
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Barzdukas").ID,
-                    CourseID = courses.Single(c => c.Title == "Chemistry").ID,
-                    Grade = Grade.B
-                },
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Li").ID,
-                    CourseID = courses.Single(c => c.Title == "Composition").ID,
-                    Grade = Grade.B
-                    },
-                new Enrollment {
-                    StudentID = students.Single(s => s.LastName == "Justice").ID,
-                    CourseID = courses.Single(c => c.Title == "Literature").ID,
-                    Grade = Grade.B
-                }
-            };
+                CourseID = e.CourseID,
+                StudentID = e.StudentID,
+                Grade = e.Grade
+            });
 
             _logger.LogInformation("Seeding enrollment table");
             foreach (Enrollment e in enrollments)
@@ -122,41 +80,11 @@ namespace ContosoUniversity.Data
             var instructors = _unitOfWork.InstructorRepository.GetAll().ToArray();
             var courses = _unitOfWork.CourseRepository.GetAll().ToArray();
 
-            var courseAssignments = new CourseAssignment[]
+            var courseAssignments = _data.CourseAssignments.Select(ca => new CourseAssignment
             {
-                new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Chemistry" ).ID,
-                    InstructorID = instructors.Single(i => i.LastName == "Kapoor").ID
-                },
-                new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Chemistry" ).ID,
-                    InstructorID = instructors.Single(i => i.LastName == "Harui").ID
-                },
-                new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Microeconomics" ).ID,
-                    InstructorID = instructors.Single(i => i.LastName == "Zheng").ID
-                },
-                new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Macroeconomics" ).ID,
-                    InstructorID = instructors.Single(i => i.LastName == "Zheng").ID
-                },
-                new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Calculus" ).ID,
-                    InstructorID = instructors.Single(i => i.LastName == "Fakhouri").ID
-                },
-                new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Trigonometry" ).ID,
-                    InstructorID = instructors.Single(i => i.LastName == "Harui").ID
-                },
-                new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Composition" ).ID,
-                    InstructorID = instructors.Single(i => i.LastName == "Abercrombie").ID
-                },
-                new CourseAssignment {
-                    CourseID = courses.Single(c => c.Title == "Literature" ).ID,
-                    InstructorID = instructors.Single(i => i.LastName == "Abercrombie").ID
-                }
-            };
+                InstructorID = ca.InstructorID,
+                CourseID = ca.CourseID
+            });
 
             _logger.LogInformation("Seeding CourseAssignment table");
             foreach (CourseAssignment c in courseAssignments)
@@ -173,16 +101,15 @@ namespace ContosoUniversity.Data
             {
                 return;
             }
-            
+
             InitializeInstructors();
 
             var instructors = _unitOfWork.InstructorRepository.GetAll().ToArray();
-            var officeAssignments = new OfficeAssignment[]
+            var officeAssignments = _data.OfficeAssignments.Select(oa => new OfficeAssignment
             {
-                new OfficeAssignment { InstructorID = instructors.Single( i => i.LastName == "Fakhouri").ID, Location = "Smith 17" },
-                new OfficeAssignment { InstructorID = instructors.Single( i => i.LastName == "Harui").ID, Location = "Gowan 27" },
-                new OfficeAssignment { InstructorID = instructors.Single( i => i.LastName == "Kapoor").ID, Location = "Thompson 304" },
-            };
+                InstructorID = oa.InstructorID,
+                Location = oa.Location
+            });
 
             _logger.LogInformation("Seeding OfficeAssignment table");
             foreach (OfficeAssignment o in officeAssignments)
@@ -201,32 +128,15 @@ namespace ContosoUniversity.Data
             }
 
             InitializeDeparments();
-            
+
             var departments = _unitOfWork.DepartmentRepository.GetAll().ToArray();
-            var courses = new Course[]
+            var courses = _data.Courses.Select(c => new Course
             {
-                new Course {CourseNumber = 1050, Title = "Chemistry", Credits = 3,
-                    DepartmentID = departments.Single( s => s.Name == "Engineering").ID
-                },
-                new Course {CourseNumber = 4022, Title = "Microeconomics", Credits = 3,
-                    DepartmentID = departments.Single( s => s.Name == "Economics").ID
-                },
-                new Course {CourseNumber = 4041, Title = "Macroeconomics", Credits = 3,
-                    DepartmentID = departments.Single( s => s.Name == "Economics").ID
-                },
-                new Course {CourseNumber = 1045, Title = "Calculus", Credits = 4,
-                    DepartmentID = departments.Single( s => s.Name == "Mathematics").ID
-                },
-                new Course {CourseNumber = 3141, Title = "Trigonometry", Credits = 4,
-                    DepartmentID = departments.Single( s => s.Name == "Mathematics").ID
-                },
-                new Course {CourseNumber = 2021, Title = "Composition", Credits = 3,
-                    DepartmentID = departments.Single( s => s.Name == "English").ID
-                },
-                new Course {CourseNumber = 2042, Title = "Literature", Credits = 4,
-                    DepartmentID = departments.Single( s => s.Name == "English").ID
-                }
-            };
+                CourseNumber = c.CourseNumber,
+                Title = c.Title,
+                Credits = c.Credits,
+                DepartmentID = c.DepartmentID
+            });
 
             _logger.LogInformation("Seeding Course table");
             foreach (Course c in courses)
@@ -244,17 +154,12 @@ namespace ContosoUniversity.Data
                 return;
             }
 
-            var students = new Student[]
+            var students = _data.Students.Select(s => new Student
             {
-                new Student{FirstMidName="Carson",LastName="Alexander",EnrollmentDate=DateTime.Parse("2005-09-01")},
-                new Student{FirstMidName="Meredith",LastName="Alonso",EnrollmentDate=DateTime.Parse("2002-09-01")},
-                new Student{FirstMidName="Arturo",LastName="Anand",EnrollmentDate=DateTime.Parse("2003-09-01")},
-                new Student{FirstMidName="Gytis",LastName="Barzdukas",EnrollmentDate=DateTime.Parse("2002-09-01")},
-                new Student{FirstMidName="Yan",LastName="Li",EnrollmentDate=DateTime.Parse("2002-09-01")},
-                new Student{FirstMidName="Peggy",LastName="Justice",EnrollmentDate=DateTime.Parse("2001-09-01")},
-                new Student{FirstMidName="Laura",LastName="Norman",EnrollmentDate=DateTime.Parse("2003-09-01")},
-                new Student{FirstMidName="Nino",LastName="Olivetto",EnrollmentDate=DateTime.Parse("2005-09-01")}
-            };
+                FirstMidName = s.FirstMidName,
+                LastName = s.LastName,
+                EnrollmentDate = s.EnrollmentDate
+            });
 
             _logger.LogInformation("Seeding student table");
             foreach (Student s in students)
@@ -263,6 +168,7 @@ namespace ContosoUniversity.Data
             }
 
             _unitOfWork.Commit();
+
         }
 
         private void InitializeDeparments()
@@ -275,19 +181,20 @@ namespace ContosoUniversity.Data
             InitializeInstructors();
 
             var instructors = _unitOfWork.InstructorRepository.GetAll().ToArray();
-            var departments = new Department[]
+            var departments = _data.Departments.Select(d => new Department
             {
-                new Department { Name = "English",     Budget = 350000, StartDate = DateTime.Parse("2007-09-01"), InstructorID  = instructors.Single( i => i.LastName == "Abercrombie").ID },
-                new Department { Name = "Mathematics", Budget = 100000, StartDate = DateTime.Parse("2007-09-01"), InstructorID  = instructors.Single( i => i.LastName == "Fakhouri").ID },
-                new Department { Name = "Engineering", Budget = 350000, StartDate = DateTime.Parse("2007-09-01"), InstructorID  = instructors.Single( i => i.LastName == "Harui").ID },
-                new Department { Name = "Economics",   Budget = 100000, StartDate = DateTime.Parse("2007-09-01"), InstructorID  = instructors.Single( i => i.LastName == "Kapoor").ID }
-            };
+                Name = d.Name,
+                Budget = d.Budget,
+                StartDate = d.StartDate,
+                InstructorID = d.InstructorID
+            });
 
             _logger.LogInformation("Seeding department table");
             foreach (Department d in departments)
             {
                 _unitOfWork.DepartmentRepository.Add(d);
             }
+
             _unitOfWork.Commit();
         }
 
@@ -298,14 +205,12 @@ namespace ContosoUniversity.Data
                 return;
             }
 
-            var instructors = new Instructor[]
+            var instructors = _data.Instructors.Select(i => new Instructor
             {
-                new Instructor { FirstMidName = "Kim",     LastName = "Abercrombie", HireDate = DateTime.Parse("1995-03-11") },
-                new Instructor { FirstMidName = "Fadi",    LastName = "Fakhouri", HireDate = DateTime.Parse("2002-07-06") },
-                new Instructor { FirstMidName = "Roger",   LastName = "Harui", HireDate = DateTime.Parse("1998-07-01") },
-                new Instructor { FirstMidName = "Candace", LastName = "Kapoor", HireDate = DateTime.Parse("2001-01-15") },
-                new Instructor { FirstMidName = "Roger",   LastName = "Zheng", HireDate = DateTime.Parse("2004-02-12") }
-            };
+                FirstMidName = i.FirstMidName,
+                LastName = i.LastName,
+                HireDate = i.HireDate
+            });
 
             _logger.LogInformation("Seeding instructor table");
             foreach (Instructor i in instructors)
