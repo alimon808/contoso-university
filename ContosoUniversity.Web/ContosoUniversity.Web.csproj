@@ -32,5 +32,8 @@
     <ProjectReference Include="..\ContosoUniversity.Identity\ContosoUniversity.Identity.csproj" />
     <ProjectReference Include="..\ContosoUniversity.Services\ContosoUniversity.Services.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
 
 </Project>
