@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
+using ContosoUniversity.Services;
 
 namespace ContosoUniversity.Data
 {
@@ -19,7 +20,14 @@ namespace ContosoUniversity.Data
                 .Build();
 
             var builder = new DbContextOptionsBuilder<ApplicationContext>();
-            builder.UseSqlServer(config.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso"));
+            if (ContosoUniversity.Services.OperatingSystem.IsMacOs())
+            {
+                builder.UseSqlite("Data Source=ContosoUniversity.sqlite");
+            }
+            else
+            {
+                builder.UseSqlServer(config.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso"));
+            }
             return new ApplicationContext(builder.Options);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using ContosoUniversity.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using ContosoUniversity.Services;
 
 namespace ContosoUniversity.Data
 {
@@ -20,14 +21,19 @@ namespace ContosoUniversity.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Course>().ToTable("Course", "Contoso");
-            modelBuilder.Entity<Enrollment>().ToTable("Enrollment", "Contoso");
-            modelBuilder.Entity<Student>().ToTable("Student", "Contoso");
-            modelBuilder.Entity<Department>().ToTable("Department", "Contoso");
-            modelBuilder.Entity<Instructor>().ToTable("Instructor", "Contoso");
-            modelBuilder.Entity<OfficeAssignment>().ToTable("OfficeAssignment", "Contoso");
-            modelBuilder.Entity<CourseAssignment>().ToTable("CourseAssignment", "Contoso");
-            modelBuilder.Entity<Person>().ToTable("Person", "Contoso");
+            string schema = "Contoso";
+            if (OperatingSystem.IsMacOs())
+            {
+                schema = null;
+            }
+            modelBuilder.Entity<Course>().ToTable("Course", schema);
+            modelBuilder.Entity<Enrollment>().ToTable("Enrollment", schema);
+            modelBuilder.Entity<Student>().ToTable("Student", schema);
+            modelBuilder.Entity<Department>().ToTable("Department", schema);
+            modelBuilder.Entity<Instructor>().ToTable("Instructor", schema);
+            modelBuilder.Entity<OfficeAssignment>().ToTable("OfficeAssignment", schema);
+            modelBuilder.Entity<CourseAssignment>().ToTable("CourseAssignment", schema);
+            modelBuilder.Entity<Person>().ToTable("Person", schema);
             modelBuilder.Entity<CourseAssignment>().HasKey(c => new { c.CourseID, c.InstructorID });
         }
     }

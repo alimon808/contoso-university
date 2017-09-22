@@ -2,9 +2,9 @@
 
   <PropertyGroup>    
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <PackageTargetFallback>
+    <!-- <PackageTargetFallback>
       $(PackageTargetFallback);portable-net45+win8+wp8+wpa91;
-    </PackageTargetFallback>
+    </PackageTargetFallback>-->
   </PropertyGroup>
   <Target Name="CopyDepsFiles" AfterTargets="Build" Condition="'$(TargetFramework)'!=''">
     <ItemGroup>

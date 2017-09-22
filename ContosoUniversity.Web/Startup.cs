@@ -28,7 +28,7 @@ namespace ContosoUniversity
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() && ContosoUniversity.Services.OperatingSystem.IsWindows())
             {
                 builder.AddUserSecrets<Startup>();
             }
@@ -48,13 +48,21 @@ namespace ContosoUniversity
             }
             else
             {
-                services.AddDbContext<ApplicationContext>(
-                    options => options.UseSqlServer(
-                        Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso")));
+                if (ContosoUniversity.Services.OperatingSystem.IsMacOs())
+                {
+                    services.AddDbContext<ApplicationContext>(options => options.UseSqlite("Data Source=MyWebAppDb"));
+                    services.AddDbContext<SecureApplicationContext>(options => options.UseSqlite("Data Source=MyWebAppDb"));
+                }
+                else
+                {
+                    services.AddDbContext<ApplicationContext>(
+                        options => options.UseSqlServer(
+                            Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso")));
 
-                services.AddDbContext<SecureApplicationContext>(
-                    options => options.UseSqlServer(
-                        Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("IdentityMigration", "Contoso")));
+                    services.AddDbContext<SecureApplicationContext>(
+                        options => options.UseSqlServer(
+                            Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("IdentityMigration", "Contoso")));
+                }
             }
 
             services.AddIdentity<ApplicationUser, IdentityRole>(config =>
@@ -68,7 +76,7 @@ namespace ContosoUniversity
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            
+
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();
 
@@ -88,7 +96,7 @@ namespace ContosoUniversity
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            
+
             if (env.IsDevelopment())
             {
                 var sampleData = new SampleData();
