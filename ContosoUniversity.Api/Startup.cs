@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
 using ContosoUniversity.Data.Interfaces;
 using Microsoft.Extensions.Logging;
+using ContosoUniversity.Services;
 
 namespace ContosoUniversity.Api
 {
@@ -21,7 +22,7 @@ namespace ContosoUniversity.Api
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            
+
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -32,14 +33,23 @@ namespace ContosoUniversity.Api
             if (CurrentEnvironment.IsEnvironment("Testing"))
             {
                 services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("ContosoUniversity2017"));
-            } else
-            {
-                services.AddDbContext<ApplicationContext>(options =>
-                {
-                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso"));
-                });
             }
-            
+            else
+            {
+                if (OperatingSystem.IsMacOs())
+                {
+                    services.AddDbContext<ApplicationContext>(options => options.UseSqlite("Data Source=ContosoUniversity2017.sqlite"));
+                }
+                else
+                {
+
+                    services.AddDbContext<ApplicationContext>(options =>
+                    {
+                        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso"));
+                    });
+                }
+            }
+
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddMvc();
         }
@@ -48,7 +58,9 @@ namespace ContosoUniversity.Api
         {
             if (CurrentEnvironment.IsDevelopment() || CurrentEnvironment.IsEnvironment("Testing"))
             {
-                DbInitializer.Initialize(context, loggerFactory);
+                var sampleData = new SampleData();
+                Configuration.GetSection("SampleData").Bind(sampleData);
+                DbInitializer.Initialize(context, loggerFactory, sampleData);
             }
 
             app.UseMvc();
