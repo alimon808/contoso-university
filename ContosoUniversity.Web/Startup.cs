@@ -28,7 +28,8 @@ namespace ContosoUniversity
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
-            if (env.IsDevelopment() && ContosoUniversity.Services.OperatingSystem.IsWindows())
+            if (env.IsDevelopment())
+            // if (env.IsDevelopment() && ContosoUniversity.Services.OperatingSystem.IsWindows())
             {
                 builder.AddUserSecrets<Startup>();
             }
@@ -50,8 +51,8 @@ namespace ContosoUniversity
             {
                 if (ContosoUniversity.Services.OperatingSystem.IsMacOs())
                 {
-                    services.AddDbContext<ApplicationContext>(options => options.UseSqlite("Data Source=MyWebAppDb"));
-                    services.AddDbContext<SecureApplicationContext>(options => options.UseSqlite("Data Source=MyWebAppDb"));
+                    services.AddDbContext<ApplicationContext>(options => options.UseSqlite("Data Source=ContosoUniversity2017.sqlite"));
+                    services.AddDbContext<SecureApplicationContext>(options => options.UseSqlite("Data Source=ContosoUniversity2017.sqlite"));
                 }
                 else
                 {
