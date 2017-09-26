@@ -38,7 +38,10 @@ namespace ContosoUniversity.Data
         public static void Initialize(ApplicationContext context, SecureApplicationContext secureApplicationContext, ILoggerFactory loggerFactory, SampleData data)
         {
             context.Database.EnsureCreated();
-            secureApplicationContext.Database.EnsureCreated();
+            if (secureApplicationContext != null)
+            {
+                secureApplicationContext.Database.EnsureCreated();
+            }
 
             var unitOfWork = new UnitOfWork(context);
             var seedData = new SeedData(loggerFactory.CreateLogger("SeedData"), unitOfWork, data);
