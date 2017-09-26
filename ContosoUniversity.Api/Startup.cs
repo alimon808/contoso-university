@@ -32,7 +32,19 @@ namespace ContosoUniversity.Api
         {
             if (CurrentEnvironment.IsEnvironment("Testing"))
             {
-                services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("ContosoUniversity2017"));
+                if (OperatingSystem.IsMacOs())
+                {
+                    //store sqlite data base output directory
+                    var location = System.Reflection.Assembly.GetEntryAssembly().Location;
+                    var directoryName = System.IO.Path.GetDirectoryName(location);
+                    var dataSource = $"Data Source={directoryName}//ContosoDb.sqlite";
+                    services.AddDbContext<ApplicationContext>(options => options.UseSqlite(dataSource));
+                }
+                else
+                {
+                    services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("ContosoUniversity2017"));
+                }
+
             }
             else
             {
