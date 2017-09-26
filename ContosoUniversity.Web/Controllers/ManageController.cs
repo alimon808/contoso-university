@@ -1,4 +1,5 @@
-using ContosoUniversity.Identity;
+using ContosoUniversity.Data.Entities;
+using ContosoUniversity.Data.DbContexts;
 using ContosoUniversity.Services;
 using ContosoUniversity.Web.Enums;
 using ContosoUniversity.Web.ViewModels;
@@ -16,7 +17,7 @@ namespace ContosoUniversity.Web.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private ISmsSender _smsSender;
 
-        public ManageController(UserManager<ApplicationUser> userManager, 
+        public ManageController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ISmsSender smsSender)
         {
@@ -202,6 +203,5 @@ namespace ContosoUniversity.Web.Controllers
         {
             return _userManager.GetUserAsync(HttpContext.User);
         }
-        
     }
 }

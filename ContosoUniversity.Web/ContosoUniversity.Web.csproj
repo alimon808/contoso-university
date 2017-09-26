@@ -29,7 +29,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ContosoUniversity.Data\ContosoUniversity.Data.csproj" />
-    <ProjectReference Include="..\ContosoUniversity.Identity\ContosoUniversity.Identity.csproj" />
     <ProjectReference Include="..\ContosoUniversity.Services\ContosoUniversity.Services.csproj" />
   </ItemGroup>
   <ItemGroup>

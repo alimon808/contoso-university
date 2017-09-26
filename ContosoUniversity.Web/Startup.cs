@@ -7,13 +7,15 @@ using ContosoUniversity.Data;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Web;
-using ContosoUniversity.Identity;
+using ContosoUniversity.Data.DbContexts;
+using ContosoUniversity.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ContosoUniversity.Services;
 using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Web.Helpers;
 using System;
 using Microsoft.AspNetCore.Identity;
+using System.IO;
 
 namespace ContosoUniversity
 {
@@ -23,18 +25,21 @@ namespace ContosoUniversity
         {
             CurrentEnvironment = env;
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+                .SetBasePath(env.ContentRootPath);
 
             if (env.IsDevelopment())
-            // if (env.IsDevelopment() && ContosoUniversity.Services.OperatingSystem.IsWindows())
             {
-                builder.AddUserSecrets<Startup>();
+                var relativePathToData = @"../ContosoUniversity.Data";
+                var absolutePathToData = System.IO.Path.GetFullPath(relativePathToData);
+                var dataProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(absolutePathToData);
+                builder.AddJsonFile(dataProvider, $"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: false)
+                    .AddUserSecrets<Startup>();
             }
 
-            Configuration = builder.Build();
+            Configuration = builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -51,8 +56,13 @@ namespace ContosoUniversity
             {
                 if (ContosoUniversity.Services.OperatingSystem.IsMacOs())
                 {
-                    services.AddDbContext<ApplicationContext>(options => options.UseSqlite("Data Source=ContosoUniversity2017.sqlite"));
-                    services.AddDbContext<SecureApplicationContext>(options => options.UseSqlite("Data Source=ContosoUniversity2017.sqlite"));
+                    //store sqlite data base output directory
+                    var location = System.Reflection.Assembly.GetEntryAssembly().Location;
+                    var directoryName = System.IO.Path.GetDirectoryName(location);
+                    var dataSource = $"Data Source={directoryName}//ContosoDb.sqlite";
+                    var secureDataSource = $"Data Source={directoryName}//ContosoDb_secure.sqlite";
+                    services.AddDbContext<ApplicationContext>(options => options.UseSqlite(dataSource));
+                    services.AddDbContext<SecureApplicationContext>(options => options.UseSqlite(secureDataSource));
                 }
                 else
                 {
@@ -92,7 +102,11 @@ namespace ContosoUniversity
             services.Configure<SMSOptions>(Configuration);
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApplicationContext context)
+        public void Configure(IApplicationBuilder app,
+            IHostingEnvironment env,
+            ILoggerFactory loggerFactory,
+            ApplicationContext context,
+            SecureApplicationContext secureContext)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -103,7 +117,7 @@ namespace ContosoUniversity
                 var sampleData = new SampleData();
                 Configuration.GetSection("SampleData").Bind(sampleData);
                 app.UseDeveloperExceptionPage();
-                DbInitializer.Initialize(context, loggerFactory, sampleData);
+                DbInitializer.Initialize(context, secureContext, loggerFactory, sampleData);
             }
             else
             {

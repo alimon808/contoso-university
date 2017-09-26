@@ -1,6 +1,7 @@
 ﻿using ContosoUniversity.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using ContosoUniversity.Identity;
+using ContosoUniversity.Data.DbContexts;
+using ContosoUniversity.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -21,8 +22,8 @@ namespace ContosoUniversity.Web.Controllers
         private readonly IUrlHelperAdaptor _urlHelperAdaptor;
         private readonly ISmsSender _smsSender;
 
-        public AccountController(UserManager<ApplicationUser> userManager, 
-            SignInManager<ApplicationUser> signInManager, 
+        public AccountController(UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
             IUrlHelperAdaptor urlHelperAdaptor)
@@ -39,7 +40,7 @@ namespace ContosoUniversity.Web.Controllers
         public IActionResult Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            
+
             return View();
         }
 
@@ -73,7 +74,7 @@ namespace ContosoUniversity.Web.Controllers
 
             return View(model);
         }
-        
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> SendCode(string returnUrl = null, bool rememberMe = false)
@@ -125,7 +126,7 @@ namespace ContosoUniversity.Web.Controllers
                 await _smsSender.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
             }
 
-            return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe});
+            return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
         }
 
         [HttpGet]
@@ -199,7 +200,7 @@ namespace ContosoUniversity.Web.Controllers
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = _urlHelperAdaptor.Action(this.Url, "ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account", $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    
+
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);
