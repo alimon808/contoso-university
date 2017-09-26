@@ -1,4 +1,4 @@
-﻿using ContosoUniversity.Identity;
+﻿using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -44,7 +44,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         public void Login_ReturnsAViewResult_WithReturnUrlInViewData()
         {
             var returnUrl = "/Home/Index";
-            var result =  _sut.Login(returnUrl);
+            var result = _sut.Login(returnUrl);
 
             Assert.IsType(typeof(ViewResult), result);
 
@@ -60,7 +60,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             _sut.Url = mockUrl.Object;
             var model = new LoginViewModel { Email = "abc@example.com", Password = "abc", RememberMe = false };
             var returnUrl = "/Home/Index";
-            
+
 
             var result = await _sut.Login(model, returnUrl);
 
@@ -146,7 +146,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         [Fact]
         public async Task RegisterPost_ReturnsAViewResult_WithInvalidModel()
         {
-            
+
             var returnUrl = "/Departments/Index";
             var model = new RegisterViewModel { Email = "abc@example.com", Password = "P@ssw0rd!" };
             _sut.ModelState.AddModelError("myModelError", "my model error message");
@@ -286,7 +286,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             var mockUrl = new Mock<IUrlHelper>();
             mockUrl.Setup(m => m.IsLocalUrl(It.IsAny<string>())).Returns(false);
             _sut.Url = mockUrl.Object;
-            var model = new VerifyCodeViewModel {};
+            var model = new VerifyCodeViewModel { };
 
             var result = await _sut.VerifyCode(model);
 

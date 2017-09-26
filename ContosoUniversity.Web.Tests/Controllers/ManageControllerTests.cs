@@ -1,4 +1,4 @@
-﻿using ContosoUniversity.Identity;
+﻿using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Web.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -160,7 +160,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             Assert.IsType(typeof(ViewResult), result);
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
-            
+
         }
 
         [Fact]
