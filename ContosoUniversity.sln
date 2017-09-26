@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.12
@@ -14,8 +14,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.Api.Tests", "ContosoUniversity.Api.Tests\ContosoUniversity.Api.Tests.csproj", "{1022B897-84D7-4024-814C-80536D4F0489}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.Web.Tests", "ContosoUniversity.Web.Tests\ContosoUniversity.Web.Tests.csproj", "{3738FFAB-E122-4982-B2C5-980CEE0E855B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.Identity", "ContosoUniversity.Identity\ContosoUniversity.Identity.csproj", "{49716984-3121-456A-8076-B3356A73B15B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.Services", "ContosoUniversity.Services\ContosoUniversity.Services.csproj", "{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}"
 EndProject
@@ -51,10 +49,6 @@ Global
 		{3738FFAB-E122-4982-B2C5-980CEE0E855B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3738FFAB-E122-4982-B2C5-980CEE0E855B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3738FFAB-E122-4982-B2C5-980CEE0E855B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49716984-3121-456A-8076-B3356A73B15B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49716984-3121-456A-8076-B3356A73B15B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49716984-3121-456A-8076-B3356A73B15B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49716984-3121-456A-8076-B3356A73B15B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}.Release|Any CPU.ActiveCfg = Release|Any CPU

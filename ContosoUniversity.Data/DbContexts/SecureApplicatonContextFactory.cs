@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
+using ContosoUniversity.Data;
 
-namespace ContosoUniversity.Identity
+namespace ContosoUniversity.Data.DbContexts
 {
     public class SecureApplicationContextFactory : IDesignTimeDbContextFactory<SecureApplicationContext>
     {
@@ -18,7 +19,16 @@ namespace ContosoUniversity.Identity
                 .Build();
 
             var builder = new DbContextOptionsBuilder<SecureApplicationContext>();
-            builder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+
+            if (ContosoUniversity.Services.OperatingSystem.IsMacOs())
+            {
+                builder.UseSqlite("Data Source=ContosoUniversity.sqlite");
+            }
+            else
+            {
+                builder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+
+            }
             return new SecureApplicationContext(builder.Options);
         }
     }
