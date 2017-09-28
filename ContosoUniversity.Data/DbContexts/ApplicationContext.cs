@@ -1,6 +1,8 @@
 ﻿using ContosoUniversity.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Services;
+using ContosoUniversity.Data.DbContexts;
+using System;
 
 namespace ContosoUniversity.Data
 {
@@ -22,7 +24,7 @@ namespace ContosoUniversity.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             string schema = "Contoso";
-            if (OperatingSystem.IsMacOs())
+            if (ContosoUniversity.Services.OperatingSystem.IsMacOs())
             {
                 schema = null;
             }

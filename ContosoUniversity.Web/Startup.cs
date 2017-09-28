@@ -90,6 +90,7 @@ namespace ContosoUniversity
 
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();
+            services.AddScoped<IDbInitializer, DbInitializer>();
 
             services.AddMvc();
             services.Configure<IdentityOptions>(options =>
@@ -98,6 +99,7 @@ namespace ContosoUniversity
                 options.Lockout.MaxFailedAccessAttempts = 3;
             });
 
+            services.Configure<SampleData>(Configuration.GetSection("SampleData"));
             services.Configure<AuthMessageSenderOptions>(Configuration);
             services.Configure<SMSOptions>(Configuration);
         }
@@ -105,8 +107,7 @@ namespace ContosoUniversity
         public void Configure(IApplicationBuilder app,
             IHostingEnvironment env,
             ILoggerFactory loggerFactory,
-            ApplicationContext context,
-            SecureApplicationContext secureContext)
+            IDbInitializer dbInitializer)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -117,7 +118,7 @@ namespace ContosoUniversity
                 var sampleData = new SampleData();
                 Configuration.GetSection("SampleData").Bind(sampleData);
                 app.UseDeveloperExceptionPage();
-                DbInitializer.Initialize(context, secureContext, loggerFactory, sampleData);
+                dbInitializer.Initialize();
             }
             else
             {

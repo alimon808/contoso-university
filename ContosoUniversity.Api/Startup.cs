@@ -70,14 +70,14 @@ namespace ContosoUniversity.Api
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, ApplicationContext context, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ApplicationContext context, ILoggerFactory loggerFactory, IDbInitializer dbInitializer)
         {
             if (CurrentEnvironment.IsDevelopment() || CurrentEnvironment.IsEnvironment("Testing"))
             {
                 var sampleData = new SampleData();
                 Configuration.GetSection("SampleData").Bind(sampleData);
                 //todo: redesign
-                DbInitializer.Initialize(context, null, loggerFactory, sampleData);
+                dbInitializer.Initialize();
             }
 
             app.UseMvc();
