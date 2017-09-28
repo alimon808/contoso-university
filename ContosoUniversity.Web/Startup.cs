@@ -99,6 +99,7 @@ namespace ContosoUniversity
                 options.Lockout.MaxFailedAccessAttempts = 3;
             });
 
+            services.Configure<IdentityUserOptions>(Configuration.GetSection("IdentityUser"));
             services.Configure<SampleData>(Configuration.GetSection("SampleData"));
             services.Configure<AuthMessageSenderOptions>(Configuration);
             services.Configure<SMSOptions>(Configuration);
@@ -112,11 +113,8 @@ namespace ContosoUniversity
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-
             if (env.IsDevelopment())
             {
-                var sampleData = new SampleData();
-                Configuration.GetSection("SampleData").Bind(sampleData);
                 app.UseDeveloperExceptionPage();
                 dbInitializer.Initialize();
             }

@@ -18,13 +18,15 @@ namespace ContosoUniversity.Data
         private readonly SampleData _data;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IdentityUserOptions _identityUser;
 
         public DbInitializer(ApplicationContext context, 
             SecureApplicationContext secureContext, 
             ILoggerFactory loggerFactory,
             IOptions<SampleData> dataOptions,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IOptions<IdentityUserOptions> identityUserOptions)
         {
             _context = context;
             _secureContext = secureContext;
@@ -32,6 +34,7 @@ namespace ContosoUniversity.Data
             _data = dataOptions.Value;
             _userManager = userManager;
             _roleManager = roleManager;
+            _identityUser = identityUserOptions.Value;
         }
         public void Initialize()
         {
@@ -62,7 +65,7 @@ namespace ContosoUniversity.Data
             //}
 
             // abort if Administrator role exists
-            if (_secureContext.Roles.Any(r => r.Name == "Administrator"))
+            if (_secureContext.Roles.Any(r => r.Name == _identityUser.Role))
             {
                 return;
             }
@@ -72,8 +75,8 @@ namespace ContosoUniversity.Data
 
             // create the default admin account and apply the administrator role
             // todo: get user/pass from user secrets
-            string user = "abc@example.com";
-            string password = "P@ssw0rd!";
+            string user = _identityUser.UserName;
+            string password = _identityUser.Password;
             await _userManager.CreateAsync(new ApplicationUser { UserName = user, Email = user, EmailConfirmed = true }, password);
             await _userManager.AddToRoleAsync(await _userManager.FindByNameAsync(user), "Administrator");
         }
