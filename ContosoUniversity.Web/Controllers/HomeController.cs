@@ -33,7 +33,13 @@ namespace ContosoUniversity.Web.Controllers
                 await conn.OpenAsync();
                 using (var command = conn.CreateCommand())
                 {
-                    string query = "SELECT EnrollmentDate, COUNT(*) AS StudentCount FROM Contoso.Person WHERE Discriminator = 'Student' GROUP BY EnrollmentDate";
+                    // todo: read from configuration
+                    var dbSchema = "Contoso.";
+                    if (ContosoUniversity.Services.OperatingSystem.IsMacOs())
+                    {
+                        dbSchema = string.Empty;
+                    }
+                    string query = $"SELECT EnrollmentDate, COUNT(*) AS StudentCount FROM {dbSchema}Person WHERE Discriminator = 'Student' GROUP BY EnrollmentDate";
                     command.CommandText = query;
                     DbDataReader reader = await command.ExecuteReaderAsync();
                     if (reader.HasRows)
