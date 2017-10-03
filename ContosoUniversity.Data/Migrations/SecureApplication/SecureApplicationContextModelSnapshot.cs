@@ -17,7 +17,8 @@ namespace ContosoUniversity.Data.Migrations.SecureApplication
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.0.0-rtm-26452");
+                .HasAnnotation("ProductVersion", "2.0.0-rtm-26452")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("ContosoUniversity.Data.Entities.ApplicationUser", b =>
                 {
@@ -64,7 +65,8 @@ namespace ContosoUniversity.Data.Migrations.SecureApplication
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex");
+                        .HasName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users","Contoso");
                 });
@@ -87,7 +89,8 @@ namespace ContosoUniversity.Data.Migrations.SecureApplication
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex");
+                        .HasName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Role","Contoso");
                 });

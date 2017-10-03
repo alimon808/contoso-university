@@ -19,7 +19,8 @@ namespace ContosoUniversity.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.0.0-rtm-26452");
+                .HasAnnotation("ProductVersion", "2.0.0-rtm-26452")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("ContosoUniversity.Data.Entities.Course", b =>
                 {
@@ -47,7 +48,7 @@ namespace ContosoUniversity.Data.Migrations
 
                     b.HasIndex("DepartmentID");
 
-                    b.ToTable("Course");
+                    b.ToTable("Course","Contoso");
                 });
 
             modelBuilder.Entity("ContosoUniversity.Data.Entities.CourseAssignment", b =>
@@ -70,7 +71,7 @@ namespace ContosoUniversity.Data.Migrations
 
                     b.HasIndex("InstructorID");
 
-                    b.ToTable("CourseAssignment");
+                    b.ToTable("CourseAssignment","Contoso");
                 });
 
             modelBuilder.Entity("ContosoUniversity.Data.Entities.Department", b =>
@@ -100,7 +101,7 @@ namespace ContosoUniversity.Data.Migrations
 
                     b.HasIndex("InstructorID");
 
-                    b.ToTable("Department");
+                    b.ToTable("Department","Contoso");
                 });
 
             modelBuilder.Entity("ContosoUniversity.Data.Entities.Enrollment", b =>
@@ -128,7 +129,7 @@ namespace ContosoUniversity.Data.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("Enrollment");
+                    b.ToTable("Enrollment","Contoso");
                 });
 
             modelBuilder.Entity("ContosoUniversity.Data.Entities.OfficeAssignment", b =>
@@ -154,7 +155,7 @@ namespace ContosoUniversity.Data.Migrations
                     b.HasIndex("InstructorID")
                         .IsUnique();
 
-                    b.ToTable("OfficeAssignment");
+                    b.ToTable("OfficeAssignment","Contoso");
                 });
 
             modelBuilder.Entity("ContosoUniversity.Data.Entities.Person", b =>
@@ -184,7 +185,7 @@ namespace ContosoUniversity.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Person");
+                    b.ToTable("Person","Contoso");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Person");
                 });
@@ -195,7 +196,7 @@ namespace ContosoUniversity.Data.Migrations
 
                     b.Property<DateTime>("HireDate");
 
-                    b.ToTable("Instructor");
+                    b.ToTable("Instructor","Contoso");
 
                     b.HasDiscriminator().HasValue("Instructor");
                 });
@@ -206,7 +207,7 @@ namespace ContosoUniversity.Data.Migrations
 
                     b.Property<DateTime>("EnrollmentDate");
 
-                    b.ToTable("Student");
+                    b.ToTable("Student","Contoso");
 
                     b.HasDiscriminator().HasValue("Student");
                 });
