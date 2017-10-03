@@ -13,6 +13,9 @@
 #EntityFramework Migrations
 */Migrations/*
 
+#powershell scripts
+*.ps1
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
