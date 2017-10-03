@@ -16,6 +16,7 @@ using ContosoUniversity.Web.Helpers;
 using System;
 using Microsoft.AspNetCore.Identity;
 using System.IO;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace ContosoUniversity
 {
@@ -25,7 +26,9 @@ namespace ContosoUniversity
         {
             CurrentEnvironment = env;
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath);
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
             if (env.IsDevelopment())
             {
@@ -36,8 +39,8 @@ namespace ContosoUniversity
                     .AddUserSecrets<Startup>();
             }
 
-            Configuration = builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            Configuration = builder
+                .AddJsonFile("appsettings.production.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
         }
@@ -83,6 +86,12 @@ namespace ContosoUniversity
                 .AddEntityFrameworkStores<SecureApplicationContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            });
+
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
@@ -93,6 +102,10 @@ namespace ContosoUniversity
             services.AddScoped<IDbInitializer, DbInitializer>();
 
             services.AddMvc();
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new RequireHttpsAttribute());
+            });
             services.Configure<IdentityOptions>(options =>
             {
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
@@ -113,6 +126,7 @@ namespace ContosoUniversity
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -123,6 +137,9 @@ namespace ContosoUniversity
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            var options = new RewriteOptions()
+                .AddRedirectToHttps();
+            app.UseRewriter(options);
             app.UseStaticFiles();
             app.UseAuthentication();
 
