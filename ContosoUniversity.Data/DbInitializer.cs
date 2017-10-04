@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 
 namespace ContosoUniversity.Data
 {
-
     public class DbInitializer : IDbInitializer
     {
         private readonly ApplicationContext _context;
@@ -56,14 +55,6 @@ namespace ContosoUniversity.Data
 
         private async Task InitializeSecureContext()
         {
-            // create schema if database does not exist
-            // todo: schema will not be created
-            // workaround - use dotnet ef database update on the command line
-            //if (_secureContext.Database.EnsureCreated())
-            //{
-            //    _logger.LogInformation("Creating identity database schema...");
-            //}
-
             // abort if Administrator role exists
             if (_secureContext.Roles.Any(r => r.Name == _identityUser.Role))
             {
@@ -73,8 +64,6 @@ namespace ContosoUniversity.Data
             // create Administrator role
             await _roleManager.CreateAsync(new IdentityRole("Administrator"));
 
-            // create the default admin account and apply the administrator role
-            // todo: get user/pass from user secrets
             string user = _identityUser.UserName;
             string password = _identityUser.Password;
             await _userManager.CreateAsync(new ApplicationUser { UserName = user, Email = user, EmailConfirmed = true }, password);

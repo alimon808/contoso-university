@@ -1,17 +1,8 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 using ContosoUniversity.Data.Entities;
 using System.Linq;
-using ContosoUniversity.Data.Enums;
-using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System.Collections;
-using ContosoUniversity.Data.DTO;
-using Microsoft.Extensions.Configuration;
 
 namespace ContosoUniversity.Data
 {
