@@ -9,13 +9,11 @@ using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Web;
 using ContosoUniversity.Data.DbContexts;
 using ContosoUniversity.Data.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ContosoUniversity.Services;
 using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Web.Helpers;
 using System;
 using Microsoft.AspNetCore.Identity;
-using System.IO;
 using Microsoft.AspNetCore.Rewrite;
 
 namespace ContosoUniversity
@@ -92,6 +90,12 @@ namespace ContosoUniversity
                 googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
             });
 
+            services.AddAuthentication().AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            });
+
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
@@ -141,6 +145,7 @@ namespace ContosoUniversity
                 .AddRedirectToHttps();
             app.UseRewriter(options);
             app.UseStaticFiles();
+
             app.UseAuthentication();
 
             app.UseMvc(routes =>

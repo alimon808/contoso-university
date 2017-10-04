@@ -87,6 +87,14 @@ namespace ContosoUniversity.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [ActionName("signin-facebook")]
+        public IActionResult SignInFacebook(string returnUrl = null, string remoteError = null)
+        {
+            return RedirectToAction("ExternalLoginCallback", new { returnUrl = returnUrl, remoteError = remoteError });
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if(remoteError != null)
