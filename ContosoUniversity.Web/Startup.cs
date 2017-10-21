@@ -3,17 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ContosoUniversity.Data;
-using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Web;
-using ContosoUniversity.Data.DbContexts;
-using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Services;
-using Microsoft.AspNetCore.Mvc;
 using ContosoUniversity.Web.Helpers;
-using System;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
 
 namespace ContosoUniversity
@@ -48,78 +41,12 @@ namespace ContosoUniversity
 
         public void ConfigureServices(IServiceCollection services)
         {
-            if (CurrentEnvironment.IsEnvironment("Testing"))
-            {
-                services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
-                services.AddDbContext<SecureApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
-            }
-            else
-            {
-                if (ContosoUniversity.Services.OperatingSystem.IsMacOs())
-                {
-                    //store sqlite data base output directory
-                    var location = System.Reflection.Assembly.GetEntryAssembly().Location;
-                    var directoryName = System.IO.Path.GetDirectoryName(location);
-                    var dataSource = $"Data Source={directoryName}//ContosoDb.sqlite";
-                    var secureDataSource = $"Data Source={directoryName}//ContosoDb_secure.sqlite";
-                    services.AddDbContext<ApplicationContext>(options => options.UseSqlite(dataSource));
-                    services.AddDbContext<SecureApplicationContext>(options => options.UseSqlite(secureDataSource));
-                }
-                else
-                {
-                    services.AddDbContext<ApplicationContext>(
-                        options => options.UseSqlServer(
-                            Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso")));
-
-                    services.AddDbContext<SecureApplicationContext>(
-                        options => options.UseSqlServer(
-                            Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("IdentityMigration", "Contoso")));
-                }
-            }
-
-            services.AddIdentity<ApplicationUser, IdentityRole>(config =>
-                {
-                    config.SignIn.RequireConfirmedEmail = true;
-                })
-                .AddEntityFrameworkStores<SecureApplicationContext>()
-                .AddDefaultTokenProviders();
-
-            services.AddAuthentication().AddGoogle(googleOptions =>
-            {
-                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
-                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-            });
-
-            services.AddAuthentication().AddFacebook(facebookOptions =>
-            {
-                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
-                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-            });
-
-            services.AddTransient<IEmailSender, AuthMessageSender>();
-            services.AddTransient<ISmsSender, AuthMessageSender>();
-
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
+            services.AddCustomizedContext(Configuration, CurrentEnvironment);
+            services.AddCustomizedIdentity(Configuration);
+            services.AddCustomizedMessage(Configuration);
+            services.AddCustomizedMvc();
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();
-            services.AddScoped<IDbInitializer, DbInitializer>();
-
-            services.AddMvc();
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new RequireHttpsAttribute());
-            });
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
-                options.Lockout.MaxFailedAccessAttempts = 3;
-            });
-
-            services.Configure<IdentityUserOptions>(Configuration.GetSection("IdentityUser"));
-            services.Configure<SampleData>(Configuration.GetSection("SampleData"));
-            services.Configure<AuthMessageSenderOptions>(Configuration);
-            services.Configure<SMSOptions>(Configuration);
         }
 
         public void Configure(IApplicationBuilder app,
@@ -129,7 +56,6 @@ namespace ContosoUniversity
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
             
             if (env.IsDevelopment())
             {
@@ -140,20 +66,11 @@ namespace ContosoUniversity
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
-            var options = new RewriteOptions()
-                .AddRedirectToHttps();
-            app.UseRewriter(options);
+            
+            app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             app.UseStaticFiles();
-
             app.UseAuthentication();
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvcWithDefaultRoute();
         }
     }
 }

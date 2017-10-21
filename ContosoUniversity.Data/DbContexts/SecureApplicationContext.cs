@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Services;
 
 namespace ContosoUniversity.Data.DbContexts
 {

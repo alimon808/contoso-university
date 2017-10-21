@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
-using ContosoUniversity.Data;
 
 namespace ContosoUniversity.Data.DbContexts
 {
@@ -20,7 +19,7 @@ namespace ContosoUniversity.Data.DbContexts
 
             var builder = new DbContextOptionsBuilder<SecureApplicationContext>();
 
-            if (ContosoUniversity.Services.OperatingSystem.IsMacOs())
+            if (OperatingSystem.IsMacOs())
             {
                 builder.UseSqlite("Data Source=ContosoUniversity.sqlite");
             }
