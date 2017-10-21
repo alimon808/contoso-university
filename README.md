@@ -1,16 +1,20 @@
 # Contoso University
-Contoso University is a place for learning AspNetCore and related technologies.  This demo application is an amalgamation of smaller demo applications found in tutorials at [AspNetCore docs](https://docs.microsoft.com/en-us/aspnet/core/).  The tutorials are great at demostrating isolated concepts, but issues surfaces when applying these concepts/techniques in a larger context.  The purpose of this demo application is to apply concepts/techniques learned from those tutorial into a single domain (i.e. university).
+Contoso University is a place for learning AspNetCore and related technologies.  This demo application is an amalgamation of smaller demo applications found in tutorials at [AspNetCore docs](https://docs.microsoft.com/en-us/aspnet/core/).  The tutorials are great at demonstrating isolated concepts, but issues surfaces when applying these concepts/techniques in a larger context.  The purpose of this demo application is to apply concepts/techniques learned from those tutorial into a single domain (i.e. university).
 
-### Web App
-### Rest Api
+### ContosoUniversity.Web
+- Traditional Web App using MVC + Razor Pages
+### ContosoUniversity.Api
+- Traditional Rest Api
 ### Testing
 - Unit Testing using [Moq](https://github.com/Moq/moq4/wiki/Quickstart) and [xUnit](https://xunit.github.io/docs/getting-started-dotnet-core)
 - Integration Testing using TestHost and InMemoryDatabase
-### Security (work in progress)
+- UI Testing using Selenium
+### Security
 - using Identity 2.0
 - Confirm Email using [SendGrid](sendgrid.com)
 - Confirm Phone using [Twilio](https://www.twilio.com/sms/api)
 - Two-Factor Authentication - [see tutorial](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/2fa)
+- OAuth 2 - Enable Google & Facebook logins
 ### Technologies
 - [ASP.NET Core 2.0](https://blogs.msdn.microsoft.com/webdev/2017/08/14/announcing-asp-net-core-2-0/)
 - Asp.Net Core Mvc 2.0 / Razor 2.0
