@@ -35,7 +35,10 @@ namespace ContosoUniversity.Tests
                 .UseEnvironment("Testing")
                 .UseStartup(typeof(T));
 
-            return new TestServer(builder);
+            var ts = new TestServer(builder);
+            ts.BaseAddress = new Uri("https://localhost/");
+
+            return ts;
         }
 
         protected void InitializeServices(IServiceCollection services)

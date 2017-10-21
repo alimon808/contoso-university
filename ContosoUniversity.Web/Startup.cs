@@ -28,13 +28,13 @@ namespace ContosoUniversity
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsEnvironment("Testing"))
             {
-                var relativePathToData = @"../ContosoUniversity.Data";
-                var absolutePathToData = System.IO.Path.GetFullPath(relativePathToData);
-                var dataProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(absolutePathToData);
-                builder.AddJsonFile(dataProvider, $"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: false)
-                    .AddUserSecrets<Startup>();
+                //var relativePathToData = @"../ContosoUniversity.Data";
+                //var absolutePathToData = System.IO.Path.GetFullPath(relativePathToData);
+                //var dataProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(absolutePathToData);
+                //builder.AddJsonFile(dataProvider, $"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: false)
+                  builder.AddUserSecrets<Startup>();
             }
 
             Configuration = builder
@@ -50,8 +50,8 @@ namespace ContosoUniversity
         {
             if (CurrentEnvironment.IsEnvironment("Testing"))
             {
-                services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("ContosoUniversity2017"));
-                services.AddDbContext<SecureApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("ContosoUniversity2017"));
+                services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
+                services.AddDbContext<SecureApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
             }
             else
             {

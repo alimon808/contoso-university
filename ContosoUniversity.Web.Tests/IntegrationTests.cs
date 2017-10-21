@@ -15,6 +15,7 @@ namespace ContosoUniversity.Web.Tests
         public async Task Home_Index_ReturnsAViewResult()
         {
             var url = "/Home/Index";
+            
             using (var th = InitTestServer())
             {
                 var client = th.CreateClient();
@@ -82,6 +83,8 @@ namespace ContosoUniversity.Web.Tests
                 
             }
         }
+
+        
 
         //todo: concurrency tests
     }
