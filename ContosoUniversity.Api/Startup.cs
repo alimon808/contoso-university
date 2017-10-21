@@ -7,6 +7,9 @@ using ContosoUniversity.Data;
 using ContosoUniversity.Data.Interfaces;
 using Microsoft.Extensions.Logging;
 using ContosoUniversity.Services;
+using ContosoUniversity.Data.DbContexts;
+using ContosoUniversity.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace ContosoUniversity.Api
 {
@@ -20,6 +23,7 @@ namespace ContosoUniversity.Api
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddUserSecrets<Startup>()
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
 
@@ -39,12 +43,13 @@ namespace ContosoUniversity.Api
                     var directoryName = System.IO.Path.GetDirectoryName(location);
                     var dataSource = $"Data Source={directoryName}//ContosoDb.sqlite";
                     services.AddDbContext<ApplicationContext>(options => options.UseSqlite(dataSource));
+                    services.AddDbContext<SecureApplicationContext>(options => options.UseSqlite(dataSource));
                 }
                 else
                 {
-                    services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("ContosoUniversity2017"));
+                    services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
+                    services.AddDbContext<SecureApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
                 }
-
             }
             else
             {
@@ -63,11 +68,38 @@ namespace ContosoUniversity.Api
                     {
                         options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso"));
                     });
+                    services.AddDbContext<SecureApplicationContext>(options =>
+                    {
+                        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("Migration", "Contoso"));
+                    });
                 }
             }
 
+            services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+            {
+                config.SignIn.RequireConfirmedEmail = true;
+            })
+            .AddEntityFrameworkStores<SecureApplicationContext>()
+            .AddDefaultTokenProviders();
+
+            services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            });
+
+            services.AddAuthentication().AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            });
+
+            services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddMvc();
+
+            services.Configure<SampleData>(Configuration.GetSection("SampleData"));
+            services.Configure<IdentityUserOptions>(Configuration.GetSection("IdentityUser"));
         }
 
         public void Configure(IApplicationBuilder app, ApplicationContext context, ILoggerFactory loggerFactory, IDbInitializer dbInitializer)
