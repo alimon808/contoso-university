@@ -68,10 +68,10 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = (ViewResult)sut.Create();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
-            Assert.Equal(1, viewData.Count);
+            Assert.Single(viewData);
             Assert.Equal("InstructorID", viewData.FirstOrDefault().Key);
         }
 
@@ -88,7 +88,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await sut.Create(vm);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
         }
 
@@ -99,7 +99,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await sut.Create(new DepartmentCreateViewModel { });
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("myerror"));
         }
 
@@ -120,7 +120,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Edit(id);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var vm = (DepartmentEditViewModel)((ViewResult)result).Model;
             Assert.Equal(departmentName, vm.Name);
@@ -132,7 +132,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Edit(id, null);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             var model = (Department)((ViewResult)result).Model;
             Assert.Null(model.Name);
             Assert.True(((ViewResult)result).ViewData.ModelState.Count > 0);
@@ -148,7 +148,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await sut.Edit(1, null);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
         }
 
         [Theory]
@@ -167,7 +167,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Delete(id, concurrencyError);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var model = (Department)((ViewResult)result).Model;
             Assert.Equal(departmentName, model.Name);
@@ -182,7 +182,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Delete(id, concurrencyError);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
 
             var actionName = ((RedirectToActionResult)result).ActionName;
             Assert.Equal("Index", actionName);
@@ -195,7 +195,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Delete(id);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             var actionName = ((RedirectToActionResult)result).ActionName;
             Assert.Equal("Index", actionName);
         }

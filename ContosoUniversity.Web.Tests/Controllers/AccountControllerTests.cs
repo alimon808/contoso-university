@@ -46,7 +46,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             var returnUrl = "/Home/Index";
             var result = _sut.Login(returnUrl);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
             Assert.True(viewData.ContainsKey("ReturnUrl"));
@@ -64,7 +64,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.Login(model, returnUrl);
 
-            Assert.IsType(typeof(RedirectResult), result);
+            Assert.IsType<RedirectResult>(result);
             Assert.Equal(returnUrl, ((RedirectResult)result).Url);
         }
 
@@ -80,7 +80,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.Login(model, returnUrl);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
 
             var actionName = ((RedirectToActionResult)result).ActionName;
             Assert.Equal("SendCode", actionName);
@@ -99,7 +99,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.Login(model, returnUrl);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal("Lockout", viewName);
@@ -111,7 +111,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             var returnUrl = "/Home/Index";
             var result = _sut.Register(returnUrl);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
             Assert.True(viewData.ContainsKey("ReturnUrl"));
@@ -139,7 +139,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.Register(model, returnUrl);
 
-            Assert.IsType(typeof(RedirectResult), result);
+            Assert.IsType<RedirectResult>(result);
             Assert.Equal(returnUrl, ((RedirectResult)result).Url);
         }
 
@@ -153,7 +153,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.Register(model, returnUrl);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("myModelError"));
         }
 
@@ -162,7 +162,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await _sut.Logout();
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Home", ((RedirectToActionResult)result).ControllerName);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
         }
@@ -172,7 +172,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = _sut.ResetPassword();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
@@ -182,7 +182,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.SendCode();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var model = (SendCodeViewModel)((ViewResult)result).Model;
             Assert.False(model.RememberMe);
@@ -198,7 +198,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.SendCode(model);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
@@ -209,7 +209,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.SendCode(model);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             Assert.Equal("Error", ((ViewResult)result).ViewName);
         }
 
@@ -221,7 +221,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.SendCode(model);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
 
             var actionName = ((RedirectToActionResult)result).ActionName;
             Assert.Equal("VerifyCode", actionName);
@@ -240,7 +240,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.SendCode(model);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
 
             var actionName = ((RedirectToActionResult)result).ActionName;
             Assert.Equal("VerifyCode", actionName);
@@ -260,7 +260,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.VerifyCode(provider, rememberMe, returnUrl);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             var model = (VerifyCodeViewModel)((ViewResult)result).Model;
             Assert.Equal(provider, model.Provider);
             Assert.Equal(rememberMe, model.RememberMe);
@@ -274,7 +274,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.VerifyCode("", false, null);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal("Error", viewName);
@@ -290,7 +290,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.VerifyCode(model);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
             Assert.Equal("Home", ((RedirectToActionResult)result).ControllerName);
         }
@@ -303,8 +303,8 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.VerifyCode(model);
 
-            Assert.IsType(typeof(ViewResult), result);
-            Assert.Equal(1, ((ViewResult)result).ViewData.ModelState.Count);
+            Assert.IsType<ViewResult>(result);
+            Assert.Single(((ViewResult)result).ViewData.ModelState);
         }
 
         [Fact]
@@ -315,7 +315,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.VerifyCode(model);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
         }
 
@@ -327,7 +327,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.VerifyCode(model);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal("Lockout", viewName);
@@ -340,7 +340,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.ResetPassword(model);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("ResetPasswordConfirmation", ((RedirectToActionResult)result).ActionName);
         }
 
@@ -352,7 +352,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.ResetPassword(model);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
         }
 
@@ -361,7 +361,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = _sut.ForgotPassword();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
@@ -372,7 +372,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.ForgotPassword(vm);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
             Assert.True(viewData.ModelState.ContainsKey("myerror"));
@@ -395,7 +395,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.ForgotPassword(vm);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             Assert.Equal("ForgotPasswordConfirmation", ((ViewResult)result).ViewName);
         }

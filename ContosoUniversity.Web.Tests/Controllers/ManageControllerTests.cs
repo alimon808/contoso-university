@@ -1,6 +1,5 @@
 ﻿using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Web.Controllers;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -42,7 +41,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.Index();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var model = (ManageIndexViewModel)((ViewResult)result).Model;
             Assert.True(model.HasPassword);
@@ -54,7 +53,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = _sut.ChangePassword();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
@@ -70,7 +69,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.ChangePassword(model);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             var modelState = ((ViewResult)result).ViewData.ModelState;
             Assert.True(modelState.ContainsKey("mymodelerror"));
         }
@@ -88,7 +87,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.ChangePassword(model);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
             Assert.Equal(ManageMessage.ChangePasswordSuccess, ((RedirectToActionResult)result).RouteValues["Message"]);
         }
@@ -98,7 +97,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = _sut.AddPhoneNumber();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
@@ -108,7 +107,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.AddPhoneNumber(new AddPhoneNumberViewModel());
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
         }
 
@@ -120,7 +119,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.AddPhoneNumber(new AddPhoneNumberViewModel());
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.True(((RedirectToActionResult)result).RouteValues.ContainsKey("PhoneNumber"));
         }
 
@@ -132,7 +131,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.VerifyPhoneNumber(phoneNumber);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             var model = (VerifyPhoneNumberViewModel)((ViewResult)result).Model;
             Assert.Equal(phoneNumber, model.PhoneNumber);
         }
@@ -145,7 +144,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.VerifyPhoneNumber(model);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal(ManageMessage.AddPhoneSuccess, ((RedirectToActionResult)result).RouteValues["Message"]);
 
         }
@@ -158,7 +157,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.VerifyPhoneNumber(model);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             Assert.True(((ViewResult)result).ViewData.ModelState.ContainsKey("mymodelerror"));
 
         }
@@ -170,7 +169,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.RemovePhoneNumber();
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             var actionName = ((RedirectToActionResult)result).ActionName;
             Assert.Equal("Index", actionName);
             Assert.Equal(ManageMessage.RemovePhoneSuccess, ((RedirectToActionResult)result).RouteValues["Message"]);
@@ -183,7 +182,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.EnableTwoFactorAuthentication();
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
 
             var actionName = ((RedirectToActionResult)result).ActionName;
             Assert.Equal("Index", actionName);
@@ -196,7 +195,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await _sut.DisableTwoFactorAuthentication();
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
 
             var actionName = ((RedirectToActionResult)result).ActionName;
             Assert.Equal("Index", actionName);

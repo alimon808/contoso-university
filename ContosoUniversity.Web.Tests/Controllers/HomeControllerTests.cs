@@ -29,7 +29,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = _sut.Index();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
         }
 
         //todo: test about action
@@ -39,7 +39,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = _sut.Contact();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = _sut.Error();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
         }
 
         private List<Student> Students()

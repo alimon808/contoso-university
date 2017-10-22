@@ -37,7 +37,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Index();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             var model = ((ViewResult)result).Model;
             Assert.Equal(Courses().Count, ((List<Course>)model).Count);
         }
@@ -60,7 +60,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Details(id);
 
-            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.IsType<NotFoundResult>(result);
             Assert.Equal(404, ((NotFoundResult)result).StatusCode);
         }
 
@@ -69,7 +69,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = (ViewResult)sut.Create();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
             Assert.True(viewData.ContainsKey("DepartmentID"));
@@ -82,7 +82,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await sut.Create(courseToAdd);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
 
             var course = mockCourseRepo.Object.GetAll().Where(c => c.CourseNumber == courseToAdd.CourseNumber).FirstOrDefault();
@@ -98,7 +98,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             var result = await sut.Create(courseToAdd);
 
             Assert.NotNull(result);
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
             Course model = (Course)viewData.Model;
@@ -117,12 +117,12 @@ namespace ContosoUniversity.Web.Tests.Controllers
         }
 
         [Theory]
-        [InlineData(3, "Macroeconomics", 4041, 3, 4)]
-        public async Task Edit_ReturnsAViewResult_WithCourseEditViewModel(int id, string title, int number, int credits, long departmentId)
+        [InlineData(3, "Macroeconomics", 4041, 4)]
+        public async Task Edit_ReturnsAViewResult_WithCourseEditViewModel(int id, string title, int number, long departmentId)
         {
             var result = await sut.Edit(id);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
             Course model = (Course)viewData.Model;
@@ -139,7 +139,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.EditPost(id);
             
-            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.IsType<NotFoundResult>(result);
             Assert.Equal(404, ((NotFoundResult)result).StatusCode);
             
         }
@@ -154,7 +154,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await sut.EditPost(id);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var model = ((ViewResult)result).Model as Course;
             Assert.Equal(id, model.ID);
@@ -168,8 +168,8 @@ namespace ContosoUniversity.Web.Tests.Controllers
         }
 
         [Theory]
-        [InlineData(1, 1050, 3, 3, "Chemistry")]
-        public async Task EditPost_ReturnsAViewResult_WithValidCourse_ThrowsDbUpdateException(int id, int courseNumber, int credits, int departmentID, string title)
+        [InlineData(1)]
+        public async Task EditPost_ReturnsAViewResult_WithValidCourse_ThrowsDbUpdateException(int id)
         {
             mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<Controller>(), It.IsAny<Course>(), It.IsAny<string>(), It.IsAny<Expression<Func<Course, object>>[]>()))
                 .Returns(Task.FromResult(true));
@@ -178,11 +178,11 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await sut.EditPost(id);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
             Assert.True(viewData.ContainsKey("DepartmentID"));
-            Assert.Equal(1, viewData.ModelState.Count);
+            Assert.Single(viewData.ModelState);
         }
 
         [Theory]
@@ -193,14 +193,14 @@ namespace ContosoUniversity.Web.Tests.Controllers
                 .Returns(Task.FromResult(true));
             var result = await sut.EditPost(id);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
         }
 
         [Theory]
         [InlineData(0)]
         [InlineData(null)]
-        public async Task Delete_ReturnsANotFoundResult(int id)
+        public async Task Delete_ReturnsANotFoundResult(int? id)
         {
             var result = await sut.Delete(id);
 
@@ -213,7 +213,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Delete(id);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
             Course model = (Course)viewData.Model;
@@ -236,7 +236,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.DeleteConfirmed(id.Value);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             var actionName = ((RedirectToActionResult)result).ActionName;
             Assert.Equal("Index", actionName);
         }
@@ -246,7 +246,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.UpdateCourseCredits(2);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
             Assert.True(viewData.ContainsKey("RowsAffected"));
@@ -260,7 +260,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.UpdateCourseCredits(multiplier);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
             Assert.True(viewData.ModelState.ContainsKey("InvalidMultiplier"));

@@ -91,10 +91,10 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = (ViewResult)sut.Create();
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var viewData = ((ViewResult)result).ViewData;
-            Assert.Equal(1, viewData.Count);
+            Assert.Single(viewData);
             Assert.Equal("Courses", viewData.FirstOrDefault().Key);
         }
 
@@ -103,7 +103,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Create(new Instructor { }, null);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
         }
 
@@ -115,12 +115,12 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await sut.Create(instructor, null);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             var model = ((ViewResult)result).Model;
             Assert.Equal(instructor.LastName, ((Instructor)model).LastName);
 
             var modelState = ((ViewResult)result).ViewData.ModelState;
-            Assert.True(modelState.Keys.Contains("myerror"));
+            Assert.Contains("myerror", modelState.Keys);
         }
 
         [Fact]
@@ -135,12 +135,12 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await sut.Create(instructor, selectedCourses);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             var model = ((ViewResult)result).Model;
             Assert.Equal(instructor.LastName, ((Instructor)model).LastName);
 
             var modelState = ((ViewResult)result).ViewData.ModelState;
-            Assert.True(modelState.Keys.Contains("myerror"));
+            Assert.Contains("myerror", modelState.Keys);
 
             Assert.Equal(instructorCourses+1, ((Instructor)model).CourseAssignments.Count);
         }
@@ -152,7 +152,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Edit(id);
 
-            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.IsType<NotFoundResult>(result);
             Assert.Equal(404, ((NotFoundResult)result).StatusCode);
         }
 
@@ -162,7 +162,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Edit(id);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             Instructor model = (Instructor)((ViewResult)result).Model;
             Assert.Equal(lastName, model.LastName);
@@ -173,7 +173,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Edit(null, null);
 
-            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -185,7 +185,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             var result = await sut.Edit(1, null);
 
             Assert.NotNull(result);
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
         }
 
@@ -199,7 +199,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             var result = await sut.Edit(1, null);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
             Assert.True(((ViewResult)result).ViewData.ModelState.Count > 0);
         }
 
@@ -220,7 +220,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.Delete(id);
 
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
 
             var model = (Instructor)((ViewResult)result).Model;
             Assert.Equal(lastName, model.LastName);
@@ -232,7 +232,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             var result = await sut.DeleteConfirmed(id);
 
-            Assert.IsType(typeof(RedirectToActionResult), result);
+            Assert.IsType<RedirectToActionResult>(result);
 
             var actionName = ((RedirectToActionResult)result).ActionName;
             Assert.Equal("Index", actionName);
