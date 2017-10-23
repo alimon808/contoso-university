@@ -9,6 +9,8 @@
 *.sql
 *.sqlite
 *.DS_Store
+*/Data/*
+
 
 #EntityFramework Migrations
 */Migrations/*

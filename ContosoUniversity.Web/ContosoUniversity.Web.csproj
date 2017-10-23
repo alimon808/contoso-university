@@ -6,6 +6,9 @@
     <UserSecretsId>494868df-30c3-4e9e-8fea-5db093fcb63f</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Properties\PublishProfiles\Azure.pubxml" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
@@ -25,8 +28,5 @@
   <ItemGroup>
     <ProjectReference Include="..\ContosoUniversity.Data\ContosoUniversity.Data.csproj" />
     <ProjectReference Include="..\ContosoUniversity.Services\ContosoUniversity.Services.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
   </ItemGroup>
 </Project>

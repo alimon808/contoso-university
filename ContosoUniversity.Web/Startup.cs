@@ -26,8 +26,8 @@ namespace ContosoUniversity
                 //var relativePathToData = @"../ContosoUniversity.Data";
                 //var absolutePathToData = System.IO.Path.GetFullPath(relativePathToData);
                 //var dataProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(absolutePathToData);
-                //builder.AddJsonFile(dataProvider, $"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: false)
-                  builder.AddUserSecrets<Startup>();
+                builder.AddJsonFile($"sampleData.json", optional: true, reloadOnChange: false);
+                builder.AddUserSecrets<Startup>();
             }
 
             Configuration = builder

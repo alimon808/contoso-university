@@ -29,30 +29,30 @@ namespace ContosoUniversity.Data
             InitializeCourseAssignment();
             InitializeEnrollments();
 
-            if (_data.SaveToExternalFile)
-            {
-                SaveToJson();
-            }
+            //if (_data.SaveToExternalFile)
+            //{
+            //    SaveToJson();
+            //}
         }
 
-        private void SaveToJson()
-        {
-            var file = $"{Directory.GetCurrentDirectory()}\\data\\sample-data.json";
-            if (File.Exists(file))
-            {
-                File.Delete(file);
-            }
-            JsonSerializer serializer = new JsonSerializer
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
-            using (StreamWriter sw = new StreamWriter(file))
-            using (JsonWriter writer = new JsonTextWriter(sw))
-            {
-                serializer.Serialize(writer, _data);
-            }
-        }
+        //private void SaveToJson()
+        //{
+        //    var file = $"{Directory.GetCurrentDirectory()}\\data\\sample-data.json";
+        //    if (File.Exists(file))
+        //    {
+        //        File.Delete(file);
+        //    }
+        //    JsonSerializer serializer = new JsonSerializer
+        //    {
+        //        NullValueHandling = NullValueHandling.Ignore,
+        //        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        //    };
+        //    using (StreamWriter sw = new StreamWriter(file))
+        //    using (JsonWriter writer = new JsonTextWriter(sw))
+        //    {
+        //        serializer.Serialize(writer, _data);
+        //    }
+        //}
 
         private void InitializeEnrollments()
         {

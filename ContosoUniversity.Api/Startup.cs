@@ -19,8 +19,15 @@ namespace ContosoUniversity.Api
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddUserSecrets<Startup>()
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            if (env.IsDevelopment() || env.IsEnvironment("Testing"))
+            {
+                builder.AddJsonFile($"sampleData.json", optional: true, reloadOnChange: false);
+                builder.AddUserSecrets<Startup>();
+            }
+
+            builder.AddUserSecrets<Startup>()
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
 
