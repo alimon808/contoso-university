@@ -47,10 +47,9 @@ namespace ContosoUniversity.Services
                 }
             }
 
-            services.AddScoped<IDbInitializer, DbInitializer>();
+            
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.Configure<SampleData>(configuration.GetSection("SampleData"));
-
 
             return services;
         }

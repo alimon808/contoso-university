@@ -8,6 +8,7 @@ using ContosoUniversity.Web;
 using ContosoUniversity.Services;
 using ContosoUniversity.Web.Helpers;
 using Microsoft.AspNetCore.Rewrite;
+using ContosoUniversity.Services.Data;
 
 namespace ContosoUniversity
 {
@@ -45,6 +46,7 @@ namespace ContosoUniversity
             services.AddCustomizedIdentity(Configuration);
             services.AddCustomizedMessage(Configuration);
             services.AddCustomizedMvc();
+            services.AddScoped<IDbInitializer, WebInitializer>();
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();
         }

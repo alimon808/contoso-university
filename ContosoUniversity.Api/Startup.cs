@@ -7,6 +7,7 @@ using ContosoUniversity.Data.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Rewrite;
 using ContosoUniversity.Services;
+using ContosoUniversity.Services.Data;
 
 namespace ContosoUniversity.Api
 {
@@ -39,8 +40,9 @@ namespace ContosoUniversity.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCustomizedContext(Configuration, CurrentEnvironment);
-            services.AddCustomizedIdentity(Configuration);
             services.AddCustomizedMvc();
+
+            services.AddScoped<IDbInitializer, ApiInitializer>();
         }
 
         public void Configure(IApplicationBuilder app, ApplicationContext context, ILoggerFactory loggerFactory, IDbInitializer dbInitializer)
