@@ -28,8 +28,7 @@ namespace ContosoUniversity.Api
                 builder.AddUserSecrets<Startup>();
             }
 
-            builder.AddUserSecrets<Startup>()
-                .AddEnvironmentVariables();
+            builder.AddEnvironmentVariables();
             Configuration = builder.Build();
 
         }
