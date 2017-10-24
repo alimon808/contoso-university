@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ContosoUniversity.Data;
 using ContosoUniversity.Data.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Rewrite;
@@ -44,7 +43,7 @@ namespace ContosoUniversity.Api
             services.AddScoped<IDbInitializer, ApiInitializer>();
         }
 
-        public void Configure(IApplicationBuilder app, ApplicationContext context, ILoggerFactory loggerFactory, IDbInitializer dbInitializer)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IDbInitializer dbInitializer)
         {
             if (CurrentEnvironment.IsDevelopment() || CurrentEnvironment.IsEnvironment("Testing"))
             {
