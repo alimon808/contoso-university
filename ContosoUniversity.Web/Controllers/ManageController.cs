@@ -1,6 +1,6 @@
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.DbContexts;
-using ContosoUniversity.Services;
+using ContosoUniversity.Common;
 using ContosoUniversity.Web.Enums;
 using ContosoUniversity.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
 using ContosoUniversity.Data;
 
-namespace ContosoUniversity.Services.Data
+namespace ContosoUniversity.Common.Data
 {
     public class ApiInitializer : IDbInitializer
     {

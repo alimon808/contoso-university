@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace ContosoUniversity.Services
+namespace ContosoUniversity.Common
 {
     public static class OperatingSystem
     {

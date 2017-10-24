@@ -14,9 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.Api.Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.Web.Tests", "ContosoUniversity.Web.Tests\ContosoUniversity.Web.Tests.csproj", "{3738FFAB-E122-4982-B2C5-980CEE0E855B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.Services", "ContosoUniversity.Services\ContosoUniversity.Services.csproj", "{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.Data.Tests", "ContosoUniversity.Data.Tests\ContosoUniversity.Data.Tests.csproj", "{99F19513-C9E8-4943-A30A-BAB4827EBC76}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.Common", "ContosoUniversity.Common\ContosoUniversity.Common.csproj", "{B3A0F49D-5221-407A-9591-60064AD6C61F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,18 +61,18 @@ Global
 		{3738FFAB-E122-4982-B2C5-980CEE0E855B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3738FFAB-E122-4982-B2C5-980CEE0E855B}.Release-Azure|Any CPU.ActiveCfg = Release|Any CPU
 		{3738FFAB-E122-4982-B2C5-980CEE0E855B}.Release-Azure|Any CPU.Build.0 = Release|Any CPU
-		{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}.Release-Azure|Any CPU.ActiveCfg = Release|Any CPU
-		{1EF0AA73-52B2-41F5-A386-AF94F99E4B7E}.Release-Azure|Any CPU.Build.0 = Release|Any CPU
 		{99F19513-C9E8-4943-A30A-BAB4827EBC76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{99F19513-C9E8-4943-A30A-BAB4827EBC76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99F19513-C9E8-4943-A30A-BAB4827EBC76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99F19513-C9E8-4943-A30A-BAB4827EBC76}.Release|Any CPU.Build.0 = Release|Any CPU
 		{99F19513-C9E8-4943-A30A-BAB4827EBC76}.Release-Azure|Any CPU.ActiveCfg = Release|Any CPU
 		{99F19513-C9E8-4943-A30A-BAB4827EBC76}.Release-Azure|Any CPU.Build.0 = Release|Any CPU
+		{B3A0F49D-5221-407A-9591-60064AD6C61F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3A0F49D-5221-407A-9591-60064AD6C61F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3A0F49D-5221-407A-9591-60064AD6C61F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3A0F49D-5221-407A-9591-60064AD6C61F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3A0F49D-5221-407A-9591-60064AD6C61F}.Release-Azure|Any CPU.ActiveCfg = Release|Any CPU
+		{B3A0F49D-5221-407A-9591-60064AD6C61F}.Release-Azure|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

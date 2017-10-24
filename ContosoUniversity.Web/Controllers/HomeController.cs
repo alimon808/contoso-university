@@ -35,7 +35,7 @@ namespace ContosoUniversity.Web.Controllers
                 {
                     // todo: read from configuration
                     var dbSchema = "Contoso.";
-                    if (ContosoUniversity.Services.OperatingSystem.IsMacOs())
+                    if (ContosoUniversity.Common.OperatingSystem.IsMacOs())
                     {
                         dbSchema = string.Empty;
                     }

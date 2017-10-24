@@ -1,4 +1,4 @@
-﻿namespace ContosoUniversity.Services
+﻿namespace ContosoUniversity.Common
 {
     public class AuthMessageSenderOptions
     {

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using ContosoUniversity.Web.ViewModels;
 using ContosoUniversity.Web.Enums;
-using ContosoUniversity.Services;
+using ContosoUniversity.Common;
 
 namespace ContosoUniversity.Web.Tests.Controllers
 {

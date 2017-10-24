@@ -1,5 +1,5 @@
 ﻿using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Services;
+using ContosoUniversity.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

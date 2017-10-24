@@ -4,7 +4,7 @@ using ContosoUniversity.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using ContosoUniversity.Services;
+using ContosoUniversity.Common;
 using ContosoUniversity.Web.Helpers;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;

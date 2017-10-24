@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace ContosoUniversity.Services
+namespace ContosoUniversity.Common
 {
     public interface ISmsSender
     {

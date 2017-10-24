@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 
-namespace ContosoUniversity.Services
+namespace ContosoUniversity.Common
 {
     public class AuthMessageSender : IEmailSender, ISmsSender
     {

@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using ContosoUniversity.Data.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Rewrite;
-using ContosoUniversity.Services;
-using ContosoUniversity.Services.Data;
+using ContosoUniversity.Common;
+using ContosoUniversity.Common.Data;
 
 namespace ContosoUniversity.Api
 {

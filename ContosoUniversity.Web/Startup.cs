@@ -5,10 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Web;
-using ContosoUniversity.Services;
+using ContosoUniversity.Common;
 using ContosoUniversity.Web.Helpers;
 using Microsoft.AspNetCore.Rewrite;
-using ContosoUniversity.Services.Data;
+using ContosoUniversity.Common.Data;
 
 namespace ContosoUniversity
 {
