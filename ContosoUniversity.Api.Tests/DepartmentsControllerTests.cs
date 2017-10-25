@@ -1,13 +1,13 @@
 ﻿using Xunit;
 using ContosoUniversity.Api.Controllers;
 using Moq;
-using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Data.Entities;
 using System.Collections.Generic;
 using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using ContosoUniversity.Tests;
+using ContosoUniversity.Common.Interfaces;
 
 namespace ContosoUniversity.Api.Tests
 {

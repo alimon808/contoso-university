@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Common.Interfaces;
 using ContosoUniversity.Data.Entities;
 using System.Linq;
 using System.Threading.Tasks;

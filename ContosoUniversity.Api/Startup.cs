@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ContosoUniversity.Data.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Rewrite;
 using ContosoUniversity.Common;
 using ContosoUniversity.Common.Data;
+using ContosoUniversity.Common.Interfaces;
 
 namespace ContosoUniversity.Api
 {

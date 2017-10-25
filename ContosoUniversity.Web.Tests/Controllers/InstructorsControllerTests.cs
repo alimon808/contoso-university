@@ -1,7 +1,6 @@
 ﻿using ContosoUniversity.Web.Controllers;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Data.Enums;
-using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Models.SchoolViewModels;
 using ContosoUniversity.Tests;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +13,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using ContosoUniversity.Common.Interfaces;
 
 namespace ContosoUniversity.Web.Tests.Controllers
 {

@@ -1,7 +1,7 @@
 ﻿using ContosoUniversity.Data.Entities;
 using System.Linq;
 
-namespace ContosoUniversity.Data.Interfaces
+namespace ContosoUniversity.Common.Interfaces
 {
     public interface IPersonRepository<T> : IRepository<T> where T : Person
     {

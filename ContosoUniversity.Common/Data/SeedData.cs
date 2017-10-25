@@ -2,7 +2,7 @@
 using ContosoUniversity.Data.Entities;
 using System.Linq;
 
-namespace ContosoUniversity.Data
+namespace ContosoUniversity.Common.Data
 {
     public class SeedData
     {

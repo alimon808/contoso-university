@@ -1,7 +1,7 @@
 ﻿using ContosoUniversity.Data;
 using ContosoUniversity.Data.DbContexts;
 using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Common.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using ContosoUniversity.Common.Data;
 
 namespace ContosoUniversity.Common
 {

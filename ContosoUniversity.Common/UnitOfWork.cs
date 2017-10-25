@@ -1,7 +1,9 @@
 ﻿using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Common.Interfaces;
+using ContosoUniversity.Data;
+using ContosoUniversity.Common.Repositories;
 
-namespace ContosoUniversity.Data
+namespace ContosoUniversity.Common
 {
     // use c# 7 expression-bodied members
     public class UnitOfWork : IUnitOfWork

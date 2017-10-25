@@ -1,5 +1,5 @@
 ﻿using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;

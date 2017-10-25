@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ContosoUniversity.Common\ContosoUniversity.Common.csproj" />
     <ProjectReference Include="..\ContosoUniversity.Data\ContosoUniversity.Data.csproj" />
   </ItemGroup>
 

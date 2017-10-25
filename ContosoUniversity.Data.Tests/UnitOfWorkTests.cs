@@ -1,5 +1,6 @@
+using ContosoUniversity.Common;
+using ContosoUniversity.Common.Repositories;
 using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Common.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
 using ContosoUniversity.Data;

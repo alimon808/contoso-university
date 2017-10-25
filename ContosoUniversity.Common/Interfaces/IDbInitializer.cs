@@ -1,4 +1,4 @@
-﻿namespace ContosoUniversity.Data.Interfaces
+﻿namespace ContosoUniversity.Common.Interfaces
 {
     public interface IDbInitializer
     {

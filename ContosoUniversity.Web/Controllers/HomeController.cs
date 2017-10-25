@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Models.SchoolViewModels;
-using ContosoUniversity.Data;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Data.Common;
-using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Data.Entities;
+using ContosoUniversity.Common.Interfaces;
 
 namespace ContosoUniversity.Web.Controllers
 {

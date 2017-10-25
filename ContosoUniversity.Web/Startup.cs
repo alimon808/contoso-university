@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Web;
 using ContosoUniversity.Common;
 using ContosoUniversity.Web.Helpers;
 using Microsoft.AspNetCore.Rewrite;
 using ContosoUniversity.Common.Data;
+using ContosoUniversity.Common.Interfaces;
 
 namespace ContosoUniversity
 {

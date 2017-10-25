@@ -1,6 +1,5 @@
 ﻿using ContosoUniversity.Web.Controllers;
 using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -12,6 +11,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using ContosoUniversity.Tests;
+using ContosoUniversity.Common.Interfaces;
 
 namespace ContosoUniversity.Web.Tests.Controllers
 {

@@ -1,7 +1,7 @@
 ﻿using ContosoUniversity.Data.DTO;
 using System.Collections.Generic;
 
-namespace ContosoUniversity.Data
+namespace ContosoUniversity.Common.Data
 {
     public class SampleData
     {

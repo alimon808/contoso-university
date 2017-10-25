@@ -4,9 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Data.Interfaces;
-using System.Reflection;
-using ContosoUniversity.Web;
+using ContosoUniversity.Common.Interfaces;
 
 namespace ContosoUniversity.Web.Controllers
 {

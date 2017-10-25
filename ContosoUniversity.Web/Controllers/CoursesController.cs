@@ -3,11 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ContosoUniversity.Data;
 using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Data.Interfaces;
 using System;
-using ContosoUniversity.Web;
+using ContosoUniversity.Common.Interfaces;
 
 namespace ContosoUniversity.Web.Controllers
 {

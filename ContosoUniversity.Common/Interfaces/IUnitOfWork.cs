@@ -1,4 +1,4 @@
-﻿namespace ContosoUniversity.Data
+﻿namespace ContosoUniversity.Common.Interfaces
 {
     public interface IUnitOfWork
     {

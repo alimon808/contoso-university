@@ -1,5 +1,5 @@
-﻿using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Data.Interfaces;
+﻿using ContosoUniversity.Common.Interfaces;
+using ContosoUniversity.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Collections.Generic;

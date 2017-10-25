@@ -3,7 +3,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ContosoUniversity.Data.Interfaces
+namespace ContosoUniversity.Common.Interfaces
 {
     public interface IRepository<T> where T : BaseEntity
     {

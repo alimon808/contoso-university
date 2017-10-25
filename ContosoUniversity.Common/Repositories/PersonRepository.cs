@@ -1,9 +1,10 @@
 ﻿using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Common.Interfaces;
 using System;
 using System.Linq;
+using ContosoUniversity.Data;
 
-namespace ContosoUniversity.Data
+namespace ContosoUniversity.Common.Repositories
 {
     public class PersonRepository<T> : Repository<T>, IPersonRepository<T> where T : Person
     {

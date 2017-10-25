@@ -4,7 +4,7 @@ using System.Linq;
 using ContosoUniversity.Data.DbContexts;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
-using ContosoUniversity.Data.Interfaces;
+using ContosoUniversity.Common.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
