@@ -38,6 +38,7 @@ namespace ContosoUniversity.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCustomizedContext(Configuration, CurrentEnvironment);
+            services.AddCustomizedAutoMapper();
             services.AddCustomizedMvc();
 
             services.AddScoped<IDbInitializer, ApiInitializer>();

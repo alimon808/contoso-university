@@ -5,6 +5,8 @@ using ContosoUniversity.Data.Entities;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using AutoMapper;
+using ContosoUniversity.Common.DTO;
 
 namespace ContosoUniversity.Api.Controllers
 {
@@ -14,51 +16,62 @@ namespace ContosoUniversity.Api.Controllers
     public class DepartmentsController : Controller
     {
         private IRepository<Department> _departmentRepo;
+        private readonly IMapper _mapper;
 
-        public DepartmentsController(IRepository<Department> departmentRepo)
+        public DepartmentsController(IRepository<Department> departmentRepo, IMapper mapper)
         {
             _departmentRepo = departmentRepo;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public IEnumerable<Department> GetAll()
+        public IEnumerable<DepartmentDTO> GetAll()
         {
-            return _departmentRepo.GetAll().ToList();
+            var query = _departmentRepo.GetAll()
+                .Select(d => _mapper.Map<DepartmentDTO>(d));
+
+            return query.ToList();
         }
 
-        [HttpGet("{id}", Name ="GetDepartment")]
+        [HttpGet("{id}", Name = "GetDepartment")]
         public IActionResult GetById(int id)
         {
-            var department = _departmentRepo.Get(id).FirstOrDefault();
-            if (department == null)
+            var dto = _departmentRepo.Get(id)
+                .Select(d => _mapper.Map<DepartmentDTO>(d))
+                .FirstOrDefault();
+            if (dto == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(department);
+            return new ObjectResult(dto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Department department)
+        public async Task<IActionResult> Create([FromBody] DepartmentDTO dto)
         {
-            if (department == null)
+            if (dto == null)
             {
                 return BadRequest();
             }
+
+            var department = _mapper.Map<Department>(dto);
 
             await _departmentRepo.AddAsync(department);
             await _departmentRepo.SaveChangesAsync();
 
-            return CreatedAtRoute("GetDepartment", new { id = department.ID }, department);
+            return CreatedAtRoute("GetDepartment", new { id = department.ID }, _mapper.Map<DepartmentDTO>(department));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody]Department newDepartment)
+        public async Task<IActionResult> Update(int id, [FromBody]DepartmentDTO dto)
         {
-            if (newDepartment == null || id != newDepartment.ID)
+            if (dto == null || id != dto.ID)
             {
                 return BadRequest();
             }
+
+            var newDepartment = _mapper.Map<Department>(dto);
 
             var oldDepartment = _departmentRepo.Get(newDepartment.ID).FirstOrDefault();
             if (oldDepartment == null)

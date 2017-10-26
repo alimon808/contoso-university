@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using ContosoUniversity.Tests;
 using ContosoUniversity.Common.Interfaces;
+using AutoMapper;
+using ContosoUniversity.Common.DTO;
 
 namespace ContosoUniversity.Api.Tests
 {
@@ -15,11 +17,17 @@ namespace ContosoUniversity.Api.Tests
     {
         private readonly DepartmentsController _sut;
         private readonly Mock<IRepository<Department>> _mockDepartmentRepo;
-
+        private readonly IMapper _mapper;
         public DepartmentsApiControllerTests()
         {
             _mockDepartmentRepo = Departments.AsMockRepository<Department>();
-            _sut = new DepartmentsController(_mockDepartmentRepo.Object);
+            
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Department, DepartmentDTO>().ReverseMap();
+            });
+            _mapper = config.CreateMapper();
+            _sut = new DepartmentsController(_mockDepartmentRepo.Object, _mapper);
         }
 
         [Fact]
@@ -27,8 +35,8 @@ namespace ContosoUniversity.Api.Tests
         {
             var result = _sut.GetAll();
 
-            Assert.IsType(typeof(List<Department>), result);
-            Assert.Equal(4, ((List<Department>)result).Count);
+            Assert.IsType<List<DepartmentDTO>>(result);
+            Assert.Equal(4, ((List<DepartmentDTO>)result).Count);
         }
 
         [Theory]
@@ -47,24 +55,26 @@ namespace ContosoUniversity.Api.Tests
         {
             var result = _sut.GetById(id);
 
-            Assert.IsType(typeof(ObjectResult), result);
-            var department = (Department)((ObjectResult)result).Value;
-            Assert.Equal(departmentName, department.Name);
-            Assert.Equal(budget, department.Budget);
+            Assert.IsType<ObjectResult>(result);
+            var dto = (DepartmentDTO)((ObjectResult)result).Value;
+            Assert.Equal(departmentName, dto.Name);
+            Assert.Equal(budget, dto.Budget);
         }
 
         [Fact]
         public async Task HttpPost_ReturnsCreatedAtRouteResult_WithDepartmentEntity()
         {
-            var departmentToAdd = new Department { ID = 5, Name = "Physics", Budget = 100000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 4 };
+            var department = new Department { ID = 5, Name = "Physics", Budget = 100000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 4 };
+
+            var departmentToAdd = _mapper.Map<DepartmentDTO>(department);
             var result = await _sut.Create(departmentToAdd);
 
             Assert.NotNull(result);
             Assert.IsType(typeof(CreatedAtRouteResult), result);
             Assert.Equal(201, ((CreatedAtRouteResult)result).StatusCode);
 
-            var department = (Department)((CreatedAtRouteResult)result).Value;
-            Assert.Equal(departmentToAdd.ID, department.ID);
+            var departmentCreated = (DepartmentDTO)((CreatedAtRouteResult)result).Value;
+            Assert.Equal(department.ID, departmentCreated.ID);
             Assert.Equal(departmentToAdd.Name, department.Name);
         }
 
@@ -74,7 +84,7 @@ namespace ContosoUniversity.Api.Tests
             var result = await _sut.Create(null);
 
             Assert.NotNull(result);
-            Assert.IsType(typeof(BadRequestResult), result);
+            Assert.IsType<BadRequestResult>(result);
             Assert.Equal(400, ((BadRequestResult)result).StatusCode);
         }
 
@@ -83,36 +93,38 @@ namespace ContosoUniversity.Api.Tests
         {
             var result = await _sut.Update(1, null);
 
-            Assert.IsType(typeof(BadRequestResult), result);
+            Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
         public async Task HttpPut_ReturnsABadRequestResult_WithInvalidDepartmentID()
         {
             var departmentToUpdate = new Department { ID = 1, Name = "English 2", Budget = 350000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 1, RowVersion = new byte[] { } };
-            var result = await _sut.Update(2, departmentToUpdate);
+            var dto = _mapper.Map<DepartmentDTO>(departmentToUpdate);
+            var result = await _sut.Update(2, dto);
 
-            Assert.IsType(typeof(BadRequestResult), result);
+            Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
         public async Task HttpPut_ReturnsANotFoundResult()
         {
             var departmentToUpdate = new Department { ID = 0, Name = "English 2", Budget = 350000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 1, RowVersion = new byte[] { } };
+            var dto = _mapper.Map<DepartmentDTO>(departmentToUpdate);
 
-            var result = await _sut.Update(departmentToUpdate.ID, departmentToUpdate);
+            var result = await _sut.Update(departmentToUpdate.ID, dto);
 
-            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
         public async Task HttpPut_ReturnsANoContentResult()
         {
             var departmentToUpdate = new Department { ID = 1, Name = "English 2", Budget = 350000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 1, RowVersion = new byte[] { } };
+            var dto = _mapper.Map<DepartmentDTO>(departmentToUpdate);
+            var result = await _sut.Update(departmentToUpdate.ID, dto);
 
-            var result = await _sut.Update(departmentToUpdate.ID, departmentToUpdate);
-
-            Assert.IsType(typeof(NoContentResult), result);
+            Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
@@ -120,7 +132,7 @@ namespace ContosoUniversity.Api.Tests
         {
             var result = await _sut.Delete(1);
 
-            Assert.IsType(typeof(NoContentResult), result);
+            Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
@@ -128,7 +140,7 @@ namespace ContosoUniversity.Api.Tests
         {
             var result = await _sut.Delete(0);
 
-            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         private List<Department> Departments { get; } = new List<Department>
