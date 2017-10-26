@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using ContosoUniversity.Common.Data;
+using AutoMapper;
+using ContosoUniversity.Common.DTO;
 
 namespace ContosoUniversity.Common
 {
@@ -108,6 +110,17 @@ namespace ContosoUniversity.Common
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.Configure<AuthMessageSenderOptions>(configuration);
             services.Configure<SMSOptions>(configuration);
+
+            return services;
+        }
+
+
+        public static IServiceCollection AddCustomizedAutoMapper(this IServiceCollection services)
+        {
+            services.AddAutoMapper(cfg => 
+            {
+                cfg.CreateMap<DepartmentDTO, Department>().ReverseMap();
+            });
 
             return services;
         }

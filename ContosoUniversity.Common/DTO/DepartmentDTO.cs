@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ContosoUniversity.Data.DTO
+namespace ContosoUniversity.Common.DTO
 {
     public class DepartmentDTO
     {

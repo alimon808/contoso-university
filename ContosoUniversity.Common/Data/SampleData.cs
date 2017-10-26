@@ -1,4 +1,5 @@
 ﻿using ContosoUniversity.Data.DTO;
+using ContosoUniversity.Common.DTO;
 using System.Collections.Generic;
 
 namespace ContosoUniversity.Common.Data
