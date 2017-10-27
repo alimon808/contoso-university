@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data.Entities;
 using System;
 using ContosoUniversity.ViewModels;
-using System.Collections.Generic;
 using ContosoUniversity.Common.Interfaces;
+using AutoMapper;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -16,31 +16,26 @@ namespace ContosoUniversity.Web.Controllers
         private readonly IRepository<Department> _departmentRepo;
         private readonly IRepository<Instructor> _instructorRepo;
         private readonly IModelBindingHelperAdaptor _modelBindingHelperAdaptor;
+        private readonly IMapper _mapper;
 
-        public DepartmentsController(IRepository<Department> departmentRepo, IRepository<Instructor> instructorRepo, IModelBindingHelperAdaptor modelBindingHelperAdaptor)
+        public DepartmentsController(IRepository<Department> departmentRepo, 
+                                     IRepository<Instructor> instructorRepo, 
+                                     IModelBindingHelperAdaptor modelBindingHelperAdaptor,
+                                     IMapper mapper)
         {
             _departmentRepo = departmentRepo;
             _instructorRepo = instructorRepo;
             _modelBindingHelperAdaptor = modelBindingHelperAdaptor;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
         {
-            var departments = await _departmentRepo.GetAll()
+            var query = _departmentRepo.GetAll()
                 .Include(d => d.Administrator)
-                .ToListAsync();
+                .Select(d => _mapper.Map<DepartmentDetailsViewModel>(d));
 
-            var vm = new List<DepartmentDetailsViewModel>();
-            departments.ForEach(d => vm.Add(new DepartmentDetailsViewModel
-            {
-                ID = d.ID,
-                Name = d.Name,
-                Budget = d.Budget,
-                StartDate = d.StartDate,
-                Administrator = d.Administrator?.FullName,
-            }));
-
-            return View(vm);
+            return View(await query.ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -50,25 +45,17 @@ namespace ContosoUniversity.Web.Controllers
                 return NotFound();
             }
 
-            var department = await _departmentRepo.Get(id.Value)
+            var vm = await _departmentRepo.Get(id.Value)
                 .Include(d => d.Administrator)
+                .Select(d => _mapper.Map<DepartmentDetailsViewModel>(d))
                 .AsGatedNoTracking()
                 .SingleOrDefaultAsync();
 
-            if (department == null)
+            if (vm == null)
             {
                 return NotFound();
             }
-
-            var vm = new DepartmentDetailsViewModel
-            {
-                ID = department.ID,
-                Name = department.Name,
-                Budget = department.Budget,
-                StartDate = department.StartDate,
-                Administrator = department.Administrator?.FullName
-            };
-
+            
             return View(vm);
         }
 
@@ -84,13 +71,7 @@ namespace ContosoUniversity.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var department = new Department
-                {
-                    Name = vm.Name,
-                    Budget = vm.Budget,
-                    StartDate = vm.StartDate,
-                    InstructorID = vm.InstructorID
-                };
+                var department = _mapper.Map<Department>(vm);
                 await _departmentRepo.AddAsync(department);
                 await _departmentRepo.SaveChangesAsync();
                 return RedirectToAction("Index", new { newid = department.ID });
@@ -116,16 +97,7 @@ namespace ContosoUniversity.Web.Controllers
                 return NotFound();
             }
 
-            var vm = new DepartmentEditViewModel
-            {
-                ID = id.Value,
-                Name = department.Name,
-                Budget = department.Budget,
-                StartDate = department.StartDate,
-                RowVersion = department.RowVersion?.ToString(),
-                Administrator = department?.Administrator?.FullName,
-                InstructorID = department.InstructorID.Value
-            };
+            var vm = _mapper.Map<DepartmentEditViewModel>(department);
 
             ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", department.InstructorID);
             return View(vm);

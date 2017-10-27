@@ -9,6 +9,9 @@ using ContosoUniversity.Web.Helpers;
 using Microsoft.AspNetCore.Rewrite;
 using ContosoUniversity.Common.Data;
 using ContosoUniversity.Common.Interfaces;
+using AutoMapper;
+using ContosoUniversity.ViewModels;
+using ContosoUniversity.Data.Entities;
 
 namespace ContosoUniversity
 {
@@ -46,6 +49,11 @@ namespace ContosoUniversity
             services.AddCustomizedIdentity(Configuration);
             services.AddCustomizedMessage(Configuration);
             services.AddCustomizedMvc();
+            
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<WebProfile>();
+            });
             services.AddScoped<IDbInitializer, WebInitializer>();
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();

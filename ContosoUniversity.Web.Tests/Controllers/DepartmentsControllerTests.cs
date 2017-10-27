@@ -12,6 +12,7 @@ using Xunit;
 using Xunit.Abstractions;
 using ContosoUniversity.Tests;
 using ContosoUniversity.Common.Interfaces;
+using AutoMapper;
 
 namespace ContosoUniversity.Web.Tests.Controllers
 {
@@ -21,6 +22,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         private readonly Mock<IRepository<Department>> mockDepartmentRepo;
         private readonly Mock<IPersonRepository<Instructor>> mockInstructorRepo;
         private readonly Mock<IModelBindingHelperAdaptor> mockModelBindingHelperAdaptor;
+        private readonly IMapper _mapper;
         DepartmentsController sut;
 
         public DepartmentsControllerTests(ITestOutputHelper output)
@@ -29,7 +31,13 @@ namespace ContosoUniversity.Web.Tests.Controllers
             mockDepartmentRepo = Departments.AsMockRepository();
             mockInstructorRepo = Instructors.AsMockPersonRepository();
             mockModelBindingHelperAdaptor = new Mock<IModelBindingHelperAdaptor>();
-            sut = new DepartmentsController(mockDepartmentRepo.Object, mockInstructorRepo.Object, mockModelBindingHelperAdaptor.Object);
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<WebProfile>();
+            });
+            _mapper = config.CreateMapper();
+
+            sut = new DepartmentsController(mockDepartmentRepo.Object, mockInstructorRepo.Object, mockModelBindingHelperAdaptor.Object, _mapper);
         }
 
         [Fact]
