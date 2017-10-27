@@ -138,10 +138,11 @@ namespace ContosoUniversity.Web.Tests.Controllers
         [InlineData(0)]
         public async Task EditPost_ReturnsAViewResult_WithDeletedDepartmentModelError(int id)
         {
-            var result = await sut.Edit(id, null);
+            DepartmentEditViewModel vm = new DepartmentEditViewModel { ID = id };
+            var result = await sut.Edit(vm);
 
             Assert.IsType<ViewResult>(result);
-            var model = (Department)((ViewResult)result).Model;
+            var model = (DepartmentEditViewModel)((ViewResult)result).Model;
             Assert.Null(model.Name);
             Assert.True(((ViewResult)result).ViewData.ModelState.Count > 0);
             Assert.True(((ViewResult)result).ViewData.ContainsKey("InstructorID"));
@@ -151,10 +152,12 @@ namespace ContosoUniversity.Web.Tests.Controllers
         [Fact]
         public async Task EditPost_ReturnsRedirectToActionResult_Index()
         {
-            mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<Controller>(), It.IsAny<Department>(), It.IsAny<string>(), It.IsAny<Expression<Func<Department, object>>[]>()))
-                .Returns(Task.FromResult(true));
+            //mockModelBindingHelperAdaptor.Setup(m => m.TryUpdateModelAsync(It.IsAny<Controller>(), It.IsAny<Department>(), It.IsAny<string>(), It.IsAny<Expression<Func<Department, object>>[]>()))
+            //    .Returns(Task.FromResult(true));
+            
+            var vm = new DepartmentEditViewModel { ID = 1 };
 
-            var result = await sut.Edit(1, null);
+            var result = await sut.Edit(vm);
 
             Assert.IsType<RedirectToActionResult>(result);
         }

@@ -18,8 +18,8 @@ namespace ContosoUniversity.Web.Controllers
         private readonly IModelBindingHelperAdaptor _modelBindingHelperAdaptor;
         private readonly IMapper _mapper;
 
-        public DepartmentsController(IRepository<Department> departmentRepo, 
-                                     IRepository<Instructor> instructorRepo, 
+        public DepartmentsController(IRepository<Department> departmentRepo,
+                                     IRepository<Instructor> instructorRepo,
                                      IModelBindingHelperAdaptor modelBindingHelperAdaptor,
                                      IMapper mapper)
         {
@@ -55,7 +55,7 @@ namespace ContosoUniversity.Web.Controllers
             {
                 return NotFound();
             }
-            
+
             return View(vm);
         }
 
@@ -105,75 +105,71 @@ namespace ContosoUniversity.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, string rowVersion)
+        public async Task<IActionResult> Edit(DepartmentEditViewModel vm)
         {
-            if (id == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return View(vm);
             }
 
-            var departmentToUpdate = await _departmentRepo.Get(id.Value)
+            var departmentToUpdate = await _departmentRepo.Get(vm.ID)
                 .Include(i => i.Administrator)
                 .SingleOrDefaultAsync();
 
             if (departmentToUpdate == null)
             {
-                Department deletedDepartment = new Department();
-                await _modelBindingHelperAdaptor.TryUpdateModelAsync(this, deletedDepartment);
                 ModelState.AddModelError(string.Empty, "Unable to save changes.  The department was deleted by another user.");
-                ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", deletedDepartment.InstructorID);
-                return View(deletedDepartment);
+                ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", vm.InstructorID);
+                return View(vm);
             }
 
-            if (await _modelBindingHelperAdaptor.TryUpdateModelAsync<Department>(this, departmentToUpdate, "", s => s.Name, s => s.Budget, s => s.InstructorID, s => s.StartDate))
+            try
             {
-                try
+                departmentToUpdate = _mapper.Map(vm, departmentToUpdate);
+                departmentToUpdate.ModifiedDate = DateTime.UtcNow;
+                await _departmentRepo.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var exceptionEntry = ex.Entries.Single();
+                var clientValues = (Department)exceptionEntry.Entity;
+                var databaseEntry = exceptionEntry.GetDatabaseValues();
+                if (databaseEntry == null)
                 {
-                    departmentToUpdate.ModifiedDate = DateTime.UtcNow;
-                    await _departmentRepo.SaveChangesAsync();
-                    return RedirectToAction("Index");
+                    ModelState.AddModelError(string.Empty, "Unable to save changes.  The department was deleted by another use.");
                 }
-                catch (DbUpdateConcurrencyException ex)
+                else
                 {
-                    var exceptionEntry = ex.Entries.Single();
-                    var clientValues = (Department)exceptionEntry.Entity;
-                    var databaseEntry = exceptionEntry.GetDatabaseValues();
-                    if (databaseEntry == null)
+                    var databaseValues = (Department)databaseEntry.ToObject();
+                    if (databaseValues.Name != clientValues.Name)
                     {
-                        ModelState.AddModelError(string.Empty, "Unable to save changes.  The department was deleted by another use.");
+                        ModelState.AddModelError("Name", $"Current value: {databaseValues.Name}");
                     }
-                    else
+                    if (databaseValues.Budget != clientValues.Budget)
                     {
-                        var databaseValues = (Department)databaseEntry.ToObject();
-                        if (databaseValues.Name != clientValues.Name)
-                        {
-                            ModelState.AddModelError("Name", $"Current value: {databaseValues.Name}");
-                        }
-                        if (databaseValues.Budget != clientValues.Budget)
-                        {
-                            ModelState.AddModelError("Budget", $"Current value: {databaseValues.Budget:c}");
-                        }
-                        if (databaseValues.StartDate != clientValues.StartDate)
-                        {
-                            ModelState.AddModelError("StartDate", $"Current value: {databaseValues.StartDate:d}");
-                        }
-                        if (databaseValues.InstructorID != clientValues.InstructorID)
-                        {
-                            Instructor databaseInstructor = await _instructorRepo.GetAll().SingleOrDefaultAsync(i => i.ID == databaseValues.InstructorID);
-                            ModelState.AddModelError("InstructorID", $"Current value: {databaseInstructor?.FullName}");
-                        }
+                        ModelState.AddModelError("Budget", $"Current value: {databaseValues.Budget:c}");
+                    }
+                    if (databaseValues.StartDate != clientValues.StartDate)
+                    {
+                        ModelState.AddModelError("StartDate", $"Current value: {databaseValues.StartDate:d}");
+                    }
+                    if (databaseValues.InstructorID != clientValues.InstructorID)
+                    {
+                        Instructor databaseInstructor = await _instructorRepo.GetAll().SingleOrDefaultAsync(i => i.ID == databaseValues.InstructorID);
+                        ModelState.AddModelError("InstructorID", $"Current value: {databaseInstructor?.FullName}");
+                    }
 
-                        ModelState.AddModelError(string.Empty, "The record you attempted to edit was modified by another use after you got the original valued.  "
-                            + "The edit operation was canceled and the current values in the database have been displayed.  If you still want to edit this record, "
-                            + "click the Save button again.  Otherwise click the back to List hyperlink.");
-                        departmentToUpdate.RowVersion = (byte[])databaseValues.RowVersion;
-                        ModelState.Remove("RowVersion");
-                    }
+                    ModelState.AddModelError(string.Empty, "The record you attempted to edit was modified by another use after you got the original valued.  "
+                        + "The edit operation was canceled and the current values in the database have been displayed.  If you still want to edit this record, "
+                        + "click the Save button again.  Otherwise click the back to List hyperlink.");
+                    departmentToUpdate.RowVersion = (byte[])databaseValues.RowVersion;
+                    ModelState.Remove("RowVersion");
                 }
             }
 
-            ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", departmentToUpdate.InstructorID);
-            return View(departmentToUpdate);
+            ViewData["InstructorID"] = new SelectList(_instructorRepo.GetAll(), "ID", "FullName", vm.InstructorID);
+            return View(vm);
         }
 
         public async Task<IActionResult> Delete(int? id, bool? concurrencyError)
