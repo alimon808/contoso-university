@@ -47,8 +47,8 @@ namespace ContosoUniversity.Web.Tests
                 var formTokenVal = await response.GetAntiForgeryFormToken(AntiForgeryFormTokenName);
                 client.DefaultRequestHeaders.Add("Cookie", cookieVal);
 
-                var departmentToAdd = new Department { Name = "Economics", Budget = 100000, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 4 };
-                response = await client.PostFormDataAsync<Department>(url, departmentToAdd, formTokenVal);
+                var departmentToAdd = new DepartmentCreateViewModel { Name = "Economics", Budget = 100000, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 4 };
+                response = await client.PostFormDataAsync<DepartmentCreateViewModel>(url, departmentToAdd, formTokenVal);
 
                 Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
                 Assert.Contains("newid", response.Headers.Location.ToString());

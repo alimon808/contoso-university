@@ -11,7 +11,8 @@ namespace ContosoUniversity.Web
         {
             CreateMap<Department, DepartmentDetailsViewModel>()
                 .ForMember(dest => dest.Administrator, opts => opts.MapFrom(src => src.Administrator.FullName));
-            CreateMap<DepartmentCreateViewModel, Department>();
+            CreateMap<DepartmentCreateViewModel, Department>()
+                .ForMember(dest => dest.Administrator, opts => opts.Ignore());
             CreateMap<Department, DepartmentEditViewModel>()
                 .ForMember(dest => dest.Administrator, opts => opts.MapFrom(src => src.Administrator.FullName));
             CreateMap<DepartmentEditViewModel, Department>()
