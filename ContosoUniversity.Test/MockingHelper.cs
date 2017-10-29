@@ -33,7 +33,13 @@ namespace ContosoUniversity.Tests
         public static Mock<IRepository<TEntity>> AsMockRepository<TEntity>(this List<TEntity> data) where TEntity : BaseEntity
         {
             var mockRepository = new Mock<IRepository<TEntity>>();
-            mockRepository.Setup(c => c.AddAsync(It.IsAny<TEntity>())).Callback<TEntity>(d => data.Add(d)).Returns(Task.FromResult(0));
+            mockRepository.Setup(c => c.AddAsync(It.IsAny<TEntity>()))
+                .Callback<TEntity>(d => 
+                {
+                    d.ID = data.Count() + 1;
+                    data.Add(d);
+                })
+                .Returns(Task.FromResult(0));
             mockRepository.Setup(c => c.Delete(It.IsAny<TEntity>())).Callback<TEntity>(d => data.Remove(d));
             mockRepository.Setup(c => c.GetAll()).Returns(data.AsMockDbSet<TEntity>().Object.AsQueryable<TEntity>());
             mockRepository.Setup(c => c.Get(It.IsAny<int>())).Returns<int>(id => data.AsMockDbSet<TEntity>().Object.Where(s => s.ID == id).AsQueryable<TEntity>());
