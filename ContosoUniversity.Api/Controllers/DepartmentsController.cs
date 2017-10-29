@@ -13,6 +13,7 @@ namespace ContosoUniversity.Api.Controllers
 
     // api is modeled after example at https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?tabs=aspnet1x
     [Route("[controller]")]
+    [Produces("application/json")]
     public class DepartmentsController : Controller
     {
         private IRepository<Department> _departmentRepo;
