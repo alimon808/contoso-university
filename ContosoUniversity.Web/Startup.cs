@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.Rewrite;
 using ContosoUniversity.Common.Data;
 using ContosoUniversity.Common.Interfaces;
 using AutoMapper;
-using ContosoUniversity.ViewModels;
-using ContosoUniversity.Data.Entities;
 
 namespace ContosoUniversity
 {

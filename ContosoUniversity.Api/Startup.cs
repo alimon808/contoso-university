@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Rewrite;
 using ContosoUniversity.Common;
 using ContosoUniversity.Common.Data;
 using ContosoUniversity.Common.Interfaces;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace ContosoUniversity.Api
 {
@@ -40,6 +41,10 @@ namespace ContosoUniversity.Api
             services.AddCustomizedContext(Configuration, CurrentEnvironment);
             services.AddCustomizedAutoMapper();
             services.AddCustomizedMvc();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Contoso University Api", Version = "v1" });
+            });
 
             services.AddScoped<IDbInitializer, ApiInitializer>();
         }
@@ -48,9 +53,16 @@ namespace ContosoUniversity.Api
         {
             if (CurrentEnvironment.IsDevelopment() || CurrentEnvironment.IsEnvironment("Testing"))
             {
+                app.UseDeveloperExceptionPage();
                 dbInitializer.Initialize();
             }
             app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
+            app.UseStaticFiles();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Contoso API V1");
+            });
             app.UseMvc();
         }
     }
