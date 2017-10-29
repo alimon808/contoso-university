@@ -10,6 +10,7 @@ using ContosoUniversity.Tests;
 using ContosoUniversity.Common.Interfaces;
 using AutoMapper;
 using ContosoUniversity.Common.DTO;
+using ContosoUniversity.Api.DTO;
 
 namespace ContosoUniversity.Api.Tests
 {
@@ -24,7 +25,7 @@ namespace ContosoUniversity.Api.Tests
             
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Department, DepartmentDTO>().ReverseMap();
+                cfg.AddProfile<ApiProfile>();
             });
             _mapper = config.CreateMapper();
             _sut = new DepartmentsController(_mockDepartmentRepo.Object, _mapper);
@@ -66,14 +67,14 @@ namespace ContosoUniversity.Api.Tests
         {
             var department = new Department { ID = 5, Name = "Physics", Budget = 100000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 4 };
 
-            var departmentToAdd = _mapper.Map<DepartmentDTO>(department);
+            var departmentToAdd = _mapper.Map<CreateDepartmentDTO>(department);
             var result = await _sut.Create(departmentToAdd);
 
             Assert.NotNull(result);
-            Assert.IsType(typeof(CreatedAtRouteResult), result);
+            Assert.IsType<CreatedAtRouteResult>(result);
             Assert.Equal(201, ((CreatedAtRouteResult)result).StatusCode);
 
-            var departmentCreated = (DepartmentDTO)((CreatedAtRouteResult)result).Value;
+            var departmentCreated = _mapper.Map<DepartmentDTO>(((CreatedAtRouteResult)result).Value);
             Assert.Equal(department.ID, departmentCreated.ID);
             Assert.Equal(departmentToAdd.Name, department.Name);
         }

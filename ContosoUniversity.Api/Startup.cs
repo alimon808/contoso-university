@@ -8,6 +8,7 @@ using ContosoUniversity.Common;
 using ContosoUniversity.Common.Data;
 using ContosoUniversity.Common.Interfaces;
 using Swashbuckle.AspNetCore.Swagger;
+using AutoMapper;
 
 namespace ContosoUniversity.Api
 {
@@ -38,13 +39,16 @@ namespace ContosoUniversity.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCustomizedContext(Configuration, CurrentEnvironment);
-            services.AddCustomizedAutoMapper();
-            services.AddCustomizedMvc();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "Contoso University Api", Version = "v1" });
-            });
+            services.AddCustomizedContext(Configuration, CurrentEnvironment)
+                .AddAutoMapper(cfg =>
+                {
+                    cfg.AddProfile<ApiProfile>();
+                })
+                .AddCustomizedMvc()
+                .AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new Info { Title = "Contoso University Api", Version = "v1" });
+                });
 
             services.AddScoped<IDbInitializer, ApiInitializer>();
         }
@@ -56,14 +60,16 @@ namespace ContosoUniversity.Api
                 app.UseDeveloperExceptionPage();
                 dbInitializer.Initialize();
             }
-            app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
-            app.UseStaticFiles();
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Contoso API V1");
-            });
-            app.UseMvc();
+            app.UseRewriter(new RewriteOptions().AddRedirectToHttps())
+                .UseDefaultFiles()
+                .UseStaticFiles()
+                .UseSwagger()
+                .UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Contoso API V1");
+                })
+                .UseMvcWithDefaultRoute();
+            
         }
     }
 }

@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using System;
 using AutoMapper;
 using ContosoUniversity.Common.DTO;
+using ContosoUniversity.Api.DTO;
 
 namespace ContosoUniversity.Api.Controllers
 {
 
-    // api is modeled after example at https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?tabs=aspnet1x
+    // api modeled after example at https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?tabs=aspnet1x
     [Route("[controller]")]
     [Produces("application/json")]
     public class DepartmentsController : Controller
@@ -48,8 +49,29 @@ namespace ContosoUniversity.Api.Controllers
             return new ObjectResult(dto);
         }
 
+        /// <summary>
+        /// Creates a Department.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /Departments
+        ///     {
+        ///        "instructorID": 1,
+        ///        "name": "Physics",
+        ///        "budget": 100,
+        ///        "startDate": "2017-10-29T15:24:14.300Z"
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="dto"></param>
+        /// <returns>A newly-created TodoItem</returns>
+        /// <response code="201">Returns the newly-created item</response>
+        /// <response code="400">If the item is null</response>            
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] DepartmentDTO dto)
+        [ProducesResponseType(typeof(CreateDepartmentDTO), 201)]
+        [ProducesResponseType(typeof(CreateDepartmentDTO), 400)]
+        public async Task<IActionResult> Create([FromBody] CreateDepartmentDTO dto)
         {
             if (dto == null)
             {
