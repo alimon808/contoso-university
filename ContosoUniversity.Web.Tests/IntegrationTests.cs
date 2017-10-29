@@ -1,5 +1,4 @@
-﻿using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Tests;
+﻿using ContosoUniversity.Tests;
 using ContosoUniversity.ViewModels;
 using Microsoft.AspNetCore.WebUtilities;
 using System;
