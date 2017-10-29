@@ -3,8 +3,10 @@ Contoso University is a place for learning AspNetCore and related technologies. 
 
 ### ContosoUniversity.Web
 - Traditional Web App using MVC + Razor Pages
+- [Demo](https://contoso-university-demo.azurewebsites.net/)
 ### ContosoUniversity.Api
 - Traditional Rest Api
+- [Demo](https://contoso-university-demo-api.azurewebsites.net/)
 ### Testing
 - Unit Testing using [Moq](https://github.com/Moq/moq4/wiki/Quickstart) and [xUnit](https://xunit.github.io/docs/getting-started-dotnet-core)
 - Integration Testing using TestHost and InMemoryDatabase
