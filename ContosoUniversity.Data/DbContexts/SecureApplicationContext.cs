@@ -20,13 +20,8 @@ namespace ContosoUniversity.Data.DbContexts
                 dbSchema = null;
             }
 
-            builder.Entity<ApplicationUser>().ToTable("Users", dbSchema);
-            builder.Entity<IdentityRole>().ToTable("Role", dbSchema);
-            builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaim", dbSchema);
-            builder.Entity<IdentityUserRole<string>>().ToTable("UserRole", dbSchema);
-            builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogin", dbSchema);
-            builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaim", dbSchema);
-            builder.Entity<IdentityUserToken<string>>().ToTable("UserToken", dbSchema);
+            var config = new DbContextConfig();
+            config.SecureApplicationContextConfig(builder, dbSchema);
         }
     }
 }

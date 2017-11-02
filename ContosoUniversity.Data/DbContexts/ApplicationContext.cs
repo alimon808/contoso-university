@@ -1,7 +1,7 @@
 ﻿using ContosoUniversity.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ContosoUniversity.Data
+namespace ContosoUniversity.Data.DbContexts
 {
     public class ApplicationContext : DbContext
     {
@@ -25,15 +25,10 @@ namespace ContosoUniversity.Data
             {
                 schema = null;
             }
-            modelBuilder.Entity<Course>().ToTable("Course", schema);
-            modelBuilder.Entity<Enrollment>().ToTable("Enrollment", schema);
-            modelBuilder.Entity<Student>().ToTable("Student", schema);
-            modelBuilder.Entity<Department>().ToTable("Department", schema);
-            modelBuilder.Entity<Instructor>().ToTable("Instructor", schema);
-            modelBuilder.Entity<OfficeAssignment>().ToTable("OfficeAssignment", schema);
-            modelBuilder.Entity<CourseAssignment>().ToTable("CourseAssignment", schema);
-            modelBuilder.Entity<Person>().ToTable("Person", schema);
-            modelBuilder.Entity<CourseAssignment>().HasKey(c => new { c.CourseID, c.InstructorID });
+
+            var config = new DbContextConfig();
+            config.ApplicationContextConfig(modelBuilder, schema);
+            
         }
     }
 }
