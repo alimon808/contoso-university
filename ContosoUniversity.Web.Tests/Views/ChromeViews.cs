@@ -17,7 +17,7 @@ namespace ContosoUniversity.Web.Tests.Views
             _baseUrl = new Uri("https://localhost:44368/");
         }
 
-        [Fact]
+        [Fact(Skip = "Chrome UI")]
         public void HomeIndex_ShouldHaveAJumbotron_WithH1()
         {
             var home = _baseUrl;
