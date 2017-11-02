@@ -11,6 +11,8 @@ using ContosoUniversity.Common.Interfaces;
 using AutoMapper;
 using ContosoUniversity.Common.DTO;
 using ContosoUniversity.Api.DTO;
+using ContosoUniversity.Common;
+using ContosoUniversity.Data.DbContexts;
 
 namespace ContosoUniversity.Api.Tests
 {
@@ -22,13 +24,15 @@ namespace ContosoUniversity.Api.Tests
         public DepartmentsApiControllerTests()
         {
             _mockDepartmentRepo = Departments.AsMockRepository<Department>();
-            
+            var mockUnitOfWork = new Mock<UnitOfWork<ApiContext>>();
+            mockUnitOfWork.Setup(c => c.DepartmentRepository).Returns(_mockDepartmentRepo.Object);
+
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<ApiProfile>();
             });
             _mapper = config.CreateMapper();
-            _sut = new DepartmentsController(_mockDepartmentRepo.Object, _mapper);
+            _sut = new DepartmentsController(mockUnitOfWork.Object, _mapper);
         }
 
         [Fact]

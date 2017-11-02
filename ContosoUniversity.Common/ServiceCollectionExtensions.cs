@@ -26,6 +26,7 @@ namespace ContosoUniversity.Common
                 services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
                 services.AddDbContext<SecureApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
                 services.AddDbContext<WebContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
+                services.AddDbContext<ApiContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
             }
             else
             {

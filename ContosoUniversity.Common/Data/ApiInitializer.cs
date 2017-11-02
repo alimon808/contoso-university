@@ -2,18 +2,18 @@
 using ContosoUniversity.Common.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
-using ContosoUniversity.Data;
+using ContosoUniversity.Data.DbContexts;
 
 namespace ContosoUniversity.Common.Data
 {
     public class ApiInitializer : IDbInitializer
     {
-        private readonly ApplicationContext _context;
+        private readonly ApiContext _context;
         private readonly ILogger _logger;
         private readonly SampleData _data;
         private readonly IHostingEnvironment _environment;
 
-        public ApiInitializer(ApplicationContext context, 
+        public ApiInitializer(ApiContext context, 
             ILoggerFactory loggerFactory,
             IOptions<SampleData> dataOptions,
             IHostingEnvironment env)
@@ -35,8 +35,8 @@ namespace ContosoUniversity.Common.Data
             {
                 _logger.LogInformation("Creating database schema...");
             }
-            var unitOfWork = new UnitOfWork(_context);
-            var seedData = new SeedData(_logger, unitOfWork, _data);
+            var unitOfWork = new UnitOfWork<ApiContext>(_context);
+            var seedData = new SeedData<ApiContext>(_logger, unitOfWork, _data);
             seedData.Initialize();
         }
     }

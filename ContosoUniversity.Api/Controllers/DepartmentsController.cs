@@ -8,10 +8,11 @@ using System;
 using AutoMapper;
 using ContosoUniversity.Common.DTO;
 using ContosoUniversity.Api.DTO;
+using ContosoUniversity.Data.DbContexts;
+using ContosoUniversity.Common;
 
 namespace ContosoUniversity.Api.Controllers
 {
-
     // api modeled after example at https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?tabs=aspnet1x
     [Route("[controller]")]
     [Produces("application/json")]
@@ -20,9 +21,9 @@ namespace ContosoUniversity.Api.Controllers
         private IRepository<Department> _departmentRepo;
         private readonly IMapper _mapper;
 
-        public DepartmentsController(IRepository<Department> departmentRepo, IMapper mapper)
+        public DepartmentsController(UnitOfWork<ApiContext> unitOfWork, IMapper mapper)
         {
-            _departmentRepo = departmentRepo;
+            _departmentRepo = unitOfWork.DepartmentRepository;
             _mapper = mapper;
         }
 
