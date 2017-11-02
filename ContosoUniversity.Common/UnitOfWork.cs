@@ -2,13 +2,14 @@
 using ContosoUniversity.Common.Interfaces;
 using ContosoUniversity.Data;
 using ContosoUniversity.Common.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Common
 {
     // use c# 7 expression-bodied members
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork<TContext> : IUnitOfWork where TContext : DbContext
     {
-        private ApplicationContext _context;
+        private TContext _context;
         private IRepository<Department> _departmentRepo;
         private IPersonRepository<Instructor> _instructorRepo;
         private IPersonRepository<Student> _studentRepo;
@@ -21,45 +22,45 @@ namespace ContosoUniversity.Common
         {
         }
 
-        public UnitOfWork(ApplicationContext context)
+        public UnitOfWork(TContext context)
         {
             context.Database.EnsureCreated();
             _context = context;
         }
 
-        public IRepository<Department> DepartmentRepository
+        public virtual IRepository<Department> DepartmentRepository
         {
-            get => _departmentRepo = _departmentRepo ?? new Repository<Department>(_context);
+            get => _departmentRepo = _departmentRepo ?? new Repository<Department, TContext>(_context);
         }
 
-        public IPersonRepository<Instructor> InstructorRepository
+        public virtual IPersonRepository<Instructor> InstructorRepository
         {
-            get => _instructorRepo = _instructorRepo ?? new PersonRepository<Instructor>(_context);
+            get => _instructorRepo = _instructorRepo ?? new PersonRepository<Instructor, TContext>(_context);
         }
 
-        public IPersonRepository<Student> StudentRepository
+        public virtual IPersonRepository<Student> StudentRepository
         {
-            get => _studentRepo = _studentRepo ?? new PersonRepository<Student>(_context);
+            get => _studentRepo = _studentRepo ?? new PersonRepository<Student, TContext>(_context);
         }
 
-        public IRepository<Course> CourseRepository
+        public virtual IRepository<Course> CourseRepository
         {
-            get => _courseRepo = _courseRepo ?? new Repository<Course>(_context);
+            get => _courseRepo = _courseRepo ?? new Repository<Course, TContext>(_context);
         }
 
-        public IRepository<CourseAssignment> CourseAssignmentRepository
+        public virtual IRepository<CourseAssignment> CourseAssignmentRepository
         {
-            get => _courseAssignmentRepo = _courseAssignmentRepo ?? new Repository<CourseAssignment>(_context);
+            get => _courseAssignmentRepo = _courseAssignmentRepo ?? new Repository<CourseAssignment, TContext>(_context);
         }
 
-        public IRepository<OfficeAssignment> OfficeAssignmentRepository
+        public virtual IRepository<OfficeAssignment> OfficeAssignmentRepository
         {
-            get => _officeAssignmentRepo = _officeAssignmentRepo ?? new Repository<OfficeAssignment>(_context);
+            get => _officeAssignmentRepo = _officeAssignmentRepo ?? new Repository<OfficeAssignment, TContext>(_context);
         }
 
-        public IRepository<Enrollment> EnrollmentRepository
+        public virtual IRepository<Enrollment> EnrollmentRepository
         {
-            get => _enrollmentRepo = _enrollmentRepo ?? new Repository<Enrollment>(_context);
+            get => _enrollmentRepo = _enrollmentRepo ?? new Repository<Enrollment, TContext>(_context);
         }
 
         public void Commit()

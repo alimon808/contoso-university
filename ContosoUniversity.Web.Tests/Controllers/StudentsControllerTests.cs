@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using ContosoUniversity.Common.Interfaces;
+using ContosoUniversity.Common;
+using ContosoUniversity.Data.DbContexts;
 
 namespace ContosoUniversity.Web.Tests.Controllers
 {
@@ -25,8 +27,12 @@ namespace ContosoUniversity.Web.Tests.Controllers
         {
             this.output = output;
             mockStudentRepo = Students().AsMockPersonRepository();
+
+            var mockUnitOfWork = new Mock<UnitOfWork<ApplicationContext>>();
+            mockUnitOfWork.Setup(c => c.StudentRepository).Returns(mockStudentRepo.Object);
+
             mockModelBindingHelperAdaptor = new Mock<IModelBindingHelperAdaptor>();
-            sut = new StudentsController(mockStudentRepo.Object, mockModelBindingHelperAdaptor.Object);
+            sut = new StudentsController(mockUnitOfWork.Object, mockModelBindingHelperAdaptor.Object);
         }
 
         [Theory]

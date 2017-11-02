@@ -1,4 +1,5 @@
 ﻿using ContosoUniversity.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;

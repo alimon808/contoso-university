@@ -3,12 +3,13 @@ using ContosoUniversity.Common.Interfaces;
 using System;
 using System.Linq;
 using ContosoUniversity.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Common.Repositories
 {
-    public class PersonRepository<T> : Repository<T>, IPersonRepository<T> where T : Person
+    public class PersonRepository<T, TContext> : Repository<T, TContext>, IPersonRepository<T> where T : Person where TContext : DbContext
     {
-        public PersonRepository(ApplicationContext context) : base(context)
+        public PersonRepository(TContext context) : base(context)
         {
         }
 

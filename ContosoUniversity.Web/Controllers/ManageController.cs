@@ -1,5 +1,4 @@
 using ContosoUniversity.Data.Entities;
-using ContosoUniversity.Data.DbContexts;
 using ContosoUniversity.Common;
 using ContosoUniversity.Web.Enums;
 using ContosoUniversity.Web.ViewModels;

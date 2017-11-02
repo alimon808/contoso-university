@@ -1,16 +1,18 @@
 ﻿using Microsoft.Extensions.Logging;
 using ContosoUniversity.Data.Entities;
 using System.Linq;
+using ContosoUniversity.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Common.Data
 {
-    public class SeedData
+    public class SeedData<TContext> where TContext : DbContext
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly UnitOfWork<TContext> _unitOfWork;
         private readonly ILogger _logger;
         private readonly SampleData _data;
 
-        public SeedData(ILogger logger, UnitOfWork unitOfWork, SampleData data)
+        public SeedData(ILogger logger, UnitOfWork<TContext> unitOfWork, SampleData data)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;

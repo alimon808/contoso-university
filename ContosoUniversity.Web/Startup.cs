@@ -52,6 +52,7 @@ namespace ContosoUniversity
             {
                 cfg.AddProfile<WebProfile>();
             });
+
             services.AddScoped<IDbInitializer, WebInitializer>();
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();

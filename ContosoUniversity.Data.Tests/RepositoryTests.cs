@@ -1,4 +1,5 @@
-﻿using ContosoUniversity.Data.Entities;
+﻿using ContosoUniversity.Data.DbContexts;
+using ContosoUniversity.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -10,7 +11,7 @@ namespace ContosoUniversity.Data.Tests
 {
     public class RepositoryTests
     {
-        private Repository<Department> _sut;
+        private Repository<Department, ApplicationContext> _sut;
 
         public RepositoryTests()
         {
@@ -18,7 +19,7 @@ namespace ContosoUniversity.Data.Tests
             builder.UseInMemoryDatabase("TestDb");
 
             var context = new ApplicationContext(builder.Options);
-            _sut = new Repository<Department>(context);
+            _sut = new Repository<Department, ApplicationContext>(context);
         }
 
         [Fact]

@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Data.Common;
+using ContosoUniversity.Data.DbContexts;
 
 namespace ContosoUniversity.Data
 {
-    public class Repository<T> : IRepository<T> where T : BaseEntity
+    public class Repository<T, TContext> : IRepository<T> where T : BaseEntity where TContext : DbContext
     {
-        private readonly ApplicationContext context;
+        private readonly TContext context;
         private DbSet<T> entities;
         string errorMessage = string.Empty;
 
@@ -17,7 +18,7 @@ namespace ContosoUniversity.Data
         {
         }
 
-        public Repository(ApplicationContext context)
+        public Repository(TContext context)
         {
             this.context = context;
             entities = context.Set<T>();

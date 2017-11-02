@@ -25,6 +25,7 @@ namespace ContosoUniversity.Common
             {
                 services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
                 services.AddDbContext<SecureApplicationContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
+                services.AddDbContext<WebContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("TestDb"));
             }
             else
             {
@@ -47,11 +48,18 @@ namespace ContosoUniversity.Common
                     services.AddDbContext<SecureApplicationContext>(
                         options => options.UseSqlServer(
                             configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("IdentityMigration", "Contoso")));
+                    services.AddDbContext<WebContext>(
+                        options => options.UseSqlServer(
+                            configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("IdentityMigration", "Contoso")));
+                    services.AddDbContext<ApiContext>(
+                        options => options.UseSqlServer(
+                            configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("IdentityMigration", "Contoso")));
                 }
             }
 
+            services.AddScoped<UnitOfWork<ApplicationContext>, UnitOfWork<ApplicationContext>>();
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<,>));
             
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.Configure<SampleData>(configuration.GetSection("SampleData"));
 
             return services;

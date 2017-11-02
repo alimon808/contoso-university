@@ -7,21 +7,23 @@ using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 using ContosoUniversity.Tests;
-using ContosoUniversity.Common.Interfaces;
+using ContosoUniversity.Data.DbContexts;
+using ContosoUniversity.Common;
 
 namespace ContosoUniversity.Web.Tests.Controllers
 {
     public class HomeControllerTests
     {
         private readonly ITestOutputHelper _output;
-        private readonly Mock<IPersonRepository<Student>> mockStudentRepo;
         HomeController _sut;
         
         public HomeControllerTests(ITestOutputHelper output)
         {
             _output = output;
-            mockStudentRepo = Students().AsMockPersonRepository();
-            _sut = new HomeController(mockStudentRepo.Object);
+            var mockStudentRepo = Students().AsMockPersonRepository();
+            var mockUnitOfWork = new Mock<UnitOfWork<ApplicationContext>>();
+            mockUnitOfWork.Setup(c => c.StudentRepository).Returns(mockStudentRepo.Object);
+            _sut = new HomeController(mockUnitOfWork.Object);
         }
 
         [Fact]

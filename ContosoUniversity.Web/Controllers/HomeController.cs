@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Data.Common;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Common.Interfaces;
+using ContosoUniversity.Data.DbContexts;
+using ContosoUniversity.Common;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -12,9 +14,9 @@ namespace ContosoUniversity.Web.Controllers
     {
         private readonly IRepository<Student> _studentRepo;
 
-        public HomeController(IRepository<Student> studentRepo)
+        public HomeController(UnitOfWork<ApplicationContext> unitOfWork)
         {
-            _studentRepo = studentRepo;
+            _studentRepo = unitOfWork.StudentRepository;
         }
 
         public IActionResult Index()

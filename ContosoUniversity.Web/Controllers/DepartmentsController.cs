@@ -8,6 +8,8 @@ using System;
 using ContosoUniversity.ViewModels;
 using ContosoUniversity.Common.Interfaces;
 using AutoMapper;
+using ContosoUniversity.Common;
+using ContosoUniversity.Data.DbContexts;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -18,13 +20,12 @@ namespace ContosoUniversity.Web.Controllers
         private readonly IModelBindingHelperAdaptor _modelBindingHelperAdaptor;
         private readonly IMapper _mapper;
 
-        public DepartmentsController(IRepository<Department> departmentRepo,
-                                     IRepository<Instructor> instructorRepo,
+        public DepartmentsController(UnitOfWork<ApplicationContext> unitOfWork,
                                      IModelBindingHelperAdaptor modelBindingHelperAdaptor,
                                      IMapper mapper)
         {
-            _departmentRepo = departmentRepo;
-            _instructorRepo = instructorRepo;
+            _departmentRepo = unitOfWork.DepartmentRepository;
+            _instructorRepo = unitOfWork.InstructorRepository;
             _modelBindingHelperAdaptor = modelBindingHelperAdaptor;
             _mapper = mapper;
         }

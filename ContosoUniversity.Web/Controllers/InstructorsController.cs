@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Models.SchoolViewModels;
 using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Common.Interfaces;
+using ContosoUniversity.Common;
+using ContosoUniversity.Data.DbContexts;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -18,16 +20,13 @@ namespace ContosoUniversity.Web.Controllers
         private readonly IRepository<CourseAssignment> _courseAssignmentRepo;
         private readonly IModelBindingHelperAdaptor _modelBindingHelperAdaptor;
 
-        public InstructorsController(IRepository<Instructor> instructorRepo, 
-            IRepository<Department> departmentRepo, 
-            IRepository<Course> courseRepo, 
-            IRepository<CourseAssignment> courseAssignmentRepo,
+        public InstructorsController(UnitOfWork<ApplicationContext> unitOfWork,
             IModelBindingHelperAdaptor modelBindingHelperAdaptor)
         {
-            _instructorRepo = instructorRepo;
-            _departmentRepo = departmentRepo;
-            _courseRepo = courseRepo;
-            _courseAssignmentRepo = courseAssignmentRepo;
+            _instructorRepo = unitOfWork.InstructorRepository;
+            _departmentRepo = unitOfWork.DepartmentRepository;
+            _courseRepo = unitOfWork.CourseRepository;
+            _courseAssignmentRepo = unitOfWork.CourseAssignmentRepository;
             _modelBindingHelperAdaptor = modelBindingHelperAdaptor;
         }
 

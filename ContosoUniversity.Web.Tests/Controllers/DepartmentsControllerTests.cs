@@ -6,13 +6,14 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using ContosoUniversity.Tests;
 using ContosoUniversity.Common.Interfaces;
 using AutoMapper;
+using ContosoUniversity.Common;
+using ContosoUniversity.Data.DbContexts;
 
 namespace ContosoUniversity.Web.Tests.Controllers
 {
@@ -37,7 +38,12 @@ namespace ContosoUniversity.Web.Tests.Controllers
             });
             _mapper = config.CreateMapper();
 
-            sut = new DepartmentsController(mockDepartmentRepo.Object, mockInstructorRepo.Object, mockModelBindingHelperAdaptor.Object, _mapper);
+
+            var mockUnitOfWork = new Mock<UnitOfWork<ApplicationContext>>();
+            mockUnitOfWork.Setup(c => c.DepartmentRepository).Returns(mockDepartmentRepo.Object);
+            mockUnitOfWork.Setup(c => c.InstructorRepository).Returns(mockInstructorRepo.Object);
+
+            sut = new DepartmentsController(mockUnitOfWork.Object, mockModelBindingHelperAdaptor.Object, _mapper);
         }
 
         [Fact]
