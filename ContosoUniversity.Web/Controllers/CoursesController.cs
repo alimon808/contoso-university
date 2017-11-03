@@ -8,6 +8,7 @@ using System;
 using ContosoUniversity.Common.Interfaces;
 using ContosoUniversity.Common;
 using ContosoUniversity.Data.DbContexts;
+using System.Collections.Generic;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -60,7 +61,7 @@ namespace ContosoUniversity.Web.Controllers
             var departmentsQuery = from d in _departmentRepo.GetAll()
                                    orderby d.Name
                                    select d;
-            ViewBag.DepartmentID = new SelectList(departmentsQuery.AsNoTracking(), "DepartmentID", "Name", selectedDepartment);
+            ViewBag.DepartmentID = new SelectList(departmentsQuery.AsNoTracking(), "ID", "Name", selectedDepartment);
         }
         
         [HttpPost]
