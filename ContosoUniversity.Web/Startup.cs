@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Rewrite;
 using ContosoUniversity.Common.Data;
 using ContosoUniversity.Common.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ContosoUniversity
 {
@@ -45,6 +48,16 @@ namespace ContosoUniversity
         {
             services.AddCustomizedContext(Configuration, CurrentEnvironment);
             services.AddCustomizedIdentity(Configuration);
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = Configuration["Authentication:Tokens:Issuer"],
+                        ValidAudience = Configuration["Authentication:Tokens:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:Tokens:Key"]))
+                    };
+                });
             services.AddCustomizedMessage(Configuration);
             services.AddCustomizedMvc();
             
@@ -56,6 +69,7 @@ namespace ContosoUniversity
             services.AddScoped<IDbInitializer, WebInitializer>();
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();
+            services.AddSingleton<IConfiguration>(Configuration);
         }
 
         public void Configure(IApplicationBuilder app,

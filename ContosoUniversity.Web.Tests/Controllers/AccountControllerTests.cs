@@ -401,6 +401,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         }
 
         // original code from https://github.com/aspnet/Identity/issues/344
+        // todo: move into separate file
         public class FakeUserManager : UserManager<ApplicationUser>
         {
             public FakeUserManager()
@@ -460,6 +461,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             }
         }
 
+        // todo: move into separate file
         public class FakeSignInManager : SignInManager<ApplicationUser>
         {
             public Microsoft.AspNetCore.Identity.SignInResult SignInResult { get; set; } = Microsoft.AspNetCore.Identity.SignInResult.Success;
