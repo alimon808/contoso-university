@@ -10,6 +10,8 @@ using ContosoUniversity.Common.Interfaces;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
 using ContosoUniversity.Data.DbContexts;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ContosoUniversity.Api
 {
@@ -51,6 +53,16 @@ namespace ContosoUniversity.Api
                     c.SwaggerDoc("v1", new Info { Title = "Contoso University Api", Version = "v1" });
                 });
 
+            services.AddAuthentication()
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters()
+                        {
+                            ValidIssuer = Configuration["Authentication:Tokens:Issuer"],
+                            ValidAudience = Configuration["Authentication:Tokens:Audience"],
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:Tokens:Key"]))
+                        };
+                    });
             services.AddScoped<UnitOfWork<ApiContext>, UnitOfWork<ApiContext>>();
             services.AddScoped<IDbInitializer, ApiInitializer>();
         }
@@ -62,6 +74,7 @@ namespace ContosoUniversity.Api
                 app.UseDeveloperExceptionPage();
                 dbInitializer.Initialize();
             }
+            app.UseAuthentication();
             app.UseRewriter(new RewriteOptions().AddRedirectToHttps())
                 .UseDefaultFiles()
                 .UseStaticFiles()

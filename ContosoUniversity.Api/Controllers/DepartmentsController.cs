@@ -10,12 +10,15 @@ using ContosoUniversity.Common.DTO;
 using ContosoUniversity.Api.DTO;
 using ContosoUniversity.Data.DbContexts;
 using ContosoUniversity.Common;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ContosoUniversity.Api.Controllers
 {
     // api modeled after example at https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?tabs=aspnet1x
     [Route("[controller]")]
     [Produces("application/json")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class DepartmentsController : Controller
     {
         private IRepository<Department> _departmentRepo;
@@ -28,6 +31,7 @@ namespace ContosoUniversity.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IEnumerable<DepartmentDTO> GetAll()
         {
             var query = _departmentRepo.GetAll()
