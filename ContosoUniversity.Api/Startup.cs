@@ -10,8 +10,6 @@ using ContosoUniversity.Common.Interfaces;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
 using ContosoUniversity.Data.DbContexts;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace ContosoUniversity.Api
 {
@@ -34,7 +32,6 @@ namespace ContosoUniversity.Api
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
-
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -53,16 +50,7 @@ namespace ContosoUniversity.Api
                     c.SwaggerDoc("v1", new Info { Title = "Contoso University Api", Version = "v1" });
                 });
 
-            services.AddAuthentication()
-                    .AddJwtBearer(options =>
-                    {
-                        options.TokenValidationParameters = new TokenValidationParameters()
-                        {
-                            ValidIssuer = Configuration["Authentication:Tokens:Issuer"],
-                            ValidAudience = Configuration["Authentication:Tokens:Audience"],
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:Tokens:Key"]))
-                        };
-                    });
+            services.AddCustomizedAuthorization(Configuration);
             services.AddScoped<UnitOfWork<ApiContext>, UnitOfWork<ApiContext>>();
             services.AddScoped<IDbInitializer, ApiInitializer>();
         }
@@ -83,8 +71,7 @@ namespace ContosoUniversity.Api
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Contoso API V1");
                 })
-                .UseMvcWithDefaultRoute();
-            
+                .UseMvcWithDefaultRoute();       
         }
     }
 }
