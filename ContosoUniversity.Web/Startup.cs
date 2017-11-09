@@ -18,30 +18,13 @@ namespace ContosoUniversity
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IHostingEnvironment env, IConfiguration config)
         {
             CurrentEnvironment = env;
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-            if (env.IsDevelopment() || env.IsEnvironment("Testing"))
-            {
-                //var relativePathToData = @"../ContosoUniversity.Data";
-                //var absolutePathToData = System.IO.Path.GetFullPath(relativePathToData);
-                //var dataProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(absolutePathToData);
-                builder.AddJsonFile($"sampleData.json", optional: true, reloadOnChange: false);
-                builder.AddUserSecrets<Startup>();
-            }
-
-            Configuration = builder
-                .AddJsonFile("appsettings.production.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+            Configuration = config;
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
         public IHostingEnvironment CurrentEnvironment { get; }
 
         public void ConfigureServices(IServiceCollection services)
@@ -76,10 +59,7 @@ namespace ContosoUniversity
             IHostingEnvironment env,
             ILoggerFactory loggerFactory,
             IDbInitializer dbInitializer)
-        {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-            
+        {   
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -89,7 +69,7 @@ namespace ContosoUniversity
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            
+
             app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             app.UseStaticFiles();
             app.UseAuthentication();

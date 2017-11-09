@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace ContosoUniversity.Tests
 {
@@ -33,12 +34,19 @@ namespace ContosoUniversity.Tests
                 .UseContentRoot(contentRoot)
                 .ConfigureServices(InitializeServices)
                 .UseEnvironment("Testing")
+                .ConfigureAppConfiguration(ConfigConfiguration)
                 .UseStartup(typeof(T));
 
             var ts = new TestServer(builder);
             ts.BaseAddress = new Uri("https://localhost/");
 
             return ts;
+        }
+
+        protected void ConfigConfiguration(WebHostBuilderContext context, IConfigurationBuilder config)
+        {
+            config.AddUserSecrets<T>();
+            config.AddEnvironmentVariables();
         }
 
         protected void InitializeServices(IServiceCollection services)
