@@ -12,6 +12,9 @@ using System;
 using ContosoUniversity.Common.Data;
 using AutoMapper;
 using ContosoUniversity.Common.DTO;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ContosoUniversity.Common
 {
@@ -89,18 +92,6 @@ namespace ContosoUniversity.Common
             .AddEntityFrameworkStores<SecureApplicationContext>()
             .AddDefaultTokenProviders();
 
-            services.AddAuthentication()
-                .AddGoogle(googleOptions =>
-                {
-                    googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
-                    googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
-                })
-                .AddFacebook(facebookOptions =>
-                {
-                    facebookOptions.AppId = configuration["Authentication:Facebook:AppId"];
-                    facebookOptions.AppSecret = configuration["Authentication:Facebook:AppSecret"];
-                });
-
             services.Configure<IdentityOptions>(options =>
             {
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
@@ -108,6 +99,32 @@ namespace ContosoUniversity.Common
             });
 
             services.Configure<IdentityUserOptions>(configuration.GetSection("IdentityUser"));
+
+            return services;
+        }
+
+        public static IServiceCollection AddCustomizedAuthorization(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddGoogle(options =>
+                {
+                    options.ClientId = configuration["Authentication:Google:ClientId"];
+                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+                })
+                .AddFacebook(options =>
+                {
+                    options.AppId = configuration["Authentication:Facebook:AppId"];
+                    options.AppSecret = configuration["Authentication:Facebook:AppSecret"];
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = configuration["Authentication:Tokens:Issuer"],
+                        ValidAudience = configuration["Authentication:Tokens:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:Tokens:Key"]))
+                    };
+                });
 
             return services;
         }
