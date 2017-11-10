@@ -15,27 +15,14 @@ namespace ContosoUniversity.Api
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public IConfiguration Configuration { get; }
+        public IHostingEnvironment CurrentEnvironment { get; }
+
+        public Startup(IHostingEnvironment env, IConfiguration config)
         {
             CurrentEnvironment = env;
-
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-            if (env.IsDevelopment() || env.IsEnvironment("Testing"))
-            {
-                builder.AddJsonFile($"sampleData.json", optional: true, reloadOnChange: false);
-                builder.AddUserSecrets<Startup>();
-            }
-
-            builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = config;
         }
-
-        public IConfigurationRoot Configuration { get; }
-        public IHostingEnvironment CurrentEnvironment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -57,7 +44,7 @@ namespace ContosoUniversity.Api
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IDbInitializer dbInitializer)
         {
-            if (CurrentEnvironment.IsDevelopment() || CurrentEnvironment.IsEnvironment("Testing"))
+            if (CurrentEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 dbInitializer.Initialize();
@@ -72,6 +59,14 @@ namespace ContosoUniversity.Api
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Contoso API V1");
                 })
                 .UseMvcWithDefaultRoute();       
+        }
+
+        public void ConfigureTesting(IApplicationBuilder app, IDbInitializer dbInitializer)
+        {            
+            dbInitializer.Initialize();
+            app.UseAuthentication()
+                .UseRewriter(new RewriteOptions().AddRedirectToHttps())
+                .UseMvcWithDefaultRoute();
         }
     }
 }
