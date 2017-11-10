@@ -129,6 +129,22 @@ namespace ContosoUniversity.Common
             return services;
         }
 
+        public static IServiceCollection AddCustomizedApiAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddAuthentication()
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = configuration["Authentication:Tokens:Issuer"],
+                        ValidAudience = configuration["Authentication:Tokens:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:Tokens:Key"]))
+                    };
+                });
+
+            return services;
+        }
+
         // sms and email services
         public static IServiceCollection AddCustomizedMessage(this IServiceCollection services, IConfiguration configuration)
         {
