@@ -103,7 +103,7 @@ namespace ContosoUniversity.Common
             return services;
         }
 
-        public static IServiceCollection AddCustomizedAuthorization(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddCustomizedAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddGoogle(options =>

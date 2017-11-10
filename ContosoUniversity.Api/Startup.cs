@@ -37,7 +37,7 @@ namespace ContosoUniversity.Api
                     c.SwaggerDoc("v1", new Info { Title = "Contoso University Api", Version = "v1" });
                 });
 
-            services.AddCustomizedAuthorization(Configuration);
+            services.AddCustomizedAuthentication(Configuration);
             services.AddScoped<UnitOfWork<ApiContext>, UnitOfWork<ApiContext>>();
             services.AddScoped<IDbInitializer, ApiInitializer>();
         }

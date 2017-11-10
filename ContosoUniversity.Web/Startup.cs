@@ -28,7 +28,7 @@ namespace ContosoUniversity
         {
             services.AddCustomizedContext(Configuration, CurrentEnvironment);
             services.AddCustomizedIdentity(Configuration);
-            services.AddCustomizedAuthorization(Configuration);
+            services.AddCustomizedAuthentication(Configuration);
             services.AddCustomizedMessage(Configuration);
             services.AddCustomizedMvc();
             services.AddAutoMapper(cfg =>
