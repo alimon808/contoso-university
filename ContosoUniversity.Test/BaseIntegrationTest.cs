@@ -45,8 +45,11 @@ namespace ContosoUniversity.Tests
 
         protected void ConfigConfiguration(WebHostBuilderContext context, IConfigurationBuilder config)
         {
-            config.AddUserSecrets<T>();
-            config.AddEnvironmentVariables();
+            config.SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.Testing.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("testData.json", optional: false, reloadOnChange: true)
+                .AddUserSecrets<T>()
+                .AddEnvironmentVariables();
         }
 
         protected void InitializeServices(IServiceCollection services)
