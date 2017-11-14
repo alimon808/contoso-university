@@ -34,20 +34,23 @@
             }
 
         </dd>
-        <dt>Two-Factor Authentication</dt>
-        <dd>
-            @if (Model.TwoFactor)
-            {
-                <form asp-controller="Manage" asp-action="DisableTwoFactorAuthentication" method="post" class="form-horizontal">
-                    Enabled <button type="submit" class="btn-link btn-bracketed">Disable</button>
-                </form>
-            }
-            else
-            {
-                <form asp-controller="Manage" asp-action="EnableTwoFactorAuthentication" method="post" class="form-horizontal">
-                    <button type="submit" class="btn-link btn-bracketed">Enable</button> Disabled
-                </form>
-            }
-        </dd>
+        @if (Model.PhoneNumber != null)
+        {
+            <dt>Two-Factor Authentication</dt>
+            <dd>
+                @if (Model.TwoFactor)
+                {
+                    <form asp-controller="Manage" asp-action="DisableTwoFactorAuthentication" method="post" class="form-horizontal">
+                        Enabled <button type="submit" class="btn-link btn-bracketed">Disable</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-controller="Manage" asp-action="EnableTwoFactorAuthentication" method="post" class="form-horizontal">
+                        <button type="submit" class="btn-link btn-bracketed">Enable</button> Disabled
+                    </form>
+                }
+            </dd>
+        }
     </dl>
 </div>
