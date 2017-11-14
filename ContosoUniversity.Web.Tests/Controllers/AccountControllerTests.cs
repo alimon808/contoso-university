@@ -281,7 +281,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
         }
 
         [Fact]
-        public async Task VerfifyCodePost_ReturnsARedirectToActionResult_HomeIndex()
+        public async Task VerfifyCodePost_ReturnsARedirectToActionResult_ManageIndex()
         {
             var mockUrl = new Mock<IUrlHelper>();
             mockUrl.Setup(m => m.IsLocalUrl(It.IsAny<string>())).Returns(false);
@@ -292,7 +292,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
 
             Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
-            Assert.Equal("Home", ((RedirectToActionResult)result).ControllerName);
+            Assert.Equal("Manage", ((RedirectToActionResult)result).ControllerName);
         }
 
         [Fact]
