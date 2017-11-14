@@ -1,14 +1,13 @@
 @model ContosoUniversity.Web.ViewModels.ManageIndexViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Manage Account Settings";
 }
 
 <h2>@ViewData["Title"]</h2>
 <p class="text-success">@ViewData["StatusMessage"]</p>
 
 <div>
-    <h4>Change your account settings</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>Password:</dt>
@@ -17,18 +16,9 @@
             {
                 <a asp-controller="Manage" asp-action="ChangePassword" class="btn-bracketed">Change</a>
             }
-            else
-            {
-                @*<a asp-controller="Manage" asp-action="SetPassword" class="btn-bracketed">Create</a>*@
-            }
         </dd>
         <dt>Phone Number:</dt>
         <dd>
-            @*<p>
-                Phone numbers can be used as a second factor of verification in two-factor authentication
-                See <a href="https://go.microsoft.com/fwlink/?LinkID=532713">this article</a>
-                for details on setting this ASP.NET application to support two-factor authentication using sms.
-            </p>*@
             @(Model.PhoneNumber ?? "None")
             @if (Model.PhoneNumber != null)
             {
