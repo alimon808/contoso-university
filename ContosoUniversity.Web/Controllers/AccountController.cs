@@ -422,7 +422,7 @@ namespace ContosoUniversity.Web.Controllers
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Manage");
             }
         }
     }
