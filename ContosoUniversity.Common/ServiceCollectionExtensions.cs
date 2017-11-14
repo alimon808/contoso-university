@@ -88,6 +88,9 @@ namespace ContosoUniversity.Common
             services.AddIdentity<ApplicationUser, IdentityRole>(config =>
             {
                 config.SignIn.RequireConfirmedEmail = true;
+                // issue generating sms friendly verification code
+                // https://github.com/aspnet/Identity/issues/1388
+                config.Tokens.ChangePhoneNumberTokenProvider = "Phone";
             })
             .AddEntityFrameworkStores<SecureApplicationContext>()
             .AddDefaultTokenProviders();
