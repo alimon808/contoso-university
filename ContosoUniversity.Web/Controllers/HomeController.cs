@@ -19,11 +19,6 @@ namespace ContosoUniversity.Web.Controllers
             _studentRepo = unitOfWork.StudentRepository;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         public async Task<IActionResult> About()
         {
             List<EnrollmentDateGroup> groups = new List<EnrollmentDateGroup>();

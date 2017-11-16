@@ -25,17 +25,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             mockUnitOfWork.Setup(c => c.StudentRepository).Returns(mockStudentRepo.Object);
             _sut = new HomeController(mockUnitOfWork.Object);
         }
-
-        [Fact]
-        public void Index_ReturnsAViewResult()
-        {
-            var result = _sut.Index();
-
-            Assert.IsType<ViewResult>(result);
-        }
-
-        //todo: test about action
-
+        
         [Fact]
         public void Contact_ReturnsAViewResult()
         {
