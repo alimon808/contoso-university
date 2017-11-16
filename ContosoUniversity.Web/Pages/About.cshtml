@@ -1,8 +1,10 @@
-﻿@model IEnumerable<ContosoUniversity.Models.SchoolViewModels.EnrollmentDateGroup>
-
+﻿@page
+@model ContosoUniversity.Web.Pages.AboutModel
 @{
-    ViewData["Title"] = "Student Body Statistics";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Student Body Statistics via Razor";
 }
+
 <h2>@ViewData["Title"].</h2>
 
 <table>
@@ -14,7 +16,7 @@
             Students
         </th>
     </tr>
-    @foreach (var item in Model)
+    @foreach (var item in Model.StudentEnrollments)
     {
         <tr>
             <td>

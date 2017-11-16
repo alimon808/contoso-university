@@ -1,25 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ContosoUniversity.Models.SchoolViewModels;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Data.Common;
-using ContosoUniversity.Data.Entities;
+﻿using ContosoUniversity.Common;
 using ContosoUniversity.Common.Interfaces;
 using ContosoUniversity.Data.DbContexts;
-using ContosoUniversity.Common;
+using ContosoUniversity.Data.Entities;
+using ContosoUniversity.Models.SchoolViewModels;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Threading.Tasks;
 
-namespace ContosoUniversity.Web.Controllers
+namespace ContosoUniversity.Web.Pages
 {
-    public class HomeController : Controller
+    public class AboutModel : PageModel
     {
         private readonly IRepository<Student> _studentRepo;
+        public List<EnrollmentDateGroup> StudentEnrollments;
 
-        public HomeController(UnitOfWork<ApplicationContext> unitOfWork)
+        public AboutModel(UnitOfWork<ApplicationContext> unitOfWork)
         {
             _studentRepo = unitOfWork.StudentRepository;
         }
 
-        public async Task<IActionResult> About()
+        public void OnGet()
+        {
+
+            StudentEnrollments = Stats().Result;
+        }
+
+        private async Task<List<EnrollmentDateGroup>> Stats()
         {
             List<EnrollmentDateGroup> groups = new List<EnrollmentDateGroup>();
             var conn = _studentRepo.GetDbConnection();
@@ -57,12 +64,7 @@ namespace ContosoUniversity.Web.Controllers
                 conn.Close();
             }
 
-            return View(groups);
-        }
-
-        public IActionResult Error()
-        {
-            return View();
+            return groups;
         }
     }
 }
