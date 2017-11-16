@@ -60,13 +60,6 @@ namespace ContosoUniversity.Web.Controllers
             return View(groups);
         }
 
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
         public IActionResult Error()
         {
             return View();
