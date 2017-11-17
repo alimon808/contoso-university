@@ -41,7 +41,9 @@ namespace ContosoUniversity.Common
                     var dataSource = $"Data Source={directoryName}//ContosoDb.sqlite";
                     var secureDataSource = $"Data Source={directoryName}//ContosoDb_secure.sqlite";
                     services.AddDbContext<ApplicationContext>(options => options.UseSqlite(dataSource));
-                    services.AddDbContext<SecureApplicationContext>(options => options.UseSqlite(secureDataSource));
+                    services.AddDbContext<WebContext>(options => options.UseSqlite(dataSource));
+                    services.AddDbContext<ApiContext>(options => options.UseSqlite(dataSource));
+                    services.AddDbContext<SecureApplicationContext>(options => options.UseSqlite(dataSource));
                 }
                 else
                 {
@@ -63,7 +65,7 @@ namespace ContosoUniversity.Common
 
             services.AddScoped<UnitOfWork<ApplicationContext>, UnitOfWork<ApplicationContext>>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<,>));
-            
+
             services.Configure<SampleData>(configuration.GetSection("SampleData"));
 
             return services;
@@ -162,7 +164,7 @@ namespace ContosoUniversity.Common
 
         public static IServiceCollection AddCustomizedAutoMapper(this IServiceCollection services)
         {
-            services.AddAutoMapper(cfg => 
+            services.AddAutoMapper(cfg =>
             {
                 cfg.CreateMap<DepartmentDTO, Department>().ReverseMap();
             });
