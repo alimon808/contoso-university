@@ -30,7 +30,7 @@ namespace ContosoUniversity
             services.AddCustomizedIdentity(Configuration);
             services.AddCustomizedAuthentication(Configuration);
             services.AddCustomizedMessage(Configuration);
-            services.AddCustomizedMvc();
+            services.AddCustomizedMvc(CurrentEnvironment);
             services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<WebProfile>();
@@ -46,7 +46,7 @@ namespace ContosoUniversity
             IHostingEnvironment env,
             ILoggerFactory loggerFactory,
             IDbInitializer dbInitializer)
-        {   
+        {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -55,9 +55,9 @@ namespace ContosoUniversity
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             }
 
-            app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();

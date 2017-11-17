@@ -72,13 +72,17 @@ namespace ContosoUniversity.Common
         }
 
 
-        public static IServiceCollection AddCustomizedMvc(this IServiceCollection services)
+        public static IServiceCollection AddCustomizedMvc(this IServiceCollection services, IHostingEnvironment env)
         {
-            services.AddMvc()
-                .AddMvcOptions(options =>
+            services.AddMvc();
+
+            if (env.IsProduction())
+            {
+                services.AddMvc().AddMvcOptions(options =>
                 {
                     options.Filters.Add(new RequireHttpsAttribute());
                 });
+            }
 
             return services;
         }
