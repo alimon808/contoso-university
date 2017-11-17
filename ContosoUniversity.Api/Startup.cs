@@ -31,7 +31,7 @@ namespace ContosoUniversity.Api
                 {
                     cfg.AddProfile<ApiProfile>();
                 })
-                .AddCustomizedMvc()
+                .AddCustomizedMvc(CurrentEnvironment)
                 .AddSwaggerGen(c =>
                 {
                     c.SwaggerDoc("v1", new Info { Title = "Contoso University Api", Version = "v1" });
@@ -46,11 +46,14 @@ namespace ContosoUniversity.Api
         {
             if (CurrentEnvironment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
                 dbInitializer.Initialize();
+                app.UseDeveloperExceptionPage();
             }
-            app.UseAuthentication();
-            app.UseRewriter(new RewriteOptions().AddRedirectToHttps())
+            else
+            {
+                app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
+            }
+            app.UseAuthentication()
                 .UseDefaultFiles()
                 .UseStaticFiles()
                 .UseSwagger()
@@ -58,11 +61,11 @@ namespace ContosoUniversity.Api
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Contoso API V1");
                 })
-                .UseMvcWithDefaultRoute();       
+                .UseMvcWithDefaultRoute();
         }
 
         public void ConfigureTesting(IApplicationBuilder app, IDbInitializer dbInitializer)
-        {            
+        {
             dbInitializer.Initialize();
             app.UseAuthentication()
                 .UseRewriter(new RewriteOptions().AddRedirectToHttps())
