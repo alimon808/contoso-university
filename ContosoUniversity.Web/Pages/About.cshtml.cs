@@ -22,7 +22,6 @@ namespace ContosoUniversity.Web.Pages
 
         public void OnGet()
         {
-
             StudentEnrollments = Stats().Result;
         }
 
