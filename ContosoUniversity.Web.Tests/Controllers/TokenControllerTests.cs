@@ -35,7 +35,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             _sut = new TokenController(_fakeSignInManager, _fakeUserManager, config);
         }
 
-        [Fact]
+        [Fact(Skip = "Local Test Only")]
         public async Task Create_ReturnsBadRequestAsync()
         {
             var vm = new TokenViewModel();
@@ -46,7 +46,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
-        [Fact]
+        [Fact(Skip = "Local Test Only")]
         public async Task Create_ReturnsToken()
         {
             var vm = new TokenViewModel

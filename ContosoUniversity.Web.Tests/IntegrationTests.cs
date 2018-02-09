@@ -10,11 +10,11 @@ namespace ContosoUniversity.Web.Tests
 {
     public class IntegrationTest : BaseIntegrationTest<Startup>
     {
-        [Fact]
+        [Fact(Skip = "Local Test Only")]
         public async Task Home_Index_ReturnsAViewResult()
         {
             var url = "/Home/Index";
-            
+
             using (var th = InitTestServer())
             {
                 var client = th.CreateClient();
@@ -24,7 +24,7 @@ namespace ContosoUniversity.Web.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Local Test Only")]
         [InlineData("Departments")]
         //todo: integration testing on Courses, Instructors, and Students
         //[InlineData("Courses")]
@@ -79,11 +79,11 @@ namespace ContosoUniversity.Web.Tests
                 var departmentToDelete = new DepartmentDetailsViewModel { ID = int.Parse(newid) };
                 response = await client.PostFormDataAsync<DepartmentDetailsViewModel>(url, departmentToDelete, formTokenVal);
                 Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-                
+
             }
         }
 
-        
+
 
         //todo: concurrency tests
     }
