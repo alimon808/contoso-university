@@ -1,4 +1,4 @@
-# Contoso University
+# Contoso University [![Build Status](https://travis-ci.org/alimon808/contoso-university.svg?branch=master)](https://travis-ci.org/alimon808/contoso-university)
 Contoso University is a place for learning AspNetCore and related technologies.  This demo application is an amalgamation of smaller demo applications found in tutorials at [AspNetCore docs](https://docs.microsoft.com/en-us/aspnet/core/).  The tutorials are great at demonstrating isolated concepts, but issues surfaces when applying these concepts/techniques in a larger context.  The purpose of this demo application is to apply concepts/techniques learned from those tutorial into a single domain (i.e. university).
 
 ### ContosoUniversity.Web
