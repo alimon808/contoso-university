@@ -6,6 +6,7 @@
 
 Building the app: `dotnet build`
 
-Running the app: `dotnet run`
+Running the app: `dotnet run`, navigate to http://localhost:5000
 
-http://localhost:5000
+
+[Demo](https://contoso-university-demo-react.azurewebsites.net/)
