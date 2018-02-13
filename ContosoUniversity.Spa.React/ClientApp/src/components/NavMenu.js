@@ -12,7 +12,7 @@ export class NavMenu extends Component {
       <Navbar inverse fixedTop fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <Link to={'/'}>Contoso University - React using JavaScriptServices</Link>
+            <Link to={'/'}>Contoso University</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>

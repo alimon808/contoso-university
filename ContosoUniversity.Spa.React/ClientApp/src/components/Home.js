@@ -6,12 +6,13 @@ export class Home extends Component {
   render() {
     return (
       <div>
-        <h1>Hello, world!</h1>
+        <h1>Hello, students!</h1>
         <p>Welcome to your new single-page application, built with:</p>
         <ul>
           <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
           <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
           <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
+          <li><a href='https://github.com/alimon808/contoso-university/tree/master/ContosoUniversity.Spa.React'>Source Code</a> on Github</li>
         </ul>
         <p>To help you get started, we've also set up:</p>
         <ul>
