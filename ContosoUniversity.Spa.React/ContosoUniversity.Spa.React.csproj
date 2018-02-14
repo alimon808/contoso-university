@@ -17,7 +17,10 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\ContosoUniversity.Common\ContosoUniversity.Common.csproj" />
+    <ProjectReference Include="..\ContosoUniversity.Data\ContosoUniversity.Data.csproj" />
+  </ItemGroup>
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
