@@ -11,8 +11,7 @@ namespace ContosoUniversity_Spa_React.Controllers
             "Engineering", "English", "Physics"
         };
 
-        [HttpGet()]
-        public IEnumerable<string> Index()
+        public IEnumerable<string> Get()
         {
             return Departments;
         }
