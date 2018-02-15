@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using AutoMapper;
 
-namespace ContosoUniversity_Spa_React
+namespace ContosoUniversity.Spa.React
 {
     public class Startup
     {
@@ -23,7 +24,11 @@ namespace ContosoUniversity_Spa_React
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddCustomizedContext(Configuration, CurrentEnvironment);
+            services.AddCustomizedContext(Configuration, CurrentEnvironment)
+                .AddAutoMapper(Configuration => 
+                {
+                    Configuration.AddProfile<ReactApiProfile>();
+                });
             services.AddScoped<UnitOfWork<ApiContext>, UnitOfWork<ApiContext>>();
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace ContosoUniversity_Spa_React
+namespace ContosoUniversity.Spa.React
 {
     public class Program
     {
