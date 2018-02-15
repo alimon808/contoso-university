@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Moment from 'moment';
+import Numeral from 'numeral';
 
 export class Department extends Component {
     constructor(props){
@@ -27,7 +28,7 @@ export class Department extends Component {
                     {departments.map((department) => 
                         <tr key={department.id}>
                             <td>{department.name}</td>
-                            <td>{department.budget}</td>
+                            <td>{Numeral(department.budget).format('$0,0.00')}</td>
                             <td>{Moment(department.startDate).format('DD/MM/YYYY')}</td>
                         </tr>
                     )}
