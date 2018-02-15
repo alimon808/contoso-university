@@ -5,7 +5,7 @@ export class Department extends Component {
         super(props);
         this.state = { departments: [], loading: true};
 
-        fetch('api/department')
+        fetch('api/department/details')
             .then(response => response.json())
             .then(data => {
                 this.setState({departments: data, loading: false});
@@ -18,12 +18,16 @@ export class Department extends Component {
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th>Budget</th>
+                        <th>Start Date</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {departments.map((elem, index) => 
-                        <tr key={index}>
-                            <td>{elem}</td>
+                    {departments.map((department) => 
+                        <tr key={department.id}>
+                            <td>{department.name}</td>
+                            <td>{department.budget}</td>
+                            <td>{department.startDate}</td>
                         </tr>
                     )}
                 </tbody>
