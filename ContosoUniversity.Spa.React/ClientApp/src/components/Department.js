@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Moment from 'moment';
 
 export class Department extends Component {
     constructor(props){
@@ -27,7 +28,7 @@ export class Department extends Component {
                         <tr key={department.id}>
                             <td>{department.name}</td>
                             <td>{department.budget}</td>
-                            <td>{department.startDate}</td>
+                            <td>{Moment(department.startDate).format('DD/MM/YYYY')}</td>
                         </tr>
                     )}
                 </tbody>
