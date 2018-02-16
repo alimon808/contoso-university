@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Moment from 'moment';
 import Numeral from 'numeral';
 
-export class Department extends Component {
+export class DepartmentsPage extends Component {
     constructor(props){
         super(props);
         this.state = { departments: [], loading: true};
@@ -40,7 +40,7 @@ export class Department extends Component {
     render() {
         let contents = this.state.loading 
             ? <p><em>Loading...</em></p> 
-            : this.departmentTable(this.state.departments)
+            : this.departmentTable(this.state.departments);
         return (
             <div>
                 <h1>Departments</h1>
