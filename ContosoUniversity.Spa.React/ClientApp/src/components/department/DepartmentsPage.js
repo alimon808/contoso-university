@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Moment from 'moment';
 import Numeral from 'numeral';
+import { Link } from 'react-router-dom';
 
 export class DepartmentsPage extends Component {
     constructor(props){
@@ -44,6 +45,7 @@ export class DepartmentsPage extends Component {
         return (
             <div>
                 <h1>Departments</h1>
+                <div><Link to="/create" class="btn btn-small btn-success">Create</Link></div>
                 {contents}
             </div>
         );
