@@ -5,7 +5,7 @@ import Numeral from 'numeral';
 
 const DepartmentListRow = ({department}) => {
     return(
-        <tr key={department.id}>
+        <tr>
             <td>{department.name}</td>
             <td>{Numeral(department.budget).format('$0,0.00')}</td>
             <td>{Moment(department.startDate).format('DD/MM/YYYY')}</td>

@@ -13,9 +13,7 @@ const DepartmentList =({departments}) => {
                 </tr>
             </thead>
             <tbody>
-                {departments.map((department) => 
-                    <DepartmentListRow department={department} />
-                )}
+                {departments.map((department) => <DepartmentListRow key={department.id} department={department} />)}
             </tbody>
         </table>
     );
