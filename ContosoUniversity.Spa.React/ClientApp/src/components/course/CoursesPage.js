@@ -6,11 +6,6 @@ import * as courseActions from '../../actions/courseActions';
 import CourseList from './CourseList';
 
 class CoursesPage extends React.Component {
-    constructor(props){
-        super(props);
-        const {store} = this.props;
-    }
-
     render() {
         return (
             <div>
