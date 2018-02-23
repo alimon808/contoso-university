@@ -9,9 +9,11 @@ import registerServiceWorker from './registerServiceWorker';
 import {Provider} from 'react-redux';
 import configureStore from './store/configureStore';
 import { loadCourses } from './actions/courseActions';
+import { loadDepartments } from './actions/departmentActions';
 
 const store = configureStore();
 store.dispatch(loadCourses());
+store.dispatch(loadDepartments());
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
