@@ -33,6 +33,7 @@ export class NavMenu extends Component {
                 <Glyphicon glyph='education' /> Courses
               </NavItem>
             </LinkContainer>
+            
           </Nav>
         </Navbar.Collapse>
       </Navbar>
