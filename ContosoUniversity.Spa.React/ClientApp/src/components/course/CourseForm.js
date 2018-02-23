@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import TextInput from '../common/TextInput';
 import SelectInput from '../common/SelectInput';
 import NumberInput from '../common/NumberInput';
+import LoadingDots from '../common/LoadingDots';
 
 const CourseForm = ({course, allDepartments, onChange, onSave, saving, errors}) => {
     return (
         <form>
-            <h1>Manage Course</h1>
+            <h1>Manage Course {saving && <LoadingDots interval={100} dots={20} />}</h1>
             <TextInput 
                 name="title"
                 label="Title"
