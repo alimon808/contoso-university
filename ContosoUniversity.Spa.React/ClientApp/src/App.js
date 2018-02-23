@@ -16,6 +16,7 @@ class App extends Component {
         <Route exact path='/' component={Home} />
         <Route path='/departments' component={DepartmentsPage} />
         <Route path='/courses' component={CoursesPage} />
+        <Route path='/course/:id' component={ManageCoursePage} />        
         <Route exact path='/course' component={ManageCoursePage} />
       </Layout>
     );

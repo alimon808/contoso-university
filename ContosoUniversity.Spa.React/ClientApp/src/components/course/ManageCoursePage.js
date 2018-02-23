@@ -68,7 +68,6 @@ class ManageCoursePage extends React.Component {
     redirect() {
         this.setState({saving: false, toCourses: true});
         toastr.success('Course saved');
-        // this.context.router.push('/courses');
     }
 
     render () {
@@ -99,7 +98,7 @@ ManageCoursePage.contextTypes = {
 };
 
 function getCourseById(courses, id){
-    const course = courses.filter(course => course.id === id);
+    const course = courses.filter(course => Number(course.id) === Number(id));
     if(course.length) return course[0];
     return null;
 }

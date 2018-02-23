@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TextInput from '../common/TextInput';
 import SelectInput from '../common/SelectInput';
+import NumberInput from '../common/NumberInput';
 
 const CourseForm = ({course, allDepartments, onChange, onSave, saving, errors}) => {
     return (
@@ -16,15 +17,15 @@ const CourseForm = ({course, allDepartments, onChange, onSave, saving, errors}) 
             <SelectInput 
                 name="departmentID"
                 label="Department"
-                value={course.departmentID}
+                value={Number(course.departmentID)}
                 defaultOption="Select Department"
                 options={allDepartments}
                 onChange={onChange}
             />
-            <TextInput 
+            <NumberInput 
                 name="credits"
                 label="Credits"
-                value={course.credits}
+                value={Number(course.credits)}
                 onChange={onChange}
             />
             <input 

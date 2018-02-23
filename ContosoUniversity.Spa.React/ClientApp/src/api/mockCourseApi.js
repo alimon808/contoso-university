@@ -105,11 +105,11 @@ const courses = [
 // This would be performed on the server in a real app. Just stubbing in.
 const generateId = (course) => {
   // return replaceAll(course.title, ' ', '-');
-  return courses.length;
+  return courses.length + 1;
 };
 
 const generateCourseNumber = (course) => {
-  let departmentCourseNumbers = courses.filter(function(c) {return Number(c.departmentID) === Number(course.departmentID);})
+  let departmentCourseNumbers = courses.filter(c => Number(c.departmentID) === Number(course.departmentID))
                                         .map(c => c.courseNumber);
   if(departmentCourseNumbers.length)  {
     return Math.max(...departmentCourseNumbers) + 1;
