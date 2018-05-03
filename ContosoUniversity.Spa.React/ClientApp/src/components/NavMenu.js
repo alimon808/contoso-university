@@ -24,7 +24,7 @@ export class NavMenu extends Component {
             <NavItem>About</NavItem>
           </LinkContainer>
           <LinkContainer to={'/contact'}>
-            <NavItem href="#">Contact</NavItem>
+            <NavItem>Contact</NavItem>
           </LinkContainer>
             <NavDropdown eventKey={3} title="Academic" id="basic-nav-dropdown">
             <LinkContainer to={'/departments'}>
@@ -40,7 +40,9 @@ export class NavMenu extends Component {
           </NavDropdown>
         </Nav>
         <Nav pullRight>
-          <NavItem eventKey={4} href="#">Register</NavItem>
+          <LinkContainer to={'/register'}>
+            <NavItem>Register</NavItem>
+          </LinkContainer>
           <NavItem eventKey={5} href="#">Log in</NavItem>          
         </Nav>
         </Navbar.Collapse>

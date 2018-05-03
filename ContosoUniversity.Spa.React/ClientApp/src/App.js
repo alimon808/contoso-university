@@ -8,6 +8,7 @@ import CoursesPage from './components/course/CoursesPage';
 import ManageCoursePage from './components/course/ManageCoursePage';
 import AboutPage from './components/about/AboutPage';
 import ContactPage from './components/contact/ContactPage';
+import RegisterPage from './components/register/RegisterPage';
 
 class App extends Component {
   displayName = App.name
@@ -22,6 +23,7 @@ class App extends Component {
         <Route path='/courses' component={CoursesPage} />
         <Route path='/course/:id' component={ManageCoursePage} />        
         <Route exact path='/course' component={ManageCoursePage} />
+        <Route path='/register' component={RegisterPage} />
       </Layout>
     );
   }
