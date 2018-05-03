@@ -1,11 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-export class Home extends Component {
-  displayName = Home.name
-
-  render() {
-    return (
-      <div>
+export default function() {
+    return(
+        <div>
         <h1>Hello, students!</h1>
         <p>Welcome to your new single-page application, built with:</p>
         <ul>
@@ -23,5 +20,4 @@ export class Home extends Component {
         <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
       </div>
     );
-  }
 }
