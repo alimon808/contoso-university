@@ -20,8 +20,11 @@ export class NavMenu extends Component {
         <LinkContainer to={'/'} exact>
               <NavItem>Home</NavItem>
           </LinkContainer>
-          <NavItem eventKey={2} href="#">About</NavItem>
-          <NavItem eventKey={3} href="#">Contact</NavItem>
+          <LinkContainer to={'/about'}>
+            <NavItem>About</NavItem>
+          </LinkContainer>
+          
+          <NavItem href="#">Contact</NavItem>
             <NavDropdown eventKey={3} title="Academic" id="basic-nav-dropdown">
             <LinkContainer to={'/departments'}>
               <MenuItem>
