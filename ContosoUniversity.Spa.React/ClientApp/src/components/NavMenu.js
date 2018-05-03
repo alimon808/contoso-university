@@ -23,8 +23,9 @@ export class NavMenu extends Component {
           <LinkContainer to={'/about'}>
             <NavItem>About</NavItem>
           </LinkContainer>
-          
-          <NavItem href="#">Contact</NavItem>
+          <LinkContainer to={'/contact'}>
+            <NavItem href="#">Contact</NavItem>
+          </LinkContainer>
             <NavDropdown eventKey={3} title="Academic" id="basic-nav-dropdown">
             <LinkContainer to={'/departments'}>
               <MenuItem>
