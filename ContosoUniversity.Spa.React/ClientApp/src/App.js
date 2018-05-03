@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router';
 import PropTypes from 'prop-types';
-import { Layout } from './components/Layout';
+import { Layout } from './components/common/Layout';
 import DepartmentsPage from './components/department/DepartmentsPage';
 import CoursesPage from './components/course/CoursesPage';
 import ManageCoursePage from './components/course/ManageCoursePage';
