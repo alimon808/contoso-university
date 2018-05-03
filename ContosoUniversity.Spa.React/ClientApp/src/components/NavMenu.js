@@ -43,7 +43,9 @@ export class NavMenu extends Component {
           <LinkContainer to={'/register'}>
             <NavItem>Register</NavItem>
           </LinkContainer>
-          <NavItem eventKey={5} href="#">Log in</NavItem>          
+          <LinkContainer to={'/login'}>
+            <NavItem>Log in</NavItem>    
+          </LinkContainer>      
         </Nav>
         </Navbar.Collapse>
       </Navbar>
