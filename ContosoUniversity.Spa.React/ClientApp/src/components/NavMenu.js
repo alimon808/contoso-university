@@ -1,15 +1,14 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Glyphicon, Nav, Navbar, NavItem } from 'react-bootstrap';
+import { Glyphicon, Nav, Navbar, NavItem, MenuItem, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import './NavMenu.css';
 
 export class NavMenu extends Component {
   displayName = NavMenu.name
 
   render() {
     return (
-      <Navbar inverse fixedTop fluid collapseOnSelect>
+      <Navbar fixedTop inverse>
         <Navbar.Header>
           <Navbar.Brand>
             <Link to={'/'}>Contoso University</Link>
@@ -17,24 +16,29 @@ export class NavMenu extends Component {
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
-          <Nav>
-            <LinkContainer to={'/'} exact>
-              <NavItem>
-                <Glyphicon glyph='home' /> Home
-              </NavItem>
-            </LinkContainer>
+        <Nav>
+        <LinkContainer to={'/'} exact>
+              <NavItem>Home</NavItem>
+          </LinkContainer>
+          <NavItem eventKey={2} href="#">About</NavItem>
+          <NavItem eventKey={3} href="#">Contact</NavItem>
+            <NavDropdown eventKey={3} title="Academic" id="basic-nav-dropdown">
             <LinkContainer to={'/departments'}>
-              <NavItem>
+              <MenuItem>
                 <Glyphicon glyph='education' /> Departments
-              </NavItem>
+              </MenuItem>
             </LinkContainer>
             <LinkContainer to={'/courses'}>
-              <NavItem>
+              <MenuItem>
                 <Glyphicon glyph='education' /> Courses
-              </NavItem>
+              </MenuItem>
             </LinkContainer>
-            
-          </Nav>
+          </NavDropdown>
+        </Nav>
+        <Nav pullRight>
+          <NavItem eventKey={4} href="#">Register</NavItem>
+          <NavItem eventKey={5} href="#">Log in</NavItem>          
+        </Nav>
         </Navbar.Collapse>
       </Navbar>
     );
