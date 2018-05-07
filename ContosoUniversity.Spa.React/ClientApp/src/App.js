@@ -13,7 +13,7 @@ import HomePage from './components/home/HomePage.js';
 
 class App extends Component {
   displayName = App.name
-  
+
   render() {
     return (
       <Layout>
@@ -22,7 +22,7 @@ class App extends Component {
         <Route path='/contact' component={ContactPage} />
         <Route path='/departments' component={DepartmentsPage} />
         <Route path='/courses' component={CoursesPage} />
-        <Route path='/course/:id' component={ManageCoursePage} />        
+        <Route path='/course/:id' component={ManageCoursePage} />
         <Route exact path='/course' component={ManageCoursePage} />
         <Route path='/register' component={RegisterPage} />
         <Route path='/login' component={LoginPage} />

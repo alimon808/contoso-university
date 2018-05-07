@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function () {
     return (
-        <div>
+        <div className="container">
             <h1>Contact</h1>
             <address>
                 One Microsoft Way <br />
