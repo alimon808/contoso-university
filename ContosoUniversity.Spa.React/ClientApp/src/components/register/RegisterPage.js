@@ -1,9 +1,11 @@
 import React from 'react';
+import RegisterForm from '../forms/Register';
 
-export default function(){
-    return(
-        <div>
-            <h1>Register Page</h1>
+export default function () {
+    return (
+        <div className="body-content">
+            <h2>Register</h2>
+            <RegisterForm />
         </div>
     );
 }
