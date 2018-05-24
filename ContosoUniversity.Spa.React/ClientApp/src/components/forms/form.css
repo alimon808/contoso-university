@@ -1,3 +1,11 @@
 input, textarea, select {
     max-width: 280px;
 }
+
+.form-control {
+    width: 280px !important;
+}
+
+.form-control-feedback {
+    left: 265px !important;
+}

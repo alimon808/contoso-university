@@ -40,7 +40,6 @@ export default class Register extends React.Component {
 
     handleClick(event) {
         event.preventDefault();
-        console.log('Register: ' + this.state.email);
     }
 
     handleChange(event) {
@@ -86,8 +85,8 @@ export default class Register extends React.Component {
                     <Col componentClass={ControlLabel} sm={2}>Email</Col>
                     <Col sm={10}>
                         <FormControl name="email" type="email" value={this.state.email} onChange={this.handleChange} />
+                        <FormControl.Feedback />                        
                     </Col>
-                    <FormControl.Feedback />
                 </FormGroup>
                 <FormGroup>
                     <Col componentClass={ControlLabel} sm={2}>Password</Col>
