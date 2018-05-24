@@ -58,13 +58,18 @@ export default class Register extends React.Component {
                 emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
                 fieldValidationErrors.email = emailValid ? '' : ' is valid';
                 break;
+            case 'password':
+                passwordValid = value.length >= 6;
+                fieldValidationErrors.password = passwordValid ? '' : ' is too short';
+                break;
             default:
                 break;
         }
 
         this.setState({
             formErrors: fieldValidationErrors,
-            emailValid: emailValid
+            emailValid: emailValid,
+            passwordValid: passwordValid
         }, this.validateForm);
     }
 
@@ -85,12 +90,14 @@ export default class Register extends React.Component {
                     <Col componentClass={ControlLabel} sm={2}>Email</Col>
                     <Col sm={10}>
                         <FormControl name="email" type="email" value={this.state.email} onChange={this.handleChange} />
-                        <FormControl.Feedback />                        
+                        <FormControl.Feedback />
                     </Col>
                 </FormGroup>
-                <FormGroup>
+                <FormGroup validationState={this.validationState(this.state.formErrors.password)}>
                     <Col componentClass={ControlLabel} sm={2}>Password</Col>
-                    <Col sm={10}><FormControl type="password" name="password" value={this.state.password} onChange={this.handleChange} /></Col>
+                    <Col sm={10}><FormControl type="password" name="password" value={this.state.password} onChange={this.handleChange} />
+                    <FormControl.Feedback />
+                    </Col>
                 </FormGroup>
                 <FormGroup>
                     <Col componentClass={ControlLabel} sm={2}>Confirm Password</Col>
