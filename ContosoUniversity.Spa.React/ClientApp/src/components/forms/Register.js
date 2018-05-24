@@ -1,26 +1,6 @@
-// todo
-// add password validation
-// add confirmPassword validation
-
 import React from 'react';
-import { Col, Form, FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
+import { Col, Form, FormGroup, ControlLabel, FormControl, Button, HelpBlock } from 'react-bootstrap';
 import './form.css';
-
-function FormErrors(formErrors) {
-    return (
-        <div className='formErrors'>
-            {Object.keys(formErrors).map((fieldName, i) => {
-                if (formErrors[fieldName].length > 0) {
-                    return (
-                        <p key={i}>{fieldName} {formErrors[fieldName]}</p>
-                    )
-                } else {
-                    return '';
-                }
-            })}
-        </div>
-    );
-}
 
 export default class Register extends React.Component {
     constructor(props) {
@@ -58,15 +38,15 @@ export default class Register extends React.Component {
         switch (fieldName) {
             case 'email':
                 emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
-                fieldValidationErrors.email = emailValid ? '' : ' is invalid';
+                fieldValidationErrors.email = emailValid ? '' : 'Email is not valid';
                 break;
             case 'password':
                 passwordValid = value.length >= 6;
-                fieldValidationErrors.password = passwordValid ? '' : ' is too short';
+                fieldValidationErrors.password = passwordValid ? '' : 'Password is too short';
                 break;
             case 'confirmPassword':
                 confirmPasswordValid = this.state.password === value;
-                fieldValidationErrors.confirmPassword = confirmPasswordValid ? '' : ' does not match password';
+                fieldValidationErrors.confirmPassword = confirmPasswordValid ? '' : 'ConfirmPassword does not match password';
             default:
                 break;
         }
@@ -98,27 +78,27 @@ export default class Register extends React.Component {
                     <Col sm={10}>
                         <FormControl name="email" type="email" value={this.state.email} onChange={this.handleChange} />
                         <FormControl.Feedback />
+                        <HelpBlock>{this.state.formErrors.email}</HelpBlock>
                     </Col>
                 </FormGroup>
                 <FormGroup validationState={this.validationState(this.state.formErrors.password)}>
                     <Col componentClass={ControlLabel} sm={2}>Password</Col>
                     <Col sm={10}><FormControl type="password" name="password" value={this.state.password} onChange={this.handleChange} />
-                    <FormControl.Feedback />
+                        <FormControl.Feedback />
+                        <HelpBlock>{this.state.formErrors.password}</HelpBlock>
                     </Col>
                 </FormGroup>
                 <FormGroup validationState={this.validationState(this.state.formErrors.confirmPassword)}>
                     <Col componentClass={ControlLabel} sm={2}>Confirm Password</Col>
                     <Col sm={10}><FormControl type="password" name="confirmPassword" value={this.state.confirmPassword} onChange={this.handleChange} />
                         <FormControl.Feedback />
+                        <HelpBlock>{this.state.formErrors.confirmPassword}</HelpBlock>
                     </Col>
                 </FormGroup>
                 <FormGroup>
                     <Col componentClass={ControlLabel} sm={2}></Col>
                     <Col sm={10}><Button type="submit" disabled={!this.state.formValid} onClick={this.handleClick}>Register</Button></Col>
                 </FormGroup>
-                <div className="panel panel-default">
-                    <FormErrors formErrors={this.state.formErrors} />
-                </div>
             </Form >
         );
     };
