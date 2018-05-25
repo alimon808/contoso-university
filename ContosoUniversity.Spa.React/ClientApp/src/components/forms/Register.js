@@ -69,35 +69,35 @@ export default class Register extends React.Component {
     }
 
     render() {
+        const formErrors = this.state.formErrors;
         return (
             <Form horizontal>
                 <h4>Create a new account</h4>
                 <hr />
-                <FormGroup validationState={this.validationState(this.state.formErrors.email)}>
+                <FormGroup validationState={this.validationState(formErrors.email)}>
                     <Col componentClass={ControlLabel} sm={2}>Email</Col>
                     <Col sm={10}>
                         <FormControl name="email" type="email" value={this.state.email} onChange={this.handleChange} />
                         <FormControl.Feedback />
-                        <HelpBlock>{this.state.formErrors.email}</HelpBlock>
+                        <HelpBlock>{formErrors.email}</HelpBlock>
                     </Col>
                 </FormGroup>
-                <FormGroup validationState={this.validationState(this.state.formErrors.password)}>
+                <FormGroup validationState={this.validationState(formErrors.password)}>
                     <Col componentClass={ControlLabel} sm={2}>Password</Col>
                     <Col sm={10}><FormControl type="password" name="password" value={this.state.password} onChange={this.handleChange} />
                         <FormControl.Feedback />
-                        <HelpBlock>{this.state.formErrors.password}</HelpBlock>
+                        <HelpBlock>{formErrors.password}</HelpBlock>
                     </Col>
                 </FormGroup>
-                <FormGroup validationState={this.validationState(this.state.formErrors.confirmPassword)}>
+                <FormGroup validationState={this.validationState(formErrors.confirmPassword)}>
                     <Col componentClass={ControlLabel} sm={2}>Confirm Password</Col>
                     <Col sm={10}><FormControl type="password" name="confirmPassword" value={this.state.confirmPassword} onChange={this.handleChange} />
                         <FormControl.Feedback />
-                        <HelpBlock>{this.state.formErrors.confirmPassword}</HelpBlock>
+                        <HelpBlock>{formErrors.confirmPassword}</HelpBlock>
                     </Col>
                 </FormGroup>
                 <FormGroup>
-                    <Col componentClass={ControlLabel} sm={2}></Col>
-                    <Col sm={10}><Button type="submit" disabled={!this.state.formValid} onClick={this.handleClick}>Register</Button></Col>
+                    <Col smOffset={2} sm={10}><Button type="submit" disabled={!this.state.formValid} onClick={this.handleClick}>Register</Button></Col>
                 </FormGroup>
             </Form >
         );
