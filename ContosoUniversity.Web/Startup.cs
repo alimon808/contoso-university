@@ -9,6 +9,9 @@ using ContosoUniversity.Data.Interfaces;
 using ContosoUniversity.Web;
 using ContosoUniversity.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using ContosoUniversity.Services;
+using Microsoft.AspNetCore.Mvc;
+using ContosoUniversity.Web.Helpers;
 
 namespace ContosoUniversity
 {
@@ -17,12 +20,17 @@ namespace ContosoUniversity
         public Startup(IHostingEnvironment env)
         {
             CurrentEnvironment = env;
-
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+
             Configuration = builder.Build();
         }
 
@@ -47,13 +55,21 @@ namespace ContosoUniversity
                         Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsHistoryTable("IdentityMigration", "Contoso")));
             }
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+                {
+                    config.SignIn.RequireConfirmedEmail = true;
+                })
                 .AddEntityFrameworkStores<SecureApplicationContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddTransient<IEmailSender, AuthMessageSender>();
+
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
-            services.AddMvc();
+            services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();
 
+            services.AddMvc();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApplicationContext context)

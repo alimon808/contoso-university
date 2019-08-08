@@ -1,5 +1,7 @@
 ﻿using ContosoUniversity.Identity;
+using ContosoUniversity.Services;
 using ContosoUniversity.Web.Controllers;
+using ContosoUniversity.Web.Helpers;
 using ContosoUniversity.Web.ViewModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -22,14 +25,18 @@ namespace ContosoUniversity.Web.Tests.Controllers
         AccountController _sut;
         private readonly FakeUserManager _fakeUserManager;
         private readonly FakeSignInManager _fakeSignInManager;
+        private readonly Mock<IUrlHelperAdaptor> _mockUrlHelperAdaptor;
+        private readonly Mock<IEmailSender> _mockEmailSender;
 
         public AccountControllerTests(ITestOutputHelper output)
         {
             _output = output;
             _fakeUserManager = new FakeUserManager();
             _fakeSignInManager = new FakeSignInManager();
+            _mockUrlHelperAdaptor = new Mock<IUrlHelperAdaptor>();
+            _mockEmailSender = new Mock<IEmailSender>();
 
-            _sut = new AccountController(_fakeUserManager, _fakeSignInManager);
+            _sut = new AccountController(_fakeUserManager, _fakeSignInManager, _mockEmailSender.Object, _mockUrlHelperAdaptor.Object);
         }
 
         [Fact]
@@ -54,7 +61,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             var returnUrl = "/Home/Index";
             
 
-            var result = await _sut.LoginAsync(model, returnUrl);
+            var result = await _sut.Login(model, returnUrl);
 
             Assert.IsType(typeof(RedirectResult), result);
             Assert.Equal(returnUrl, ((RedirectResult)result).Url);
@@ -78,6 +85,15 @@ namespace ContosoUniversity.Web.Tests.Controllers
             var mockUrl = new Mock<IUrlHelper>();
             mockUrl.Setup(m => m.IsLocalUrl(It.IsAny<string>())).Returns(true);
             _sut.Url = mockUrl.Object;
+
+            // moq HttpContext.Request.Scheme
+            // https://stackoverflow.com/questions/41400030/mock-httpcontext-for-unit-testing-a-net-core-mvc-controller
+            var context = new Mock<HttpContext>();
+            _sut.ControllerContext = new ControllerContext();
+            _sut.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            _mockUrlHelperAdaptor.Setup(m => m.Action(It.IsAny<IUrlHelper>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>())).Returns("confirmemialurl");
+            _mockEmailSender.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(0));
             var returnUrl = "/Departments/Index";
             var model = new RegisterViewModel { Email = "abc@example.com", Password = "P@ssw0rd!" };
 
@@ -86,7 +102,6 @@ namespace ContosoUniversity.Web.Tests.Controllers
             Assert.IsType(typeof(RedirectResult), result);
             Assert.Equal(returnUrl, ((RedirectResult)result).Url);
         }
-
 
         [Fact]
         public async Task RegisterPost_ReturnsAViewResult_WithInvalidModel()
@@ -112,6 +127,7 @@ namespace ContosoUniversity.Web.Tests.Controllers
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
         }
 
+        
         // original code from https://github.com/aspnet/Identity/issues/344
         public class FakeUserManager : UserManager<ApplicationUser>
         {
@@ -131,6 +147,10 @@ namespace ContosoUniversity.Web.Tests.Controllers
             {
                 // solution from https://stackoverflow.com/questions/26269104/how-to-construct-identityresult-with-success-true
                 return Task.FromResult(IdentityResult.Success);
+            }
+            public override Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user)
+            {
+                return Task.FromResult("token string");
             }
         }
 
