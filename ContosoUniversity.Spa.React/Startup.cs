@@ -18,14 +18,14 @@ namespace ContosoUniversity.Spa.React
         }
 
         public IConfiguration Configuration { get; }
-        public IHostingEnvironment CurrentEnvironment {get;}
+        public IHostingEnvironment CurrentEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
             services.AddCustomizedContext(Configuration, CurrentEnvironment)
-                .AddAutoMapper(Configuration => 
+                .AddAutoMapper(Configuration =>
                 {
                     Configuration.AddProfile<ReactApiProfile>();
                 });
@@ -68,7 +68,7 @@ namespace ContosoUniversity.Spa.React
                     // spa.UseReactDevelopmentServer(npmScript: "start");
 
                     // run CRA server independently
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:6188");
                 }
             });
         }
