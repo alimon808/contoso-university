@@ -55,7 +55,7 @@ namespace ContosoUniversity
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
+                // app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             }
 
             app.UseStaticFiles();

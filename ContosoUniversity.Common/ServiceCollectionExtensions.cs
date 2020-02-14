@@ -76,13 +76,13 @@ namespace ContosoUniversity.Common
         {
             services.AddMvc();
 
-            if (env.IsProduction())
-            {
-                services.AddMvc().AddMvcOptions(options =>
-                {
-                    options.Filters.Add(new RequireHttpsAttribute());
-                });
-            }
+            // if (env.IsProduction())
+            // {
+            //     services.AddMvc().AddMvcOptions(options =>
+            //     {
+            //         options.Filters.Add(new RequireHttpsAttribute());
+            //     });
+            // }
 
             return services;
         }
@@ -114,26 +114,54 @@ namespace ContosoUniversity.Common
 
         public static IServiceCollection AddCustomizedAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+
+            // Enable external login using Google
+            // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins?view=aspnetcore-3.1
+            string googleClientId = configuration["Authentication:Google:ClientId"];
+            string googleClientSecret = configuration["Authentication:Google:ClientSecret"];
+            if (!string.IsNullOrWhiteSpace(googleClientId) && !string.IsNullOrWhiteSpace(googleClientSecret))
+            {
+                services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddGoogle(options =>
                 {
-                    options.ClientId = configuration["Authentication:Google:ClientId"];
-                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
-                })
+                    options.ClientId = googleClientId;
+                    options.ClientSecret = googleClientSecret;
+                });
+            }
+
+            // Enable external login using Facebook
+            // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins?view=aspnetcore-3.1
+            string facebookAppId = configuration["Authentication:Facebook:AppId"];
+            string facebookAppSecret = configuration["Authentication:Facebook:AppSecret"];
+            if (!string.IsNullOrWhiteSpace(facebookAppId) && !string.IsNullOrWhiteSpace(facebookAppSecret))
+            {
+                services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddFacebook(options =>
                 {
-                    options.AppId = configuration["Authentication:Facebook:AppId"];
-                    options.AppSecret = configuration["Authentication:Facebook:AppSecret"];
-                })
+                    options.AppId = facebookAppId;
+                    options.AppSecret = facebookAppSecret;
+                });
+
+            }
+
+            // Enable Jwt Tokens
+            // https://wildermuth.com/2017/08/19/Two-AuthorizationSchemes-in-ASP-NET-Core-2
+            string jwtIssuer = configuration["Authentication:Tokens:Issuer"];
+            string jwtAudience = configuration["Authentication:Tokens:Issuer"];
+            string jwtKey = configuration["Authentication:Tokens:Key"];
+            if (!string.IsNullOrWhiteSpace(jwtIssuer) && !string.IsNullOrWhiteSpace(jwtAudience) && !string.IsNullOrWhiteSpace(jwtKey))
+            {
+                services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
-                        ValidIssuer = configuration["Authentication:Tokens:Issuer"],
-                        ValidAudience = configuration["Authentication:Tokens:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:Tokens:Key"]))
+                        ValidIssuer = jwtIssuer,
+                        ValidAudience = jwtAudience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
                     };
                 });
+            }
 
             return services;
         }
