@@ -36,4 +36,7 @@
     <ProjectReference Include="..\ContosoUniversity.Common\ContosoUniversity.Common.csproj" />
     <ProjectReference Include="..\ContosoUniversity.Data\ContosoUniversity.Data.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="appsettings*.json" CopyToPublishDirectory="Never" />
+</ItemGroup>
 </Project>

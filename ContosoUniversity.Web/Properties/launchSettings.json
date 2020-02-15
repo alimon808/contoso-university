@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/ContosoUniversity.Web",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "https://localhost:44368/",
       "sslPort": 44368

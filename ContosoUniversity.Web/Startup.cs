@@ -54,7 +54,7 @@ namespace ContosoUniversity
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                // app.UseExceptionHandler("/Home/Error");
                 // app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             }
 
