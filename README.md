@@ -3,11 +3,11 @@ Contoso University is a place for learning AspNetCore and related technologies. 
 
 ### ContosoUniversity.Web
 - Traditional Web App using MVC + Razor Pages
-- [Demo](https://contoso-university-demo.azurewebsites.net/)
+- [Demo](http://contoso-university-web.adrianlimon.com)
 ### ContosoUniversity.Api
 - Traditional Rest Api
-- [Demo](https://contoso-university-demo-api.azurewebsites.net/)
-- Generate JWT Token at https://contoso-university-demo.azurewebsites.net/api/token to access secure api content.  Requires registering via Web App.
+- [Demo](http://contoso-university-api.adrianlimon.com/)
+- Generate JWT Token at http://contoso-university-web.adrianlimon.com/api/token to access secure api content.  Requires registering via Web App.
 ### Testing
 - Unit Testing using [Moq](https://github.com/Moq/moq4/wiki/Quickstart) and [xUnit](https://xunit.github.io/docs/getting-started-dotnet-core)
 - Integration Testing using TestHost and InMemoryDatabase
