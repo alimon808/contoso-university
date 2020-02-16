@@ -27,7 +27,7 @@ namespace ContosoUniversity
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCustomizedContext(Configuration, CurrentEnvironment);
-            services.AddCustomizedIdentity(Configuration);
+            services.AddCustomizedIdentity(Configuration, CurrentEnvironment);
             services.AddCustomizedAuthentication(Configuration);
             services.AddCustomizedMessage(Configuration);
             services.AddCustomizedMvc(CurrentEnvironment);

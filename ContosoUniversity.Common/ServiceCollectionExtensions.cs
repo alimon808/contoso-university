@@ -89,25 +89,32 @@ namespace ContosoUniversity.Common
 
         // identity 2.0
         // oauth - facebook, google
-        public static IServiceCollection AddCustomizedIdentity(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddCustomizedIdentity(this IServiceCollection services, IConfiguration configuration, IHostingEnvironment env)
         {
-            services.AddIdentity<ApplicationUser, IdentityRole>(config =>
-            {
-                config.SignIn.RequireConfirmedEmail = true;
-                // issue generating sms friendly verification code
-                // https://github.com/aspnet/Identity/issues/1388
-                config.Tokens.ChangePhoneNumberTokenProvider = "Phone";
-            })
-            .AddEntityFrameworkStores<SecureApplicationContext>()
-            .AddDefaultTokenProviders();
+            // Add default identity options for ApplicationUser and IdentityRole
+            var identity = services.AddIdentity<ApplicationUser, IdentityRole>();
 
+            // Add EF Store that implements the Identity Store
+            identity.AddEntityFrameworkStores<SecureApplicationContext>();
+
+            // Default providers used to generate tokens to reset passwords, change email or passwords, or enable two-factor authentication 
+            identity.AddDefaultTokenProviders();
+
+            // Change default identity options
             services.Configure<IdentityOptions>(options =>
             {
+                options.SignIn.RequireConfirmedEmail = true;
+                // issue generating sms friendly verification code
+                // https://github.com/aspnet/Identity/issues/1388
+                options.Tokens.ChangePhoneNumberTokenProvider = "Phone";
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
                 options.Lockout.MaxFailedAccessAttempts = 3;
             });
 
-            services.Configure<IdentityUserOptions>(configuration.GetSection("IdentityUser"));
+            // Admin account will be added to identity db when created.
+            var administrator = configuration.GetSection("Administrator");
+            if (env.IsDevelopment() && administrator.Exists())
+                services.Configure<AdminIdentityOptions>(administrator);
 
             return services;
         }

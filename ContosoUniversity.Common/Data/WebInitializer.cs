@@ -19,7 +19,7 @@ namespace ContosoUniversity.Common.Data
         private readonly SampleData _data;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IdentityUserOptions _identityUser;
+        private readonly AdminIdentityOptions _adminIdentityUser;
         private readonly IHostingEnvironment _environment;
 
         public WebInitializer(WebContext webContext,
@@ -27,14 +27,14 @@ namespace ContosoUniversity.Common.Data
             IOptions<SampleData> dataOptions,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IOptions<IdentityUserOptions> identityUserOptions, IHostingEnvironment env)
+            IOptions<AdminIdentityOptions> adminIdentityOptions, IHostingEnvironment env)
         {
             _webContext = webContext;
             _logger = loggerFactory.CreateLogger("DbInitializer");
             _data = dataOptions.Value;
             _userManager = userManager;
             _roleManager = roleManager;
-            _identityUser = identityUserOptions.Value;
+            _adminIdentityUser = adminIdentityOptions.Value;
             _environment = env;
         }
         public void Initialize()
@@ -50,7 +50,7 @@ namespace ContosoUniversity.Common.Data
             {
                 _logger.LogInformation("Creating database schema...");
             }
-            
+
             var unitOfWork = new UnitOfWork<WebContext>(_webContext);
             var seedData = new SeedData<WebContext>(_logger, unitOfWork, _data);
             seedData.Initialize();
@@ -59,16 +59,16 @@ namespace ContosoUniversity.Common.Data
         private async Task InitializeSecureContext()
         {
             // abort if Administrator role exists
-            if (_webContext.Roles.Any(r => r.Name == _identityUser.Role))
+            if (_webContext.Roles.Any(r => r.Name == _adminIdentityUser.Role))
             {
                 return;
             }
 
             // create Administrator role
-            await _roleManager.CreateAsync(new IdentityRole("Administrator"));
+            await _roleManager.CreateAsync(new IdentityRole(_adminIdentityUser.Role));
 
-            string user = _identityUser.UserName;
-            string password = _identityUser.Password;
+            string user = _adminIdentityUser.UserName;
+            string password = _adminIdentityUser.Password;
             await _userManager.CreateAsync(new ApplicationUser { UserName = user, Email = user, EmailConfirmed = true }, password);
             await _userManager.AddToRoleAsync(await _userManager.FindByNameAsync(user), "Administrator");
         }

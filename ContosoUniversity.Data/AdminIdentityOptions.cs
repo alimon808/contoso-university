@@ -1,8 +1,8 @@
 ﻿namespace ContosoUniversity.Data
 {
-    public class IdentityUserOptions
+    public class AdminIdentityOptions
     {
-        public string Role { get; set; }
+        public string Role { get; } = "Administrator";
         public string UserName { get; set; }
         public string Password { get; set; }
     }
