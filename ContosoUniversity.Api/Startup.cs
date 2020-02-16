@@ -49,10 +49,10 @@ namespace ContosoUniversity.Api
                 dbInitializer.Initialize();
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
-            }
+            // else
+            // {
+            //     app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
+            // }
             app.UseAuthentication()
                 .UseDefaultFiles()
                 .UseStaticFiles()
@@ -68,7 +68,7 @@ namespace ContosoUniversity.Api
         {
             dbInitializer.Initialize();
             app.UseAuthentication()
-                .UseRewriter(new RewriteOptions().AddRedirectToHttps())
+                // .UseRewriter(new RewriteOptions().AddRedirectToHttps())
                 .UseMvcWithDefaultRoute();
         }
     }
