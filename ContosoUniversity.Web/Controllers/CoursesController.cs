@@ -9,6 +9,7 @@ using ContosoUniversity.Common.Interfaces;
 using ContosoUniversity.Common;
 using ContosoUniversity.Data.DbContexts;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -63,7 +64,7 @@ namespace ContosoUniversity.Web.Controllers
                                    select d;
             ViewBag.DepartmentID = new SelectList(departmentsQuery.AsNoTracking(), "ID", "Name", selectedDepartment);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CourseNumber,Credits,DepartmentID,Title")] Course course)
@@ -130,6 +131,7 @@ namespace ContosoUniversity.Web.Controllers
             return View(courseToUpdate);
         }
 
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -149,6 +151,7 @@ namespace ContosoUniversity.Web.Controllers
             return View(course);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
@@ -164,7 +167,7 @@ namespace ContosoUniversity.Web.Controllers
             {
                 return NotFound();
             }
-            
+
             _courseRepo.Delete(course);
             await _courseRepo.SaveChangesAsync();
             return RedirectToAction("Index");

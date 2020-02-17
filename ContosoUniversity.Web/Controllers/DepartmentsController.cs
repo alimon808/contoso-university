@@ -10,6 +10,7 @@ using ContosoUniversity.Common.Interfaces;
 using AutoMapper;
 using ContosoUniversity.Common;
 using ContosoUniversity.Data.DbContexts;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -173,6 +174,7 @@ namespace ContosoUniversity.Web.Controllers
             return View(vm);
         }
 
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id, bool? concurrencyError)
         {
             if (id == null)
@@ -203,6 +205,7 @@ namespace ContosoUniversity.Web.Controllers
             return View(department);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)

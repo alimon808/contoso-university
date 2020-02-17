@@ -7,6 +7,7 @@ using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Common.Interfaces;
 using ContosoUniversity.Common;
 using ContosoUniversity.Data.DbContexts;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -26,11 +27,12 @@ namespace ContosoUniversity.Web.Controllers
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "LastName_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "EnrollmentDate" ? "EnrollmentDate_desc" : "EnrollmentDate";
-            
+
             if (searchString != null)
             {
                 page = 1;
-            } else
+            }
+            else
             {
                 searchString = currentFilter;
             }
@@ -162,6 +164,7 @@ namespace ContosoUniversity.Web.Controllers
             return View(studentToUpdate);
         }
 
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
@@ -186,6 +189,7 @@ namespace ContosoUniversity.Web.Controllers
             return View(student);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -207,7 +211,7 @@ namespace ContosoUniversity.Web.Controllers
             }
             catch (DbUpdateException)
             {
-                return RedirectToAction("Delete", new {id = id, saveChangesError = true });
+                return RedirectToAction("Delete", new { id = id, saveChangesError = true });
             }
         }
 

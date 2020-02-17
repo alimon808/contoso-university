@@ -97,7 +97,7 @@ namespace ContosoUniversity.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
-            if(remoteError != null)
+            if (remoteError != null)
             {
                 ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
                 return View(nameof(Login));
@@ -123,7 +123,8 @@ namespace ContosoUniversity.Web.Controllers
             if (result.IsLockedOut)
             {
                 return View("Lockout");
-            } else
+            }
+            else
             {
                 // If the user does not have an account, then ask the user to create an account.
                 ViewData["ReturnUrl"] = returnUrl;
@@ -406,6 +407,13 @@ namespace ContosoUniversity.Web.Controllers
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
@@ -425,5 +433,7 @@ namespace ContosoUniversity.Web.Controllers
                 return RedirectToAction("Index", "Manage");
             }
         }
+
+
     }
 }

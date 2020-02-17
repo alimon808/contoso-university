@@ -9,6 +9,7 @@ using ContosoUniversity.Data.Entities;
 using ContosoUniversity.Common.Interfaces;
 using ContosoUniversity.Common;
 using ContosoUniversity.Data.DbContexts;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ContosoUniversity.Web.Controllers
 {
@@ -173,6 +174,7 @@ namespace ContosoUniversity.Web.Controllers
             return View(instructorToUpdate);
         }
 
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -190,6 +192,7 @@ namespace ContosoUniversity.Web.Controllers
             return View(instructor);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
