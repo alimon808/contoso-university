@@ -65,10 +65,10 @@ namespace ContosoUniversity.Spa.React
 
                 if (env.IsDevelopment())
                 {
-                    // spa.UseReactDevelopmentServer(npmScript: "start");
+                    spa.UseReactDevelopmentServer(npmScript: "start");
 
                     // run CRA server independently
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:6188");
+                    // spa.UseProxyToSpaDevelopmentServer("http://localhost:6188");
                 }
             });
         }
