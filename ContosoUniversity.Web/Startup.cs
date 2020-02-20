@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using ContosoUniversity.Web;
 using ContosoUniversity.Common;
 using ContosoUniversity.Web.Helpers;
-using Microsoft.AspNetCore.Rewrite;
 using ContosoUniversity.Common.Data;
 using ContosoUniversity.Common.Interfaces;
 using AutoMapper;
@@ -40,6 +39,13 @@ namespace ContosoUniversity
             services.AddScoped<IModelBindingHelperAdaptor, DefaultModelBindingHelaperAdaptor>();
             services.AddScoped<IUrlHelperAdaptor, UrlHelperAdaptor>();
             services.AddSingleton<IConfiguration>(Configuration);
+
+            // Call to change httpsport or redirect status code.
+            // services.AddHttpsRedirection(options =>
+            // {
+            //     options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+            //     options.HttpsPort = 20650;
+            // });
         }
 
         public void Configure(IApplicationBuilder app,
@@ -52,10 +58,19 @@ namespace ContosoUniversity
                 app.UseDeveloperExceptionPage();
                 dbInitializer.Initialize();
             }
-            else
+            else if (env.IsProduction())
             {
                 // app.UseExceptionHandler("/Home/Error");
-                // app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
+            }
+
+            // aspnetcore 2.1 Require HTTPS
+            // https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-3.1&tabs=visual-studio
+            // enable via config file
+            var enableHttps = Configuration["EnableHttps"];
+            if (!string.IsNullOrWhiteSpace(enableHttps) && enableHttps.ToLower() == "true")
+            {
+                // enable https redirection middleware
+                app.UseHttpsRedirection();
             }
 
             app.UseStaticFiles();
