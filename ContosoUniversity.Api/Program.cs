@@ -29,7 +29,7 @@ namespace ContosoUniversity.Api
         public static void ConfigConfiguration(WebHostBuilderContext context, IConfigurationBuilder config)
         {
             config.SetBasePath(Directory.GetCurrentDirectory())
-                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                   .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true);
 
             if (context.HostingEnvironment.IsDevelopment())
