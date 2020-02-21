@@ -148,46 +148,19 @@ namespace ContosoUniversity.Common
                     options.AppId = facebookAppId;
                     options.AppSecret = facebookAppSecret;
                 });
-
             }
 
-            // Enable Jwt Tokens
-            // https://wildermuth.com/2017/08/19/Two-AuthorizationSchemes-in-ASP-NET-Core-2
-            string jwtIssuer = configuration["Authentication:Tokens:Issuer"];
-            string jwtAudience = configuration["Authentication:Tokens:Issuer"];
-            string jwtKey = configuration["Authentication:Tokens:Key"];
-            if (!string.IsNullOrWhiteSpace(jwtIssuer) && !string.IsNullOrWhiteSpace(jwtAudience) && !string.IsNullOrWhiteSpace(jwtKey))
-            {
-                services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidIssuer = jwtIssuer,
-                        ValidAudience = jwtAudience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-                    };
-                });
-            }
-
+            services.AddJwtAuthentication(configuration);
             return services;
         }
 
         public static IServiceCollection AddCustomizedApiAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication()
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidIssuer = configuration["Authentication:Tokens:Issuer"],
-                        ValidAudience = configuration["Authentication:Tokens:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:Tokens:Key"]))
-                    };
-                });
-
+            services.AddJwtAuthentication(configuration);
             return services;
         }
+
+
 
         // sms and email services
         public static IServiceCollection AddCustomizedMessage(this IServiceCollection services, IConfiguration configuration)
@@ -208,6 +181,29 @@ namespace ContosoUniversity.Common
                 cfg.CreateMap<DepartmentDTO, Department>().ReverseMap();
             });
 
+            return services;
+        }
+
+        private static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Enable Jwt Tokens
+            // https://wildermuth.com/2017/08/19/Two-AuthorizationSchemes-in-ASP-NET-Core-2
+            string jwtIssuer = configuration["Authentication:Tokens:Issuer"];
+            string jwtAudience = configuration["Authentication:Tokens:Audience"];
+            string jwtKey = configuration["Authentication:Tokens:Key"];
+            if (!string.IsNullOrWhiteSpace(jwtIssuer) && !string.IsNullOrWhiteSpace(jwtAudience) && !string.IsNullOrWhiteSpace(jwtKey))
+            {
+                services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = jwtIssuer,
+                        ValidAudience = jwtAudience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                    };
+                });
+            }
             return services;
         }
     }
