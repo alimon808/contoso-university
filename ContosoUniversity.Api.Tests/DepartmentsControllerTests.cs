@@ -20,12 +20,16 @@ namespace ContosoUniversity.Api.Tests
     {
         private readonly DepartmentsController _sut;
         private readonly Mock<IRepository<Department>> _mockDepartmentRepo;
+        private readonly Mock<IPersonRepository<Instructor>> _mockInstructorRepo;
         private readonly IMapper _mapper;
         public DepartmentsApiControllerTests()
         {
             _mockDepartmentRepo = Departments.AsMockRepository<Department>();
+            _mockInstructorRepo = Instructors.AsMockPersonRepository<Instructor>();
+
             var mockUnitOfWork = new Mock<UnitOfWork<ApiContext>>();
             mockUnitOfWork.Setup(c => c.DepartmentRepository).Returns(_mockDepartmentRepo.Object);
+            mockUnitOfWork.Setup(c => c.InstructorRepository).Returns(_mockInstructorRepo.Object);
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -69,7 +73,7 @@ namespace ContosoUniversity.Api.Tests
         [Fact]
         public async Task HttpPost_ReturnsCreatedAtRouteResult_WithDepartmentEntity()
         {
-            var department = new Department { ID = 5, Name = "Physics", Budget = 100000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 4 };
+            var department = new Department { ID = 5, Name = "Physics", Budget = 100000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID = 1 };
 
             var departmentToAdd = _mapper.Map<CreateDepartmentDTO>(department);
             var result = await _sut.Create(departmentToAdd);
@@ -84,13 +88,28 @@ namespace ContosoUniversity.Api.Tests
         }
 
         [Fact]
-        public async Task HttpPost_ReturnsABadRequestResult()
+        public async Task HttpPost_ReturnsABadRequestResult_WhenInstructorIdDoesNotExist()
         {
-            var result = await _sut.Create(null);
+            var department = new Department
+            {
+                ID = 5,
+                Name = "Physics",
+                Budget = 100000,
+                AddedDate = DateTime.UtcNow,
+                ModifiedDate = DateTime.UtcNow,
+                StartDate = DateTime.Parse("2007-09-01"),
+                InstructorID = 99
+            };
+            var departmentToAdd = _mapper.Map<CreateDepartmentDTO>(department);
+            var result = await _sut.Create(departmentToAdd);
 
             Assert.NotNull(result);
-            Assert.IsType<BadRequestResult>(result);
-            Assert.Equal(400, ((BadRequestResult)result).StatusCode);
+            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, ((BadRequestObjectResult)result).StatusCode);
+
+            var value = ((BadRequestObjectResult)result).Value as SerializableError;
+            Assert.True(value.Count == 1);
+            Assert.True(value.ContainsKey("InstructorID"));
         }
 
         [Fact]
@@ -154,6 +173,11 @@ namespace ContosoUniversity.Api.Tests
             new Department { ID = 2, Name = "Mathematics", Budget = 100000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID  = 2 },
             new Department { ID = 3, Name = "Engineering", Budget = 350000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID  = 3 },
             new Department { ID = 4, Name = "Economics",   Budget = 100000, AddedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow, StartDate = DateTime.Parse("2007-09-01"), InstructorID  = 4 }
+        };
+
+        private List<Instructor> Instructors { get; } = new List<Instructor>
+        {
+            new Instructor {ID = 1, HireDate = DateTime.Now, FirstMidName = "Albert", LastName = "Einstein" }
         };
     }
 }

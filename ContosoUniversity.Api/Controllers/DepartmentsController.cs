@@ -12,21 +12,25 @@ using ContosoUniversity.Data.DbContexts;
 using ContosoUniversity.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 
 namespace ContosoUniversity.Api.Controllers
 {
     // api modeled after example at https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?tabs=aspnet1x
+    [ApiController]
     [Route("[controller]")]
     [Produces("application/json")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class DepartmentsController : Controller
     {
         private IRepository<Department> _departmentRepo;
+        private IRepository<Instructor> _instructorRepo;
         private readonly IMapper _mapper;
 
         public DepartmentsController(UnitOfWork<ApiContext> unitOfWork, IMapper mapper)
         {
             _departmentRepo = unitOfWork.DepartmentRepository;
+            _instructorRepo = unitOfWork.InstructorRepository;
             _mapper = mapper;
         }
 
@@ -72,19 +76,20 @@ namespace ContosoUniversity.Api.Controllers
         /// <param name="dto"></param>
         /// <returns>A newly-created TodoItem</returns>
         /// <response code="201">Returns the newly-created item</response>
-        /// <response code="400">If the item is null</response>            
+        /// <response code="400">If the item is null or model state is invalid</response>            
         [HttpPost]
-        [ProducesResponseType(typeof(CreateDepartmentDTO), 201)]
-        [ProducesResponseType(typeof(CreateDepartmentDTO), 400)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateDepartmentDTO dto)
         {
-            if (dto == null)
+            // check if instructor exists
+            if (!_instructorRepo.Get(dto.InstructorID).Any())
             {
-                return BadRequest();
+                ModelState.AddModelError("InstructorID", "InstructorID does not exist.");
+                return BadRequest(ModelState);
             }
 
             var department = _mapper.Map<Department>(dto);
-
             await _departmentRepo.AddAsync(department);
             await _departmentRepo.SaveChangesAsync();
 
