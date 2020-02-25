@@ -8,4 +8,4 @@ dotnet test
 ```
 
 ### References
-[Integration Test in Asp.Net Core](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-2.1#test-app-organization)
+[Integration Test in Asp.Net Core](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-2.1)

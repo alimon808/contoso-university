@@ -46,12 +46,28 @@ namespace ContosoUniversity.Web.IntegrationTests
                     options.UseInMemoryDatabase("InMemorySecureDbForTesting");
                     options.UseInternalServiceProvider(serviceProvider);
                 });
+                // Add a database context (ApplicationContext) using an in-memory database for testing
+                services.AddDbContext<ApplicationContext>(options =>
+                {
+                    options.UseInMemoryDatabase("InMemoryForTesting");
+                    options.UseInternalServiceProvider(serviceProvider);
+                });
+
+                var sp = services.BuildServiceProvider();
+
+                using (var scope = sp.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                    db.Database.EnsureCreated();
+                    Utilities.InitializeDbForTest(db);
+                }
             });
 
-            builder.ConfigureTestServices(services =>
-            {
-                services.AddScoped<IDbInitializer, TestDbInitializer>();
-            });
+            builder.UseEnvironment("Testing")
+                   .ConfigureTestServices(services =>
+                    {
+                        services.AddScoped<IDbInitializer, TestDbInitializer>();
+                    });
 
         }
     }
