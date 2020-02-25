@@ -1,8 +1,8 @@
 ## ContosoUniversity.Web.IntegrationTests
 
 ### Run Integration Tests from command line
-Clone solution.
 ```
+git clone https://github.com/alimon808/contoso-university.git
 cd ContosoUniverity.Web.IntegrationTests
 dotnet test
 ```
