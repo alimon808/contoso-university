@@ -7,7 +7,7 @@ namespace ContosoUniversity.Api.Tests
 {
     public class ApiIntegrationTests : BaseIntegrationTest<Startup>
     {
-        [Fact]
+        [Fact(Skip = "Move to separate project")]
         public async Task DepartmentApi_ReturnsArrayOfDepartmentObjects()
         {
             var url = "/Departments";
